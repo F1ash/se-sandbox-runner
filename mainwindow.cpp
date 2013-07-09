@@ -3,8 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-  //settings = new QSettings("se-sandbox-runner", "se-sandbox-runner");
-  settings = new SettingsStuff(this);
+  settings = new QSettings();
   setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
   restoreGeometry(settings->value("Geometry").toByteArray());
   setMinimumSize(100, 100);
@@ -65,7 +64,6 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason r)
 void MainWindow::initJobWidget()
 {
   jobWidget= new JobList(this);
-  jobWidget->setSettingsReference(settings);
   QStringList groups = settings->childGroups();
   QList<QString>::const_iterator i;
   for (i=groups.constBegin(); i!=groups.constEnd(); ++i)

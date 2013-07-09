@@ -1,7 +1,6 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include "jobmenu.h"
-//#include "settings/settings_stuff.h"
 #include "settings/settings.h"
 #include "element/elemprocess.h"
 //#include "utils/pgrep.h"
@@ -25,14 +24,12 @@ signals:
     void restoreJobParameter(QString&, QString&, QVariant&);
 
 public slots:
-    void setSettingsReference(SettingsStuff &);
     void editItemAction();
     void addJobItem(QString &s);
     void deleteCurrentJobItem();
     void stopJob(QListWidgetItem *_item);
 
 private :
-    SettingsStuff settings;
 
 private slots:
     void jobItemClicked(const QPoint &pos);

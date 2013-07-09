@@ -4,8 +4,7 @@
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
 {
-  //settings = new QSettings("se-sandbox-runner", "se-sandbox-runner");
-  //settings = new SettingsStuff(this);
+  settings = new QSettings();
   setWindowTitle("<noname>::Settings");
   restoreGeometry(settings->value("SetDlgGeometry").toByteArray());
   setModal(false);
@@ -43,10 +42,6 @@ SettingsDialog::~SettingsDialog()
   commonLayout = 0;
   delete settings;
   settings = 0;
-}
-void SettingsDialog::setSettingsReference(SettingsStuff &s)
-{
-  settings = s;
 }
 void SettingsDialog::initTabWidget()
 {

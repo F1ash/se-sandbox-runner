@@ -1,10 +1,9 @@
-//#include <QSettings>
 #include <QDialog>
 #include <QTabWidget>
 #include <QPushButton>
 #include <QListWidgetItem>
+#include <QSettings>
 #include <QCloseEvent>
-#include "settings_stuff.h"
 #include "common_settings.h"
 #include "window_settings.h"
 #include "include_settings.h"
@@ -16,7 +15,7 @@ class SettingsDialog : public QDialog
 public:
     SettingsDialog(QWidget *parent=0);
     ~SettingsDialog();
-    SettingsStuff *settings;
+    QSettings *settings;
     QTabWidget *tabWidget;
 
 signals:
@@ -37,7 +36,6 @@ private:
     QString previousName;
 
 public slots:
-    void setSettingsReference(SettingsStuff&);
     void setJobItem(QListWidgetItem *);
     void setGuiCheckState(int);
 

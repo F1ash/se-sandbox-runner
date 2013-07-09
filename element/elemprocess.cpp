@@ -4,6 +4,7 @@
 ElemProcess::ElemProcess(QObject *parent) :
     QProcess(parent)
 {
+  settings = new QSettings();
   setWorkingDirectory(QDir::homePath());
   connect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
   timerId = 0;
@@ -24,10 +25,6 @@ void ElemProcess::setItemReference(QListWidgetItem *i)
   item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STANDBY --"));
   fgBrush = item->foreground();
   bgBrush = item->foreground();
-}
-void ElemProcess::setSettingsReference(SettingsStuff &s)
-{
-  settings = s;
 }
 QStringList ElemProcess::CommandBuild()
 {

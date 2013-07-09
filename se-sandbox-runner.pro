@@ -19,13 +19,12 @@ SOURCES += main.cpp\
         layout/listwidget.cpp \
         layout/jobmenu.cpp \
         utils/pgrep.cpp \
-    element/elemprocess.cpp \
-    settings/settings.cpp \
-    settings/common_settings.cpp \
-    settings/window_settings.cpp \
-    settings/include_settings.cpp \
-    settings/directory_settings.cpp \
-    settings/settings_stuff.cpp
+        element/elemprocess.cpp \
+        settings/settings.cpp \
+        settings/common_settings.cpp \
+        settings/window_settings.cpp \
+        settings/include_settings.cpp \
+        settings/directory_settings.cpp
 
 HEADERS  += mainwindow.h\
         tray/traywidget.h \
@@ -33,12 +32,11 @@ HEADERS  += mainwindow.h\
         layout/listwidget.h \
         layout/jobmenu.h \
         utils/pgrep.h \
-    element/elemprocess.h \
-    settings/settings.h \
-    settings/common_settings.h \
-    settings/window_settings.h \
-    settings/include_settings.h \
-    settings/directory_settings.h \
-    settings/settings_stuff.h
+        element/elemprocess.h \
+        settings/settings.h \
+        settings/common_settings.h \
+        settings/window_settings.h \
+        settings/include_settings.h \
+        settings/directory_settings.h
 
 LIBS     += -lprocps

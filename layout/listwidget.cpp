@@ -18,10 +18,6 @@ JobList::~JobList()
   delete jobProcess;
   jobProcess = 0;
 }
-void JobList::setSettingsReference(SettingsStuff &s)
-{
-  settings = s;
-}
 void JobList::addJobItem(QString &s)
 {
   QListWidgetItem *_item;
@@ -66,7 +62,6 @@ void JobList::createJobProcess(QListWidgetItem *_item)
   QString key = _item->text();
   ElemProcess *proc = new ElemProcess(this);
   proc->setItemReference(_item);
-  proc->setSettingsReference(settings);
   jobProcess->insert(key, proc);
   qDebug()<<key<<" create Job process";
   clearSelection();
@@ -116,14 +111,13 @@ void JobList::stopJob(QListWidgetItem *_item)
 void JobList::editItemAction()
 {
   QListWidgetItem *_item = currentItem();
-  if (_item==0)
+  if (!_item)
     {
       QMessageBox::information(this, "Info", "Item not exist.");
       return;
     };
   SettingsDialog *sDialog = new SettingsDialog(this->parentWidget());
   sDialog->setJobItem(_item);
-  sDialog->setSettingsReference(settings);
   sDialog->exec();
   sDialog->deleteLater();
 }
@@ -142,9 +136,12 @@ void JobList::deleteCurrentJobItem()
           takeItem(currentRow());
           ElemProcess *proc;
           proc = jobProcess->value(job);
-          if ( proc && proc->state()==QProcess::Running ) proc->killJob();
-          jobProcess->remove(job);
-          qDebug()<<"delete"<<job;
+          if ( proc && proc->state()==QProcess::Running )
+            {
+              proc->killJob();
+              jobProcess->remove(job);
+              qDebug()<<"delete"<<job;
+            };
           emit removeJob(job);
         };
     }

@@ -1,11 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-//#include <QSettings>
+#include <QSettings>
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QStringList>
-#include "settings/settings_stuff.h"
 #include "tray/traywidget.h"
 #include "layout/listwidget.h"
 #include "toolbar/toolbar.h"
@@ -19,7 +18,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    SettingsStuff *settings;
+    QSettings *settings;
     JobList  *jobWidget;
 
 signals:

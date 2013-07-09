@@ -1,4 +1,5 @@
 #include <QStringList>
+#include <QSettings>
 #include <QListWidgetItem>
 #include <QProcess>
 #include <QDir>
@@ -6,7 +7,6 @@
 #include <QTimerEvent>
 #include <QMap>
 #include "signal.h"
-#include "settings/settings_stuff.h"
 
 #define RUNNED true
 #define STOPPED false
@@ -27,7 +27,6 @@ public:
 
 public slots:
     void setItemReference(QListWidgetItem*);
-    void setSettingsReference(SettingsStuff&);
     void runJob();
     void killJob();
 
@@ -42,7 +41,7 @@ private:
     QBrush fgBrush;
     QMap<QString, QVariant> proc_Status;
     int timerId;
-    SettingsStuff settings;
+    QSettings *settings;
 
 private slots:
     QStringList CommandBuild();
