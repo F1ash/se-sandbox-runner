@@ -21,7 +21,6 @@ public:
 signals:
     void clickedItem(QString);
     void removeJob(QString &);
-    void restoreJobParameter(QString&, QString&, QVariant&);
 
 public slots:
     void editItemAction();

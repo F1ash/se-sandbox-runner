@@ -39,7 +39,6 @@ private slots:
     void initToolBar();
     void editCurrentJobItem();
     void createNewJobItem();
-    void restoreJobParameter(QString &, QString &, QVariant &);
     void deleteCurrentJobItem();
     void removeJobItem(QString &);
     void stopCurrentJob();

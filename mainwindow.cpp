@@ -73,8 +73,6 @@ void MainWindow::initJobWidget()
     };
   setCentralWidget(jobWidget);
   connect(jobWidget, SIGNAL(removeJob(QString &)), this, SLOT(removeJobItem(QString &)));
-  connect(jobWidget, SIGNAL(restoreJobParameter(QString&,QString&,QVariant&)), \
-    this, SLOT(restoreJobParameter(QString&,QString&,QVariant&)));
 }
 void MainWindow::initToolBar()
 {
@@ -96,13 +94,6 @@ void MainWindow::createNewJobItem()
 {
   QString s = QString("<noname>");
   jobWidget->addJobItem(s);
-}
-void MainWindow::restoreJobParameter(QString &group, QString &parameter, QVariant &value)
-{
-  settings->beginGroup(group);
-  settings->setValue( parameter, value );
-  settings->endGroup();
-  qDebug()<<group<<parameter<<value<<"restored";
 }
 void MainWindow::deleteCurrentJobItem()
 {
