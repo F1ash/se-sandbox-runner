@@ -8,10 +8,12 @@ ElemProcess::ElemProcess(QObject *parent) :
   setWorkingDirectory(QDir::homePath());
   connect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
   timerId = 0;
+  commandLine = new String(this);
 }
 ElemProcess::~ElemProcess()
 {
-
+  delete commandLine;
+  commandLine = 0;
 }
 void ElemProcess::setItemReference(QListWidgetItem *i)
 {
@@ -26,10 +28,30 @@ void ElemProcess::setItemReference(QListWidgetItem *i)
   fgBrush = item->foreground();
   bgBrush = item->foreground();
 }
-QStringList ElemProcess::CommandBuild()
+QStringList ElemProcess::getCommand()
 {
-  QStringList result;
-  return result;
+  settings->beginGroup(name);
+  guiApp = settings->value("GuiApp", QVariant()).toBool();
+  cgroups = settings->value("CGroups", QVariant()).toBool();
+  capabilities = settings->value("Capabilities", QVariant()).toBool();
+  shred = settings->value("Shred", QVariant()).toBool();
+  securityLayer = settings->value("SLeyer", QVariant()).toString();
+  sandboxType = settings->value("SType", QVariant()).toString();
+  execute = settings->value("Execute", QVariant()).toBool();
+  session = settings->value("Session", QVariant()).toBool();
+  command = settings->value("Command", QVariant()).toString();
+  DPI = settings->value("DPI", QVariant()).toInt();
+  WM = settings->value("WM", QVariant()).toString();
+  windowHeight = settings->value("wHeight", QVariant()).toInt();
+  windowWidth = settings->value("wWidth", QVariant()).toInt();
+  includes = settings->value("Includes", QVariant()).toString();
+  mountDirs = settings->value("Mount", QVariant()).toBool();
+  tempDir = settings->value("TempDir", QVariant()).toString();
+  homeDir = settings->value("HomeDir", QVariant()).toString();
+  settings->endGroup();
+  commandLine->clear();
+  _commandBuild();
+  return commandLine->getList();
 }
 void ElemProcess::appendChildren()
 {
@@ -82,11 +104,23 @@ void ElemProcess::runJob()
   item->setData(Qt::UserRole, QVariant(proc_Status));
   item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STARTED --"));
   setUnAvailableItemBrush();
-  start("/usr/bin/sandbox", QStringList()<<"-X"<<"-W"<<"kwin"<<"-t"<<"sandbox_web_t"<< "firefox");
+  /* testing command */
+  //start("/usr/bin/sandbox", QStringList()<<"-X"<<"-W"<<"kwin"<<"-t"<<"sandbox_web_t"<< "firefox");
+  QStringList cmd;
+  cmd.append(getCommand());
+  qDebug()<<cmd.join(" ")<<name;
+  start("/usr/bin/sandbox", cmd);
   waitForStarted();
+  waitForReadyRead();
+  QByteArray _data;
+  _data = readAllStandardOutput();
+  _data.append("\n");
+  _data.append(readAllStandardError());
+  qDebug()<<QTextStream(&_data).readAll();
   PID = QString::number(pid());
   if (state()==QProcess::Running )
-      QTimer::singleShot(10000, this, SLOT(appendChildren()));
+    QTimer::singleShot(10000, this, SLOT(appendChildren()));
+  else emit processState(STOPPED);
 }
 void ElemProcess::setUnAvailableItemBrush()
 {
@@ -146,3 +180,26 @@ void ElemProcess::timerEvent(QTimerEvent *event)
        if ( ::kill(PID.toInt(), SIGZERO)!=0 ) killJob();
      };
  }
+
+void ElemProcess::_commandBuild()
+{
+  if (capabilities) commandLine->appendCapabilities();
+  if (cgroups) commandLine->appendCGroups();
+  if (shred) commandLine->appendShred();
+  if (guiApp && DPI) commandLine->appendDPI(DPI);
+  if (!securityLayer.isEmpty() && session) commandLine->appendSecurityLayer(securityLayer);
+  if (mountDirs) commandLine->appendMountDirs();
+  if (guiApp) commandLine->appendGuiApp();
+  if (!homeDir.isEmpty()) commandLine->appendHomeDir(homeDir);
+  if (!tempDir.isEmpty()) commandLine->appendTempDir(tempDir);
+  if (!includes.isEmpty()) commandLine->appendIncludes(includes);
+  if (guiApp)
+    {
+      if (!WM.isEmpty()) commandLine->appendWM(WM);
+      if ( windowWidth && windowHeight )
+          commandLine->appendWindowSize(windowWidth, windowHeight);
+    };
+  if (!sandboxType.isEmpty()) commandLine->appendSandboxType(sandboxType);
+  if      (session) commandLine->appendSession();
+  else if (execute) commandLine->appendCommand(command);
+}

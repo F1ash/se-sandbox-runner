@@ -24,7 +24,8 @@ SOURCES += main.cpp\
         settings/common_settings.cpp \
         settings/window_settings.cpp \
         settings/include_settings.cpp \
-        settings/directory_settings.cpp
+        settings/directory_settings.cpp \
+        element/string_list.cpp
 
 HEADERS  += mainwindow.h\
         tray/traywidget.h \
@@ -37,6 +38,7 @@ HEADERS  += mainwindow.h\
         settings/common_settings.h \
         settings/window_settings.h \
         settings/include_settings.h \
-        settings/directory_settings.h
+        settings/directory_settings.h \
+        element/string_list.h
 
 LIBS     += -lprocps

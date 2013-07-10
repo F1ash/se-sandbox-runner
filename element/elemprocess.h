@@ -7,6 +7,7 @@
 #include <QTimerEvent>
 #include <QMap>
 #include "signal.h"
+#include "string_list.h"
 
 #define RUNNED true
 #define STOPPED false
@@ -18,7 +19,7 @@
 
 class ElemProcess : public QProcess
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     ElemProcess(QObject *parent = 0);
@@ -43,11 +44,31 @@ private:
     int timerId;
     QSettings *settings;
 
+    bool guiApp;
+    bool cgroups;
+    bool capabilities;
+    bool shred;
+    QString securityLayer;
+    QString sandboxType;
+    bool execute;
+    bool session;
+    QString command;
+    int DPI;
+    QString WM;
+    int windowHeight;
+    int windowWidth;
+    QString includes;
+    bool mountDirs;
+    QString tempDir;
+    QString homeDir;
+    String *commandLine;
+
 private slots:
-    QStringList CommandBuild();
+    QStringList getCommand();
     void appendChildren();
     void readChildren();
     void setUnAvailableItemBrush();
     void setProcessState(bool status);
     void timerEvent(QTimerEvent *);
+    void _commandBuild();
 };
