@@ -42,11 +42,11 @@ void String::appendSandboxType(QString &s)
 {
   list.append("-t");
   QString t;
-  if      (s=="No Network Access") t = QString("sandbox_min_t");
-  else if (s=="Printer Ports") t = QString("sandbox_x_t");
-  else if (s=="Ports required for web browsing") t = QString("sandbox_web_t");
-  else if (s=="All network ports") t = QString("sandbox_net_t");
-  else if (s=="Default") t = QString("sandbox_t");
+  if      (s==QString("No Network Access")) t = QString("sandbox_min_t");
+  else if (s==QString("Printer Ports")) t = QString("sandbox_x_t");
+  else if (s==QString("Ports required for web browsing")) t = QString("sandbox_web_t");
+  else if (s==QString("All network ports")) t = QString("sandbox_net_t");
+  else if (s==QString("Default")) t = QString("sandbox_t");
   list.append(t);
 }
 void String::appendSession()

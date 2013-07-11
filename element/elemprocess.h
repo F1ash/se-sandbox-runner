@@ -42,7 +42,7 @@ private:
     QBrush fgBrush;
     QMap<QString, QVariant> proc_Status;
     int timerId;
-    QSettings *settings;
+    QSettings settings;
 
     bool guiApp;
     bool cgroups;

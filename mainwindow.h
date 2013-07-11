@@ -18,7 +18,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QSettings *settings;
+    QSettings settings;
     JobList  *jobWidget;
 
 signals:

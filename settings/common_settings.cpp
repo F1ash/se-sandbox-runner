@@ -39,10 +39,17 @@ CommonSet::CommonSet(QWidget *parent) :
   gridLayout->addWidget(cmdWidget, 7, 0, 8, 5);
 
   setLayout(gridLayout);
-  setFocusProxy(nameEdit);
+  //setFocusProxy(nameEdit);
 }
 CommonSet::~CommonSet()
 {
+  disconnect(sandboxType, SIGNAL(currentIndexChanged(QString)), this, SLOT(setTypeToolTip(QString)));
+  disconnect(execute, SIGNAL(toggled(bool)), this, SLOT(enableCommand(bool)));
+  disconnect(session, SIGNAL(toggled(bool)), this, SLOT(enableSLevel(bool)));
+  disconnect(selectFile, SIGNAL(clicked()), this, SLOT(setCommandPath()));
+
+  delete guiApp;
+  guiApp = 0;
   delete shred;
   shred = 0;
   delete autoRun;

@@ -28,6 +28,12 @@ DirectorySet::DirectorySet(QWidget *parent) :
 }
 DirectorySet::~DirectorySet()
 {
+  disconnect(mountDirs, SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
+  disconnect(guiApp,    SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
+  disconnect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
+  disconnect(getTempDir, SIGNAL(clicked()), this, SLOT(setTempDir()));
+  disconnect(getHomeDir, SIGNAL(clicked()), this, SLOT(setHomeDir()));
+
   delete mountDirs;
   mountDirs = 0;
   delete guiApp;

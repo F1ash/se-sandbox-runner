@@ -29,6 +29,8 @@ public slots:
     void stopJob(QListWidgetItem *_item);
 
 private :
+    QIcon stateIcon;
+    SettingsDialog *sDialog;
 
 private slots:
     void jobItemClicked(const QPoint &pos);

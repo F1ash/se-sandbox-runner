@@ -3,9 +3,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-  settings = new QSettings();
   setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
-  restoreGeometry(settings->value("Geometry").toByteArray());
+  restoreGeometry(settings.value("Geometry").toByteArray());
   setMinimumSize(100, 100);
   initTrayIcon();
   initJobWidget();
@@ -13,8 +12,20 @@ MainWindow::MainWindow(QWidget *parent)
 }
 MainWindow::~MainWindow()
 {
-  delete settings;
-  settings = 0;
+
+  disconnect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
+                    SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+  disconnect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
+  //disconnect(trayIcon->reloadAction, SIGNAL(triggered()), this, SLOT(reloadAppAction()));
+  disconnect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
+  disconnect(jobWidget, SIGNAL(removeJob(QString &)), this, SLOT(removeJobItem(QString &)));
+  disconnect(toolBar->_hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
+  disconnect(toolBar->_createAction, SIGNAL(triggered()), this, SLOT(createNewJobItem()));
+  disconnect(toolBar->_editAction, SIGNAL(triggered()), this, SLOT(editCurrentJobItem()));
+  disconnect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
+  disconnect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
+  disconnect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
+
   delete trayIcon;
   trayIcon = 0;
   delete jobWidget;
@@ -24,9 +35,9 @@ MainWindow::~MainWindow()
 }
 void MainWindow::closeEvent(QCloseEvent *)
 {
-  settings->setValue("Geometry", saveGeometry());
-  settings->setValue("ToolBarArea", toolBarArea(toolBar));
-  settings->sync();
+  settings.setValue("Geometry", saveGeometry());
+  settings.setValue("ToolBarArea", toolBarArea(toolBar));
+  settings.sync();
 }
 void MainWindow::closeEvent()
 {
@@ -64,7 +75,7 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason r)
 void MainWindow::initJobWidget()
 {
   jobWidget= new JobList(this);
-  QStringList groups = settings->childGroups();
+  QStringList groups = settings.childGroups();
   QList<QString>::const_iterator i;
   for (i=groups.constBegin(); i!=groups.constEnd(); ++i)
     {
@@ -83,7 +94,7 @@ void MainWindow::initToolBar()
   connect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
   connect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   connect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
-  int area_int = settings->value("ToolBarArea", 4).toInt();
+  int area_int = settings.value("ToolBarArea", 4).toInt();
   this->addToolBar(toolBar->get_ToolBarArea(area_int), toolBar);
 }
 void MainWindow::editCurrentJobItem()
@@ -101,7 +112,7 @@ void MainWindow::deleteCurrentJobItem()
 }
 void MainWindow::removeJobItem(QString &job)
 {
-  settings->remove(job);
+  settings.remove(job);
   QString _fn = QDir::homePath();
   _fn.append("/.config/se-sandbox-runner/");
   _fn.append(QString("%1.included").arg(job));

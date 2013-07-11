@@ -12,20 +12,26 @@ JobList::JobList(QWidget *parent)
   jobProcess = new QMap<QString, ElemProcess*>();
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
   connect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
+  stateIcon = QIcon::fromTheme("system-run");
 }
 JobList::~JobList()
 {
   delete jobProcess;
   jobProcess = 0;
+
+  disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
+  disconnect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
+  clear();
 }
 void JobList::addJobItem(QString &s)
 {
   QListWidgetItem *_item;
-  _item = new QListWidgetItem( QIcon::fromTheme("system-run"), s, this);
+  this->insertItem(0, s);
+  _item = findItems(s, Qt::MatchExactly).at(0);
+  _item->setIcon( stateIcon );
   _item->setTextAlignment(Qt::AlignLeft);
-  addItem(_item);
   createJobProcess(_item);
-  if ( _item->text() == "<noname>" )
+  if ( _item->text() == QString("<noname>") )
     {
       setCurrentItem(_item);
       editItemAction();
@@ -55,6 +61,8 @@ void JobList::jobItemClicked(const QPoint &pos)
   connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
   jobMenu->move(mapToGlobal(pos));
   jobMenu->exec();
+  disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemAction()));
+  disconnect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
   jobMenu->deleteLater();
 }
 void JobList::createJobProcess(QListWidgetItem *_item)
@@ -116,7 +124,7 @@ void JobList::editItemAction()
       QMessageBox::information(this, "Info", "Item not exist.");
       return;
     };
-  SettingsDialog *sDialog = new SettingsDialog(this->parentWidget());
+  sDialog = new SettingsDialog(this->parentWidget());
   sDialog->setJobItem(_item);
   sDialog->exec();
   sDialog->deleteLater();

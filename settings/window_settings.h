@@ -9,7 +9,7 @@ class WindowSet : public QWidget
 {
   Q_OBJECT;
 public:
-    WindowSet(QWidget *parent=0);
+    WindowSet(QWidget *parent);
     ~WindowSet();
     QSpinBox *DPI;
     QLineEdit *WM;

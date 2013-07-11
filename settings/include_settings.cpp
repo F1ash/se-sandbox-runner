@@ -29,6 +29,10 @@ IncludeSet::IncludeSet(QWidget *parent) :
 }
 IncludeSet::~IncludeSet()
 {
+  disconnect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
+  disconnect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));
+  disconnect(delPath, SIGNAL(clicked()), this, SLOT(delPathFromList()));
+
   delete addFile;
   addFile = 0;
   delete addDir;

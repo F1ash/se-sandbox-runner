@@ -4,7 +4,6 @@
 ElemProcess::ElemProcess(QObject *parent) :
     QProcess(parent)
 {
-  settings = new QSettings();
   setWorkingDirectory(QDir::homePath());
   connect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
   timerId = 0;
@@ -12,6 +11,8 @@ ElemProcess::ElemProcess(QObject *parent) :
 }
 ElemProcess::~ElemProcess()
 {
+  disconnect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
+
   delete commandLine;
   commandLine = 0;
 }
@@ -30,25 +31,25 @@ void ElemProcess::setItemReference(QListWidgetItem *i)
 }
 QStringList ElemProcess::getCommand()
 {
-  settings->beginGroup(name);
-  guiApp = settings->value("GuiApp", QVariant()).toBool();
-  cgroups = settings->value("CGroups", QVariant()).toBool();
-  capabilities = settings->value("Capabilities", QVariant()).toBool();
-  shred = settings->value("Shred", QVariant()).toBool();
-  securityLayer = settings->value("SLeyer", QVariant()).toString();
-  sandboxType = settings->value("SType", QVariant()).toString();
-  execute = settings->value("Execute", QVariant()).toBool();
-  session = settings->value("Session", QVariant()).toBool();
-  command = settings->value("Command", QVariant()).toString();
-  DPI = settings->value("DPI", QVariant()).toInt();
-  WM = settings->value("WM", QVariant()).toString();
-  windowHeight = settings->value("wHeight", QVariant()).toInt();
-  windowWidth = settings->value("wWidth", QVariant()).toInt();
-  includes = settings->value("Includes", QVariant()).toString();
-  mountDirs = settings->value("Mount", QVariant()).toBool();
-  tempDir = settings->value("TempDir", QVariant()).toString();
-  homeDir = settings->value("HomeDir", QVariant()).toString();
-  settings->endGroup();
+  settings.beginGroup(name);
+  guiApp = settings.value("GuiApp", QVariant()).toBool();
+  cgroups = settings.value("CGroups", QVariant()).toBool();
+  capabilities = settings.value("Capabilities", QVariant()).toBool();
+  shred = settings.value("Shred", QVariant()).toBool();
+  securityLayer = settings.value("SLeyer", QVariant()).toString();
+  sandboxType = settings.value("SType", QVariant()).toString();
+  execute = settings.value("Execute", QVariant()).toBool();
+  session = settings.value("Session", QVariant()).toBool();
+  command = settings.value("Command", QVariant()).toString();
+  DPI = settings.value("DPI", QVariant()).toInt();
+  WM = settings.value("WM", QVariant()).toString();
+  windowHeight = settings.value("wHeight", QVariant()).toInt();
+  windowWidth = settings.value("wWidth", QVariant()).toInt();
+  includes = settings.value("Includes", QVariant()).toString();
+  mountDirs = settings.value("Mount", QVariant()).toBool();
+  tempDir = settings.value("TempDir", QVariant()).toString();
+  homeDir = settings.value("HomeDir", QVariant()).toString();
+  settings.endGroup();
   commandLine->clear();
   _commandBuild();
   return commandLine->getList();

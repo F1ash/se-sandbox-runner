@@ -1,7 +1,5 @@
 #include <QToolBar>
-#include <QToolButton>
 #include <QAction>
-#include <QMenu>
 
 class ToolBar : public QToolBar
 {

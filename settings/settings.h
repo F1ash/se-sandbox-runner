@@ -15,7 +15,7 @@ class SettingsDialog : public QDialog
 public:
     SettingsDialog(QWidget *parent=0);
     ~SettingsDialog();
-    QSettings *settings;
+    QSettings settings;
     QTabWidget *tabWidget;
 
 signals:

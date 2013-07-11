@@ -28,6 +28,8 @@ TrayIcon::~TrayIcon()
   trayIconMenu = 0;
   delete hideAction;
   hideAction = 0;
+  delete reloadAction;
+  reloadAction = 0;
   delete closeAction;
   closeAction = 0;
 }

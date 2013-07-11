@@ -9,5 +9,8 @@ JobMenu::JobMenu(QWidget *parent)
 }
 JobMenu::~JobMenu()
 {
-
+  delete edit;
+  edit = 0;
+  delete act;
+  act = 0;
 }

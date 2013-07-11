@@ -4,8 +4,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setOrganizationName("se-sandbox-runner");
-    a.setApplicationName("se-sandbox-runner");
+    QString name = QString("se-sandbox-runner");
+    a.setOrganizationName(name);
+    a.setApplicationName(name);
     MainWindow w;
     w.show();
     

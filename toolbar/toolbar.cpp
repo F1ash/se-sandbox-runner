@@ -13,6 +13,10 @@ ToolBar::~ToolBar()
 {
   delete _hideAction;
   _hideAction = 0;
+  delete _createAction;
+  _createAction = 0;
+  delete _deleteAction;
+  _deleteAction = 0;
   delete _editAction;
   _editAction = 0;
   delete _stopAction;

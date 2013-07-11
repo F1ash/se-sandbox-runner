@@ -1,4 +1,4 @@
 se-sandbox-runner
 =================
 
-Qt-wrap of (SELinux) Sandbox
+Qt-wrap for (SELinux) Sandbox
