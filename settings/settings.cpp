@@ -103,7 +103,7 @@ void SettingsDialog::setJobItem(QListWidgetItem *i)
   name = item->text();
   previousName = name;
   setWindowTitle(QString("%1::Settings").arg(name));
-  if (name!="<noname>")
+  if (name!=QString("<noname>"))
     {
       w1->set_Job_Name(name);
       w3->set_JobName(name);
@@ -116,7 +116,7 @@ void SettingsDialog::saveJob()
   w3->set_JobName(name);
   qDebug()<<"ok"<<name;
   QStringList groups = settings.childGroups();
-  if ( name.isEmpty() ) QMessageBox::information(this, "Info", "JobName is empty.");
+  if ( name.isEmpty() ) QMessageBox::information(this, QString("Info"), QString("JobName is empty."));
   else if ( groups.contains(name) && !newbe && name==previousName )
     {
       saveParameters();
@@ -124,11 +124,11 @@ void SettingsDialog::saveJob()
     }
   else if ( groups.contains(name) && newbe )
     {
-      QMessageBox::information(this, "Info", "Same JobName is exist.");
+      QMessageBox::information(this, QString("Info"), QString("Same JobName is exist."));
     }
   else if ( groups.contains(name) && !newbe && name!=previousName )
     {
-      QMessageBox::information(this, "Info", "Same JobName is exist.");
+      QMessageBox::information(this, QString("Info"), QString("Same JobName is exist."));
     }
   else if ( !groups.contains(name) && newbe )
     {

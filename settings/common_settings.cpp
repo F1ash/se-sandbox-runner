@@ -6,7 +6,7 @@ CommonSet::CommonSet(QWidget *parent) :
     QWidget(parent)
 {
   setContentsMargins(1,1,1,1);
-  gridLayout = new QGridLayout();
+  gridLayout = new QGridLayout(this);
   gridLayout->setAlignment(Qt::AlignRight);
   cgroups = new QCheckBox("CGroups", this);
   cgroups->setToolTip("Use control groups to control this copy of sandbox. \nSpecify parameters in /etc/sysconfig/sandbox.");

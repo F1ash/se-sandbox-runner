@@ -7,7 +7,7 @@ DirectorySet::DirectorySet(QWidget *parent) :
 {
   sessionUsed = false;
   setContentsMargins(1,1,1,1);
-  commonLayout = new QGridLayout();
+  commonLayout = new QGridLayout(this);
   mountDirs = new QCheckBox("Mount", this);
   mountDirs->setToolTip("Create a Sandbox with temporary files \nfor $HOME and /tmp.");
   guiApp = new QCheckBox("GUI App", this);

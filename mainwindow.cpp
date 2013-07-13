@@ -33,11 +33,12 @@ MainWindow::~MainWindow()
   delete toolBar;
   toolBar = 0;
 }
-void MainWindow::closeEvent(QCloseEvent *)
+void MainWindow::closeEvent(QCloseEvent *ev)
 {
   settings.setValue("Geometry", saveGeometry());
   settings.setValue("ToolBarArea", toolBarArea(toolBar));
   settings.sync();
+  ev->accept();
 }
 void MainWindow::closeEvent()
 {

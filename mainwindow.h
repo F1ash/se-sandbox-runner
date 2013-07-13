@@ -30,7 +30,7 @@ private :
     ToolBar *toolBar;
 
 private slots:
-    void closeEvent( QCloseEvent *event );
+    void closeEvent(QCloseEvent *ev );
     void closeEvent();
     void changeVisibility();
     void initTrayIcon();

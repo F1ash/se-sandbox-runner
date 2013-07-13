@@ -3,6 +3,7 @@
 #include "jobmenu.h"
 #include "settings/settings.h"
 #include "element/elemprocess.h"
+#include "element/startup.h"
 //#include "utils/pgrep.h"
 
 #define TO_RUN true
@@ -13,7 +14,7 @@ class JobList : public QListWidget
     Q_OBJECT
 
 public:
-    JobList(QWidget *parent = 0);
+    JobList(QWidget *parent);
     ~JobList();
 
     QMap<QString, ElemProcess*> *jobProcess;
@@ -24,7 +25,7 @@ signals:
 
 public slots:
     void editItemAction();
-    void addJobItem(QString &s);
+    void addJobItem(QString const &s);
     void deleteCurrentJobItem();
     void stopJob(QListWidgetItem *_item);
 

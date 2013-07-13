@@ -1,3 +1,6 @@
+#ifndef ELEMPROCESS_H
+#define ELEMPROCESS_H
+
 #include <QStringList>
 #include <QSettings>
 #include <QListWidgetItem>
@@ -5,7 +8,6 @@
 #include <QDir>
 #include <QTimer>
 #include <QTimerEvent>
-#include <QMap>
 #include "signal.h"
 #include "string_list.h"
 
@@ -72,3 +74,5 @@ private slots:
     void timerEvent(QTimerEvent *);
     void _commandBuild();
 };
+
+#endif
