@@ -208,7 +208,7 @@ void SettingsDialog::saveParameters()
   QString tT = item->toolTip();
   tT.append("\n-- EDITED --");
   item->setToolTip(tT);
-  if ( item->data(Qt::UserRole).toMap().value("isRunned").toBool() )
+  if ( item->data(Qt::UserRole).toMap().value("isRunning").toBool() )
     QMessageBox::information(this, "Info", "New settings apply\nat next job start.");
 }
 void SettingsDialog::closeEvent(QCloseEvent *ev)

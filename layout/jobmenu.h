@@ -1,3 +1,5 @@
+#ifndef JOBMENU_H
+#define JOBMENU_H
 #include <QMenu>
 
 class JobMenu : public QMenu
@@ -19,3 +21,4 @@ private:
 private slots:
 
 };
+#endif

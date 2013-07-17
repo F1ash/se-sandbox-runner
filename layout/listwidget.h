@@ -1,9 +1,11 @@
+#ifndef LISTWIDGET_H
+#define LISTWIDGET_H
+
 #include <QListWidget>
 #include <QMessageBox>
 #include "jobmenu.h"
 #include "settings/settings.h"
 #include "element/elemprocess.h"
-#include "element/startup.h"
 //#include "utils/pgrep.h"
 
 #define TO_RUN true
@@ -25,9 +27,10 @@ signals:
 
 public slots:
     void editItemAction();
-    void addJobItem(QString const &s);
+    void addJobItem(const QString &s);
     void deleteCurrentJobItem();
     void stopJob(QListWidgetItem *_item);
+    void showMessage(QString &, QString &);
 
 private :
     QIcon stateIcon;
@@ -41,3 +44,5 @@ private slots:
     void jobItemAction();
 
 };
+
+#endif

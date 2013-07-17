@@ -1,3 +1,6 @@
+#ifndef DIRECTORY_SETTINGS_H
+#define DIRECTORY_SETTINGS_H
+
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QCheckBox>
@@ -47,3 +50,5 @@ private slots:
     void setWorkDirsState();
     void gui_StateChanged(bool);
 };
+
+#endif

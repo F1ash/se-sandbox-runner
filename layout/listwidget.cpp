@@ -23,7 +23,7 @@ JobList::~JobList()
   disconnect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
   clear();
 }
-void JobList::addJobItem(QString const &s)
+void JobList::addJobItem(const QString &s)
 {
   QListWidgetItem *_item;
   insertItem(0, s);
@@ -49,9 +49,9 @@ void JobList::jobItemClicked(const QPoint &pos)
   qDebug()<<_item->text()<<" Job detected";
   if ( !_item->data(Qt::UserRole).toMap().value("availability", false).toBool() ) return;
   JobMenu *jobMenu = new JobMenu(this);
-  if ( _item->data(Qt::UserRole).toMap().value("isRunned", false).toBool() )
+  if ( _item->data(Qt::UserRole).toMap().value("isRunning", false).toBool() )
     {
-      jobMenu->act->setText("Stop Job");
+      jobMenu->act->setText("Kill Job");
     }
   else
     {
@@ -96,7 +96,7 @@ void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
   reason = _item->data(Qt::UserRole).toMap().value(QString("reason"), TO_STOP).toBool();
   if ( !_item->data(Qt::UserRole).toMap().value(QString("availability"), NOT_AVAILABLE).toBool() )
     return;
-  else if ( proc->state()==QProcess::NotRunning && reason)
+  else if ( proc->state()==QProcess::NotRunning && reason )
     proc->runJob();
   else if ( proc->state()==QProcess::Running )
     proc->killJob();
@@ -154,4 +154,8 @@ void JobList::deleteCurrentJobItem()
         };
     }
   else QMessageBox::information(this, QString("Info"), QString("Item not exist."));
+}
+void JobList::showMessage(QString &title, QString &msg)
+{
+  QMessageBox::information(this, title, msg);
 }

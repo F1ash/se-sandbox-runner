@@ -11,7 +11,7 @@
 #include "signal.h"
 #include "string_list.h"
 
-#define RUNNED true
+#define RUNNING true
 #define STOPPED false
 #define TO_RUN true
 #define TO_STOP false
@@ -43,8 +43,8 @@ private:
     QBrush bgBrush;
     QBrush fgBrush;
     QMap<QString, QVariant> proc_Status;
-    int timerId;
     QSettings settings;
+    int timerId;
 
     bool guiApp;
     bool cgroups;
@@ -73,6 +73,7 @@ private slots:
     void setProcessState(bool status);
     void timerEvent(QTimerEvent *);
     void _commandBuild();
+    void sendMessage();
 };
 
 #endif

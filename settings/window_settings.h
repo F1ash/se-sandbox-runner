@@ -1,3 +1,6 @@
+#ifndef WINDOW_SETTINGS_H
+#define WINDOW_SETTINGS_H
+
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>
@@ -30,3 +33,5 @@ private slots:
     void initSizeWidgets();
 
 };
+
+#endif

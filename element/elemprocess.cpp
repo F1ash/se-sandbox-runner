@@ -6,12 +6,14 @@ ElemProcess::ElemProcess(QObject *parent) :
 {
   setWorkingDirectory(QDir::homePath());
   connect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
+  connect(this, SIGNAL(readyRead()), this, SLOT(sendMessage()));
   timerId = 0;
   commandLine = new String(this);
 }
 ElemProcess::~ElemProcess()
 {
   disconnect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
+  disconnect(this, SIGNAL(readyRead()), this, SLOT(sendMessage()));
 
   delete commandLine;
   commandLine = 0;
@@ -21,13 +23,17 @@ void ElemProcess::setItemReference(QListWidgetItem *i)
   item = i;
   name = item->text();
   proc_Status.insert("availability", QVariant(AVAILABLE));
-  proc_Status.insert("isRunned", QVariant(STOPPED));
+  proc_Status.insert("isRunning", QVariant(STOPPED));
   proc_Status.insert("reason", QVariant(TO_RUN));
   proc_Status.insert("initName", QVariant(name));
   item->setData(Qt::UserRole, QVariant(proc_Status));
   item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STANDBY --"));
   fgBrush = item->foreground();
   bgBrush = item->foreground();
+  settings.beginGroup(name);
+  bool autoRun = settings.value("AutoRun", QVariant()).toBool();
+  settings.endGroup();
+  if ( autoRun ) runJob();
 }
 QStringList ElemProcess::getCommand()
 {
@@ -60,7 +66,7 @@ void ElemProcess::appendChildren()
   qDebug()<<children.join(" ")<<" begin";
   readChildren();
   qDebug()<<children.join(" ")<<" end";
-  emit processState(RUNNED);
+  emit processState(RUNNING);
   timerId = startTimer(1000);
 }
 void ElemProcess::readChildren()
@@ -101,7 +107,7 @@ void ElemProcess::readChildren()
 void ElemProcess::runJob()
 {
   proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
-  proc_Status.insert("isRunned", QVariant(RUNNED));
+  proc_Status.insert("isRunning", QVariant(RUNNING));
   item->setData(Qt::UserRole, QVariant(proc_Status));
   item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STARTED --"));
   setUnAvailableItemBrush();
@@ -111,15 +117,12 @@ void ElemProcess::runJob()
   cmd.append(getCommand());
   qDebug()<<cmd.join(" ")<<name;
   start("/usr/bin/sandbox", cmd);
-  waitForStarted();
-  waitForReadyRead();
-  QByteArray _data;
-  _data = readAllStandardOutput();
-  _data.append("\n");
-  _data.append(readAllStandardError());
-  qDebug()<<QTextStream(&_data).readAll();
+
+  /* use same signals for it, because waiting is freez the GUI */
+  bool started = waitForStarted();
+  /*   ^   readyRead()   ^   */
   PID = QString::number(pid());
-  if (state()==QProcess::Running )
+  if ( started )
     QTimer::singleShot(10000, this, SLOT(appendChildren()));
   else emit processState(STOPPED);
 }
@@ -136,7 +139,7 @@ void ElemProcess::killJob()
       timerId = 0;
     };
   proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
-  proc_Status.insert("isRunned", QVariant(STOPPED));
+  proc_Status.insert("isRunning", QVariant(STOPPED));
   item->setData(Qt::UserRole, QVariant(proc_Status));
   setUnAvailableItemBrush();
   QList<QString>::const_iterator i;
@@ -153,11 +156,11 @@ void ElemProcess::killJob()
 }
 void ElemProcess::setProcessState(bool status)
 {
-  if (status)
+  if ( status )
     {
       item->setIcon(QIcon::fromTheme("process-stop"));
       item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg(PID));
-      proc_Status.insert("isRunned", QVariant(RUNNED));
+      proc_Status.insert("isRunning", QVariant(RUNNING));
     }
   else
     {
@@ -165,7 +168,7 @@ void ElemProcess::setProcessState(bool status)
       item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STANDBY --"));
       children.clear();
       PID.clear();
-      proc_Status.insert("isRunned", QVariant(STOPPED));
+      proc_Status.insert("isRunning", QVariant(STOPPED));
     };
   proc_Status.insert("availability", QVariant(AVAILABLE));
   item->setData(Qt::UserRole, QVariant(proc_Status));
@@ -203,4 +206,12 @@ void ElemProcess::_commandBuild()
   if (!sandboxType.isEmpty()) commandLine->appendSandboxType(sandboxType);
   if      (session) commandLine->appendSession();
   else if (execute) commandLine->appendCommand(command);
+}
+void ElemProcess::sendMessage()
+{
+  QByteArray _data;
+  _data = readAllStandardOutput();
+  _data.append("\n");
+  _data.append(readAllStandardError());
+  qDebug()<<QTextStream(&_data).readAll();
 }

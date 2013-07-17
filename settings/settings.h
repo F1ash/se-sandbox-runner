@@ -1,3 +1,6 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
 #include <QDialog>
 #include <QTabWidget>
 #include <QPushButton>
@@ -51,3 +54,4 @@ private slots:
     void set_Title_Name(QString);
 };
 
+#endif

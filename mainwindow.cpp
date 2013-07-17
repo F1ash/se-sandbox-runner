@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
   initTrayIcon();
   initJobWidget();
   initToolBar();
+  wait_thread = 0;
 }
 MainWindow::~MainWindow()
 {
@@ -38,10 +39,32 @@ void MainWindow::closeEvent(QCloseEvent *ev)
   settings.setValue("Geometry", saveGeometry());
   settings.setValue("ToolBarArea", toolBarArea(toolBar));
   settings.sync();
+  if ( runningJobsExist() )
+    {
+      QString q;
+      q.append("Running Jobs are exist.\nKill it at exit?");
+      int answer = QMessageBox::question(this, "Action", q, "OK", "Cancel");
+      if ( !answer )
+        {
+          jobWidget->setEnabled(false);
+          Wait *wait_thread = new Wait(this);
+          connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+          wait_thread->setWdgReference(jobWidget);
+          wait_thread->start();
+        };
+      ev->ignore();
+      return;
+    };
   ev->accept();
 }
 void MainWindow::closeEvent()
 {
+  if ( wait_thread )
+    {
+      disconnect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+      delete wait_thread;
+      wait_thread = 0;
+    };
   this->close();
 }
 void MainWindow::initTrayIcon()
@@ -140,4 +163,19 @@ void MainWindow::stopJob(int i)
 {
   qDebug()<<i<<" item to stop";
   jobWidget->stopJob(jobWidget->item(i));
+}
+bool MainWindow::runningJobsExist()
+{
+  bool result =- false;
+  for (int i=0; i<jobWidget->count(); i++)
+    {
+      qDebug()<<jobWidget->item(i)->text()<< jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool();
+      if ( jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool() ||
+           !jobWidget->item(i)->data(Qt::UserRole).toMap().value("availability").toBool() )
+        {
+          result = true;
+          break;
+        };
+    };
+  return result;
 }

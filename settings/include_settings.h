@@ -1,3 +1,6 @@
+#ifndef INCLUDE_SETTINGS_H
+#define INCLUDE_SETTINGS_H
+
 #include <QPushButton>
 #include <QListWidget>
 #include <QFileDialog>
@@ -35,3 +38,5 @@ private slots:
     void delItem(QListWidgetItem*);
     void removeDuplicates();
 };
+
+#endif

@@ -26,7 +26,7 @@ SOURCES += main.cpp\
         settings/include_settings.cpp \
         settings/directory_settings.cpp \
         element/string_list.cpp \
-    element/startup.cpp
+        wait_thread.cpp
 
 HEADERS  += mainwindow.h\
         tray/traywidget.h \
@@ -41,6 +41,6 @@ HEADERS  += mainwindow.h\
         settings/include_settings.h \
         settings/directory_settings.h \
         element/string_list.h \
-    element/startup.h
+        wait_thread.h
 
 LIBS     += -lprocps

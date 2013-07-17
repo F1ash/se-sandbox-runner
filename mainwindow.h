@@ -8,6 +8,7 @@
 #include "tray/traywidget.h"
 #include "layout/listwidget.h"
 #include "toolbar/toolbar.h"
+#include "wait_thread.h"
 #include <QDebug>
 
 class MainWindow : public QMainWindow
@@ -27,7 +28,8 @@ public slots:
 
 private :
     TrayIcon *trayIcon;
-    ToolBar *toolBar;
+    ToolBar  *toolBar;
+    Wait     *wait_thread;
 
 private slots:
     void closeEvent(QCloseEvent *ev );
@@ -44,6 +46,7 @@ private slots:
     void stopCurrentJob();
     void stopJob(int i);
     void stopAllJob();
+    bool runningJobsExist();
 
 };
 

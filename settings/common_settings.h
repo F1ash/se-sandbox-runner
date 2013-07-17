@@ -1,3 +1,6 @@
+#ifndef COMMON_SETTINGS_H
+#define COMMON_SETTINGS_H
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
@@ -50,3 +53,5 @@ private slots:
     void initCmdWidget();
     void setCommandPath();
 };
+
+#endif
