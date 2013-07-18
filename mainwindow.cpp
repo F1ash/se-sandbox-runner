@@ -43,17 +43,20 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     {
       QString q;
       q.append("Running Jobs are exist.\nKill it at exit?");
-      int answer = QMessageBox::question(this, "Action", q, "OK", "Cancel");
-      if ( !answer )
+      int answer = QMessageBox::question(this, "Action", q, QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+      if ( answer != QMessageBox::No )
         {
-          jobWidget->setEnabled(false);
-          Wait *wait_thread = new Wait(this);
-          connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
-          wait_thread->setWdgReference(jobWidget);
-          wait_thread->start();
+          if ( answer == QMessageBox::Yes )
+            {
+              jobWidget->setEnabled(false);
+              Wait *wait_thread = new Wait(this);
+              connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+              wait_thread->setWdgReference(jobWidget);
+              wait_thread->start();
+            };
+          ev->ignore();
+          return;
         };
-      ev->ignore();
-      return;
     };
   ev->accept();
 }
