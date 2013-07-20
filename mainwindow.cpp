@@ -74,7 +74,7 @@ void MainWindow::closeEvent()
 void MainWindow::initTrayIcon()
 {
   trayIcon = new TrayIcon(this);
-  trayIcon->setIcon(QIcon("/home/Flash/se-sandbox-runner/icons/box_closed.png"));
+  trayIcon->setIcon(QIcon::fromTheme("applications-safety", QIcon(":/applications-safety.png")));
   connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
   SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
   connect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
