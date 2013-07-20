@@ -14,6 +14,7 @@ public:
   QAction *_deleteAction;
   QAction *_stopAction;
   QAction *_stopAllAction;
+  QAction *_exitAction;
 
 signals:
 

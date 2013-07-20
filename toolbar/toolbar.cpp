@@ -23,6 +23,9 @@ ToolBar::~ToolBar()
   _stopAction = 0;
   delete _stopAllAction;
   _stopAllAction = 0;
+  delete _exitAction;
+  _exitAction = 0;
+
 }
 void ToolBar::initActions()
 {
@@ -34,10 +37,12 @@ void ToolBar::initActions()
   _editAction->setIcon ( QIcon().fromTheme("edit-select") );
   _deleteAction = new QAction(QString("Delete Job"), this);
   _deleteAction->setIcon ( QIcon().fromTheme("edit-delete") );
-  _stopAction = new QAction(QString("Stop selected Job"), this);
+  _stopAction = new QAction(QString("Kill selected Job"), this);
   _stopAction->setIcon ( QIcon().fromTheme("process-stop") );
-  _stopAllAction = new QAction(QString("Stop all Job"), this);
-  _stopAllAction->setIcon ( QIcon("/home/Flash/se-sandbox-runner/icons/all-process-stop") );
+  _stopAllAction = new QAction(QString("Kill all Job"), this);
+  _stopAllAction->setIcon ( QIcon().fromTheme("system-log-out") );
+  _exitAction = new QAction(QString("Exit"), this);
+  _exitAction->setIcon ( QIcon().fromTheme("system-shutdown") );
 
   addAction(_hideAction);
   addSeparator();
@@ -47,6 +52,8 @@ void ToolBar::initActions()
   addSeparator();
   addAction(_stopAction);
   addAction(_stopAllAction);
+  addSeparator();
+  addAction(_exitAction);
 }
 Qt::ToolBarArea ToolBar::get_ToolBarArea(int i) const
 {

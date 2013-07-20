@@ -26,6 +26,7 @@ MainWindow::~MainWindow()
   disconnect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
   disconnect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   disconnect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
+  disconnect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
 
   delete trayIcon;
   trayIcon = 0;
@@ -121,6 +122,7 @@ void MainWindow::initToolBar()
   connect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
   connect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   connect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
+  connect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
   int area_int = settings.value("ToolBarArea", 4).toInt();
   this->addToolBar(toolBar->get_ToolBarArea(area_int), toolBar);
 }
