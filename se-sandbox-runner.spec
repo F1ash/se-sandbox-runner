@@ -4,7 +4,7 @@ Name: se-sandbox-runner
 Version: 1.0
 Release: 1%{?dist}
 Summary: Qt-wrap for SELinux Sandbox
-Group: Applications/Utilities
+Group: Applications/System
 License: GPLv2+
 Source0: https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
 URL: https://github.com/F1ash/%{name}
@@ -32,7 +32,7 @@ popd
 
 %install
 pushd %{cmake_build_dir}
-      make install DESTDIR=%{buildroot}/%{_prefix}
+      make install DESTDIR=%{buildroot}
 popd
 
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
@@ -56,5 +56,5 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
-* Sat Jul 21 2013 Fl@sh <kaperang07@gmail.com> - 1.0-1
+* Sat Jul 20 2013 Fl@sh <kaperang07@gmail.com> - 1.0-1
 - Initial build

@@ -39,6 +39,10 @@ set (ICON_SIZES 256x256)
 
 project (${PROJECT_NAME})
 
+if (NOT CMAKE_INSTALL_PREFIX) 
+ set (CMAKE_INSTALL_PREFIX /usr) 
+endif ()
+
 include_directories (${CMAKE_CURRENT_BINARY_DIR} . tray toolbar layout element settings)
 find_package (Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include (${QT_USE_FILE})
