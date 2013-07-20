@@ -9,7 +9,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   setModal(false);
   setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
   setContentsMargins(1,1,1,1);
-  setWindowIcon(QIcon::fromTheme("preferences-system"));
   initTabWidget();
   initButtons();
   commonLayout = new QVBoxLayout(this);
