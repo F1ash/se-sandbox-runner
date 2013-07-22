@@ -33,7 +33,7 @@ set (SOURCES
   settings/directory_settings.cpp
   element/string_list.cpp
   wait_thread.cpp)
-set (DOC_FILES README.md COPYING Changelog Licenses)
+set (DOC_FILES README.md COPYING Changelog icons/Licenses)
 set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
 set (ICON_SIZES 256x256)
 
@@ -43,7 +43,7 @@ if (NOT CMAKE_INSTALL_PREFIX)
  set (CMAKE_INSTALL_PREFIX /usr) 
 endif ()
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR} . tray toolbar layout element settings)
+include_directories (${CMAKE_CURRENT_BINARY_DIR} . tray toolbar layout element settings icons)
 find_package (Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include (${QT_USE_FILE})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
