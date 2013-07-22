@@ -33,7 +33,7 @@ set (SOURCES
   settings/directory_settings.cpp
   element/string_list.cpp
   wait_thread.cpp)
-set (DOC_FILES README.md COPYING Changelog icons/Licenses)
+set (DOC_FILES README.md COPYING Changelog Licenses)
 set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
 set (ICON_SIZES 256x256)
 
