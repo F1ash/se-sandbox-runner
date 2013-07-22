@@ -2,8 +2,8 @@
 Name=SELinux Sandbox Runner
 GenericName=Run an application within a tightly confined SELinux domain.
 Type=Application
-Categories=Utilities;Qt;
-Icon=applications-safety.png
+Categories=Utility;Qt;
+Icon=applications-safety
 Exec=se-sandbox-runner
 Terminal=false
 StartupNotify=true

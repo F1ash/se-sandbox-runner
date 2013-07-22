@@ -31,7 +31,7 @@ popd
 
 %install
 pushd %{cmake_build_dir}
-      make install DESTDIR=%{buildroot}/%{_prefix}
+      make install DESTDIR=%{buildroot}
 popd
 
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
