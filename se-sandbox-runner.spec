@@ -10,24 +10,22 @@ Source0: https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
 URL: https://github.com/F1ash/%{name}
 
 Requires: Qt4 oxygen-icon-theme
-BuildRequires: gcc-c++ qt4-devel desktop-file-utils
+BuildRequires: gcc-c++ qt4-devel desktop-file-utils cmake
 
 %description
 %{name}
 Qt-wrap for SELinux Sandbox.
 App run and control the configured jobs, running into sandbox.
-Sett
+Job settings restores in application config.
 
 
 %prep
 %setup -q
 mkdir %{cmake_build_dir}
-pushd %{cmake_build_dir}
-      %cmake ..
-popd
 
 %build
 pushd %{cmake_build_dir}
+      %cmake ..
       make %{?_smp_mflags}
 popd
 

@@ -34,7 +34,7 @@ set (SOURCES
   element/string_list.cpp
   wait_thread.cpp)
 set (DOC_FILES README.md COPYING Changelog icons/Licenses)
-set (DESKTOP_FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop)
+set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
 set (ICON_SIZES 256x256)
 
 project (${PROJECT_NAME})
