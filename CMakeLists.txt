@@ -59,8 +59,6 @@ target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES ${DESKTOP_FILE} DESTINATION share/applications)
 
-foreach (ICON_SIZE ${ICON_SIZES})
-    install (
-        FILES icons/${ICON_SIZE}/${PROJECT_NAME}.png 
+install(FILES icons/applications-safety.png 
         DESTINATION share/icons/hicolor/${ICON_SIZE}/apps)
-endforeach ()
+

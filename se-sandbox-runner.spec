@@ -13,9 +13,10 @@ Requires: Qt4 oxygen-icon-theme
 BuildRequires: gcc-c++ qt4-devel desktop-file-utils
 
 %description
-se-sandbox-runner
+%{name}
 Qt-wrap for SELinux Sandbox.
 App run and control the configured jobs, running into sandbox.
+Sett
 
 
 %prep
@@ -32,7 +33,7 @@ popd
 
 %install
 pushd %{cmake_build_dir}
-      make install DESTDIR=%{buildroot}
+      make install DESTDIR=%{buildroot}/%{_prefix}
 popd
 
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
