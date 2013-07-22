@@ -60,5 +60,5 @@ install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES ${DESKTOP_FILE} DESTINATION share/applications)
 
 install(FILES icons/applications-safety.png 
-        DESTINATION share/icons/hicolor/${ICON_SIZE}/apps)
+        DESTINATION share/icons/hicolor/${ICON_SIZES}/apps)
 
