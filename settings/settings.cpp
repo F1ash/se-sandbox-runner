@@ -160,8 +160,9 @@ void SettingsDialog::initParameters()
   newbe = !groups.contains(name);
   settings.beginGroup(name);
   w1->autoRun->setChecked(settings.value("AutoRun", QVariant()).toBool() );
-  w1->guiApp->setChecked( settings.value("GuiApp", QVariant()).toBool() );
   w1->cgroups->setChecked( settings.value("CGroups", QVariant()).toBool() );
+  w1->guiApp->setChecked( settings.value("GuiApp", QVariant()).toBool() );
+  w1->runInTerm->setChecked( settings.value("RunInTerm", QVariant()).toBool() );
   w1->capabilities->setChecked( settings.value("Capabilities", QVariant()).toBool() );
   w1->shred->setChecked( settings.value("Shred", QVariant()).toBool() );
   c = w1->securityLayer->findText( settings.value("SLeyer", QVariant()).toString() );
@@ -185,8 +186,9 @@ void SettingsDialog::saveParameters()
 {
   settings.beginGroup(name);
   settings.setValue("AutoRun", QVariant(w1->autoRun->isChecked()));
-  settings.setValue("GuiApp", QVariant(w1->guiApp->isChecked()));
   settings.setValue("CGroups", QVariant(w1->cgroups->isChecked()));
+  settings.setValue("GuiApp", QVariant(w1->guiApp->isChecked()));
+  settings.setValue("RunInTerm", QVariant(w1->runInTerm->isChecked()));
   settings.setValue("Capabilities", QVariant(w1->capabilities->isChecked()));
   settings.setValue("Shred", QVariant(w1->shred->isChecked()));
   settings.setValue("SLeyer", QVariant(w1->securityLayer->currentText()));
@@ -219,6 +221,8 @@ void SettingsDialog::closeEvent(QCloseEvent *ev)
 void SettingsDialog::windowSetsEnable(int i)
 {
   w2->setEnabled(i==Qt::Checked);
+  w1->runInTerm->setEnabled(i!=Qt::Checked);
+  if (i==Qt::Checked) w1->runInTerm->setChecked(false);
 }
 void SettingsDialog::set_Title_Name(QString s)
 {

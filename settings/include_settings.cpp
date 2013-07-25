@@ -10,11 +10,11 @@ IncludeSet::IncludeSet(QWidget *parent) :
   commonLayout = new QGridLayout(this);
   fileList = new QListWidget(this);
   fileList->setSelectionMode(QAbstractItemView::MultiSelection);
-  addFile = new QPushButton(QIcon::fromTheme("edit-create"),"", this);
+  addFile = new QPushButton(QIcon::fromTheme("list-add"),"", this);
   addFile->setToolTip("Add file(s) to list");
-  addDir  = new QPushButton(QIcon::fromTheme("edit-create"),"", this);
+  addDir  = new QPushButton(QIcon::fromTheme("list-add"),"", this);
   addDir->setToolTip("Add directory to list");
-  delPath = new QPushButton(QIcon::fromTheme("edit-delete"),"", this);
+  delPath = new QPushButton(QIcon::fromTheme("list-remove"),"", this);
   delPath->setToolTip("Delete path from list");
   connect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
   connect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));

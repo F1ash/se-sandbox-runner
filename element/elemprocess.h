@@ -47,6 +47,7 @@ private:
     int timerId;
 
     bool guiApp;
+    bool runInTerm;
     bool cgroups;
     bool capabilities;
     bool shred;

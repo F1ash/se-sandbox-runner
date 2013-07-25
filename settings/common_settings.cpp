@@ -16,6 +16,8 @@ CommonSet::CommonSet(QWidget *parent) :
   autoRun->setToolTip("Run Job at startup.");
   guiApp = new QCheckBox("GUI App", this);
   guiApp->setToolTip("Create an X based Sandbox for gui apps, \ntemporary files for $HOME and /tmp, \nsecondary Xserver");
+  runInTerm = new QCheckBox("Run in terminal", this);
+  runInTerm->setToolTip("Run in terminal");
   shred = new QCheckBox("Shred", this);
   shred->setToolTip("Shred temporary files created \nin $HOME and /tmp,\nbefore deleting.");
   capabilities = new QCheckBox("Capabilities", this);
@@ -25,9 +27,10 @@ CommonSet::CommonSet(QWidget *parent) :
   initRadioButtons();
   initCmdWidget();
   gridLayout->addWidget(nameEdit, 0, 0);
-  gridLayout->addWidget(autoRun, 0, 2);
-  gridLayout->addWidget(cgroups, 2, 0);
-  gridLayout->addWidget(guiApp, 2, 2);
+  gridLayout->addWidget(autoRun, 1, 0);
+  gridLayout->addWidget(cgroups, 1, 2);
+  gridLayout->addWidget(guiApp, 2, 0);
+  gridLayout->addWidget(runInTerm, 2, 2);
   gridLayout->addWidget(shred, 3, 0);
   gridLayout->addWidget(capabilities, 3, 2);
   gridLayout->addWidget(typeLabel, 4, 0);

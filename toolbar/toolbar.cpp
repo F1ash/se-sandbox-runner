@@ -32,11 +32,11 @@ void ToolBar::initActions()
   _hideAction = new QAction(QString("Hide to tray"), this);
   _hideAction->setIcon ( QIcon().fromTheme("arrow-down") );
   _createAction = new QAction(QString("Create new Job"), this);
-  _createAction->setIcon ( QIcon().fromTheme("edit-create") );
+  _createAction->setIcon ( QIcon().fromTheme("list-add") );
   _editAction = new QAction(QString("Edit selected Job"), this);
   _editAction->setIcon ( QIcon().fromTheme("edit-select") );
   _deleteAction = new QAction(QString("Delete Job"), this);
-  _deleteAction->setIcon ( QIcon().fromTheme("edit-delete") );
+  _deleteAction->setIcon ( QIcon().fromTheme("list-remove") );
   _stopAction = new QAction(QString("Kill selected Job"), this);
   _stopAction->setIcon ( QIcon().fromTheme("process-stop") );
   _stopAllAction = new QAction(QString("Kill all Job"), this);

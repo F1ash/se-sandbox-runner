@@ -21,6 +21,7 @@ public:
     QCheckBox *cgroups;
     QLineEdit *nameEdit;
     QCheckBox *guiApp;
+    QCheckBox *runInTerm;
     QCheckBox *shred;
     QCheckBox *capabilities;
     QComboBox *sandboxType;

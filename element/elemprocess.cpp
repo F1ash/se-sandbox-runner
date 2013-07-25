@@ -39,6 +39,7 @@ QStringList ElemProcess::getCommand()
 {
   settings.beginGroup(name);
   guiApp = settings.value("GuiApp", QVariant()).toBool();
+  runInTerm = settings.value("RunInTerm", QVariant()).toBool();
   cgroups = settings.value("CGroups", QVariant()).toBool();
   capabilities = settings.value("Capabilities", QVariant()).toBool();
   shred = settings.value("Shred", QVariant()).toBool();
@@ -115,12 +116,17 @@ void ElemProcess::runJob()
   //start("/usr/bin/sandbox", QStringList()<<"-X"<<"-W"<<"kwin"<<"-t"<<"sandbox_web_t"<< "firefox");
   QStringList cmd;
   cmd.append(getCommand());
-  qDebug()<<cmd.join(" ")<<name;
-  start("/usr/bin/sandbox", cmd);
+  QString runApp;
+  if  (!runInTerm) runApp = QString("/usr/bin/sandbox");
+  else
+    {
+      cmd.prepend("/usr/bin/sandbox");
+      runApp = QString("xdg-terminal");
+    };
+  qDebug()<<runApp<<cmd.join(" ")<<name;
+  start(runApp, cmd);
 
-  /* use same signals for it, because waiting is freez the GUI */
   bool started = waitForStarted();
-  /*   ^   readyRead()   ^   */
   PID = QString::number(pid());
   if ( started )
     QTimer::singleShot(10000, this, SLOT(appendChildren()));

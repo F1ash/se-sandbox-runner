@@ -9,7 +9,7 @@ License: GPLv2+
 Source0: https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
 URL: https://github.com/F1ash/%{name}
 
-Requires: Qt4 oxygen-icon-theme
+Requires: qt4 oxygen-icon-theme
 BuildRequires: gcc-c++ qt4-devel desktop-file-utils cmake
 
 %description
