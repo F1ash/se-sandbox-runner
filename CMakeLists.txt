@@ -8,7 +8,6 @@ set (HEADERS
   toolbar/toolbar.h
   layout/listwidget.h
   layout/jobmenu.h
-  #utils/pgrep.h
   element/elemprocess.h
   settings/settings.h
   settings/common_settings.h
@@ -24,7 +23,6 @@ set (SOURCES
   toolbar/toolbar.cpp
   layout/listwidget.cpp
   layout/jobmenu.cpp
-  #utils/pgrep.cpp
   element/elemprocess.cpp
   settings/settings.cpp
   settings/common_settings.cpp

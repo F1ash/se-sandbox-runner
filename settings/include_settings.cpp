@@ -49,7 +49,7 @@ void IncludeSet::set_JobName(const QString s)
   fileName = QDir::homePath();
   fileName.append("/.config/se-sandbox-runner/");
   fileName.append(QString("%1.included").arg(s));
-  qDebug()<<fileName<<s<<"Incl::setJobName()";
+  //qDebug()<<fileName<<s<<"Incl::setJobName()";
 }
 void IncludeSet::addFilesToList()
 {
@@ -83,7 +83,7 @@ void IncludeSet::delItem(QListWidgetItem *_item)
       if (answer==QMessageBox::Ok)
         {
           fileList->takeItem(fileList->row(_item));
-          qDebug()<<"delete"<<_file;
+          //qDebug()<<"delete"<<_file;
         };
     }
   else QMessageBox::information(this, "Info", "Item not exist.");
@@ -107,7 +107,7 @@ const QString IncludeSet::get_FileName()
 {
   const QString res;
   QString s = get_Included_Path().join("\n");
-  qDebug()<<fileName<<s<<"Incl::get_FileName()";
+  //qDebug()<<fileName<<s<<"Incl::get_FileName()";
   int l;
   QFile *f = new QFile(fileName, this);
   f->open(QIODevice::WriteOnly|QIODevice::Text);

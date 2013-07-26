@@ -46,7 +46,7 @@ void JobList::jobItemClicked(const QPoint &pos)
       QMessageBox::information(this, QString("Info"), QString("Item not exist."));
       return;
     };
-  qDebug()<<_item->text()<<" Job detected";
+  //qDebug()<<_item->text()<<" Job detected";
   if ( !_item->data(Qt::UserRole).toMap().value("availability", false).toBool() ) return;
   JobMenu *jobMenu = new JobMenu(this);
   if ( _item->data(Qt::UserRole).toMap().value("isRunning", false).toBool() )
@@ -71,12 +71,12 @@ void JobList::createJobProcess(QListWidgetItem *_item)
   ElemProcess *proc = new ElemProcess(this);
   proc->setItemReference(_item);
   jobProcess->insert(key, proc);
-  qDebug()<<key<<" create Job process";
+  //qDebug()<<key<<" create Job process";
   clearSelection();
 }
 void JobList::jobItemClicked(QListWidgetItem *_item)
 {
-  qDebug()<<_item->text()<<"  Job clicked";
+  //qDebug()<<_item->text()<<"  Job clicked";
 }
 void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
 {

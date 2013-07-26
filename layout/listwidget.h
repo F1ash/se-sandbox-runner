@@ -6,7 +6,6 @@
 #include "jobmenu.h"
 #include "settings/settings.h"
 #include "element/elemprocess.h"
-//#include "utils/pgrep.h"
 
 #define TO_RUN true
 #define TO_STOP false

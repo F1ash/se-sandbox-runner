@@ -150,7 +150,7 @@ void MainWindow::removeJobItem(QString &job)
   f.setFileName(_fn);
   f.remove();
   f.deleteLater();
-  qDebug()<<job<<"job deleted";
+  //qDebug()<<job<<"job deleted";
 }
 void MainWindow::stopCurrentJob()
 {
@@ -175,7 +175,7 @@ bool MainWindow::runningJobsExist()
   bool result =- false;
   for (int i=0; i<jobWidget->count(); i++)
     {
-      qDebug()<<jobWidget->item(i)->text()<< jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool();
+      //qDebug()<<jobWidget->item(i)->text()<< jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool();
       if ( jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool() ||
            !jobWidget->item(i)->data(Qt::UserRole).toMap().value("availability").toBool() )
         {

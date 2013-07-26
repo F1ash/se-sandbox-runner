@@ -113,7 +113,7 @@ void SettingsDialog::saveJob()
 {
   name = w1->get_Job_Name();
   w3->set_JobName(name);
-  qDebug()<<"ok"<<name;
+  //qDebug()<<"ok"<<name;
   QStringList groups = settings.childGroups();
   if ( name.isEmpty() ) QMessageBox::information(this, QString("Info"), QString("JobName is empty."));
   else if ( groups.contains(name) && !newbe && name==previousName )
@@ -150,7 +150,7 @@ void SettingsDialog::saveJob()
 }
 void SettingsDialog::cancelJob()
 {
-  qDebug()<<"cancel"<<name;
+  //qDebug()<<"cancel"<<name;
   close();
 }
 void SettingsDialog::initParameters()

@@ -64,9 +64,9 @@ QStringList ElemProcess::getCommand()
 void ElemProcess::appendChildren()
 {
   children<<PID;
-  qDebug()<<children.join(" ")<<" begin";
+  //qDebug()<<children.join(" ")<<" begin";
   readChildren();
-  qDebug()<<children.join(" ")<<" end";
+  //qDebug()<<children.join(" ")<<" end";
   emit processState(RUNNING);
   timerId = startTimer(1000);
 }
@@ -91,9 +91,6 @@ void ElemProcess::readChildren()
       _children.append((QString().append(_data.data())).split(" "));
     };
   f.close();
-
-  //_children << QString().append(pgrep(pid)).split(" ");
-  //qDebug()<<_children.join(" ")<<"--||--";
 
   for (i = _children.constBegin(); i != _children.constEnd(); ++i)
     {
