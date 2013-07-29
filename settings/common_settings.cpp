@@ -17,7 +17,7 @@ CommonSet::CommonSet(QWidget *parent) :
   guiApp = new QCheckBox("GUI App", this);
   guiApp->setToolTip("Create an X based Sandbox for gui apps, \ntemporary files for $HOME and /tmp, \nsecondary Xserver");
   runInTerm = new QCheckBox("Run in terminal", this);
-  runInTerm->setToolTip("Run in terminal\n(Not controlled by Application).");
+  runInTerm->setToolTip("Run in terminal\n(The process can`t be controlled by application).");
   shred = new QCheckBox("Shred", this);
   shred->setToolTip("Shred temporary files created \nin $HOME and /tmp,\nbefore deleting.");
   capabilities = new QCheckBox("Capabilities", this);
