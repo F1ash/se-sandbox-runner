@@ -74,10 +74,6 @@ void JobList::createJobProcess(QListWidgetItem *_item)
   //qDebug()<<key<<" create Job process";
   clearSelection();
 }
-void JobList::jobItemClicked(QListWidgetItem *_item)
-{
-  //qDebug()<<_item->text()<<"  Job clicked";
-}
 void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
 {
   QString key = _item->data(Qt::UserRole).toMap().value(QString("initName")).toString();

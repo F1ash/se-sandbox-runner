@@ -104,6 +104,11 @@ void ElemProcess::readChildren()
 }
 void ElemProcess::runJob()
 {
+  name = item->text();  // for use real Job name
+  settings.beginGroup(name);
+  runInTerm = settings.value("RunInTerm", QVariant()).toBool();
+  settings.endGroup();
+
   proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
   proc_Status.insert("isRunning", QVariant(RUNNING));
   item->setData(Qt::UserRole, QVariant(proc_Status));
@@ -112,13 +117,21 @@ void ElemProcess::runJob()
   /* testing command */
   //start("/usr/bin/sandbox", QStringList()<<"-X"<<"-W"<<"kwin"<<"-t"<<"sandbox_web_t"<< "firefox");
   QStringList cmd;
-  cmd.append(getCommand());
   QString runApp;
-  if  (!runInTerm) runApp = QString("/usr/bin/sandbox");
+  if (!runInTerm)
+    {
+      runApp = QString("/usr/bin/sandbox");
+      cmd.append(getCommand());
+    }
   else
     {
-      cmd.prepend("/usr/bin/sandbox");
-      runApp = QString("xdg-terminal");
+      QStringList _cmd;
+      _cmd.append(getCommand());
+      _cmd.prepend("/usr/bin/sandbox");
+      //_cmd.prepend("'");
+      //_cmd.append("'");
+      cmd.append(_cmd.join(" "));
+      runApp = QString("/usr/bin/xdg-terminal");
     };
   qDebug()<<runApp<<cmd.join(" ")<<name;
   start(runApp, cmd);
@@ -197,8 +210,8 @@ void ElemProcess::_commandBuild()
   if (!securityLayer.isEmpty() && session) commandLine->appendSecurityLayer(securityLayer);
   if (mountDirs) commandLine->appendMountDirs();
   if (guiApp) commandLine->appendGuiApp();
-  if (!homeDir.isEmpty()) commandLine->appendHomeDir(homeDir);
-  if (!tempDir.isEmpty()) commandLine->appendTempDir(tempDir);
+  if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
+  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty()) commandLine->appendTempDir(tempDir);
   if (!includes.isEmpty()) commandLine->appendIncludes(includes);
   if (guiApp)
     {

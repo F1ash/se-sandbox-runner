@@ -37,7 +37,6 @@ private :
 
 private slots:
     void jobItemClicked(const QPoint &pos);
-    void jobItemClicked(QListWidgetItem *_item);
     void jobItemDoubleClicked(QListWidgetItem *_item);
     void createJobProcess(QListWidgetItem *_item);
     void jobItemAction();

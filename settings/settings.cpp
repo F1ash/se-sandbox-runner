@@ -220,9 +220,8 @@ void SettingsDialog::closeEvent(QCloseEvent *ev)
 }
 void SettingsDialog::windowSetsEnable(int i)
 {
-  w2->setEnabled(i==Qt::Checked);
-  w1->runInTerm->setEnabled(i!=Qt::Checked);
-  if (i==Qt::Checked) w1->runInTerm->setChecked(false);
+  Qt::CheckState _state = (i) ? Qt::Checked : Qt::Unchecked;
+  w2->setEnabled(_state==Qt::Checked);
 }
 void SettingsDialog::set_Title_Name(QString s)
 {
@@ -230,5 +229,6 @@ void SettingsDialog::set_Title_Name(QString s)
 }
 void SettingsDialog::setGuiCheckState(int i)
 {
-  w1->guiApp->setCheckState((i) ? Qt::Checked : Qt::Unchecked);
+  Qt::CheckState _state = (i) ? Qt::Checked : Qt::Unchecked;
+  w1->guiApp->setCheckState(_state);
 }

@@ -60,6 +60,7 @@ void IncludeSet::addFilesToList()
 void IncludeSet::addDirToList()
 {
   QString dir = QFileDialog::getExistingDirectory(this, "Include directory", "~");
+  if (!dir.endsWith(QDir::separator())) dir.append(QDir::separator());
   fileList->addItem(dir);
   removeDuplicates();
 }
