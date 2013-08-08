@@ -43,6 +43,7 @@ private slots:
     void createNewJobItem();
     void deleteCurrentJobItem();
     void removeJobItem(QString &);
+    void runCurrentJob();
     void stopCurrentJob();
     void stopJob(int i);
     void stopAllJob();

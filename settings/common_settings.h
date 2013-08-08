@@ -9,7 +9,10 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QSpinBox>
 #include <QLabel>
+
+#define TIMEOUT 10
 
 class CommonSet : public QWidget
 {
@@ -29,6 +32,7 @@ public:
     QRadioButton *execute;
     QRadioButton *session;
     QLineEdit *command;
+    QSpinBox *checkTimeout;
 
 signals:
 
@@ -36,6 +40,7 @@ private:
     QGridLayout *gridLayout;
     QLabel *secLabel;
     QLabel *typeLabel;
+    QLabel *timeoutLabel;
     QPushButton *selectFile;
     QWidget *cmdWidget;
     QHBoxLayout *cmdLayout;
@@ -49,6 +54,7 @@ private slots:
     void setTypeToolTip(QString);
     void initSLevelBox();
     void initRadioButtons();
+    void initTimeoutWidget();
     void enableCommand(bool b);
     void enableSLevel(bool);
     void initCmdWidget();

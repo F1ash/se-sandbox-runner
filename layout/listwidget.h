@@ -28,6 +28,7 @@ public slots:
     void editItemAction();
     void addJobItem(const QString &s);
     void deleteCurrentJobItem();
+    void runJob(QListWidgetItem *_item);
     void stopJob(QListWidgetItem *_item);
     void showMessage(QString &, QString &);
 
@@ -40,6 +41,7 @@ private slots:
     void jobItemDoubleClicked(QListWidgetItem *_item);
     void createJobProcess(QListWidgetItem *_item);
     void jobItemAction();
+    void deleteCancelledCreation();
 
 };
 

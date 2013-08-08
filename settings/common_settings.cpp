@@ -17,7 +17,7 @@ CommonSet::CommonSet(QWidget *parent) :
   guiApp = new QCheckBox("GUI App", this);
   guiApp->setToolTip("Create an X based Sandbox for gui apps, \ntemporary files for $HOME and /tmp, \nsecondary Xserver");
   runInTerm = new QCheckBox("Run in terminal", this);
-  runInTerm->setToolTip("Run in terminal\n(The process can`t be controlled by application).");
+  runInTerm->setToolTip("Run in terminal\n(The process can be not controlled by application).");
   shred = new QCheckBox("Shred", this);
   shred->setToolTip("Shred temporary files created \nin $HOME and /tmp,\nbefore deleting.");
   capabilities = new QCheckBox("Capabilities", this);
@@ -26,6 +26,7 @@ CommonSet::CommonSet(QWidget *parent) :
   initSLevelBox();
   initRadioButtons();
   initCmdWidget();
+  initTimeoutWidget();
   gridLayout->addWidget(nameEdit, 0, 0);
   gridLayout->addWidget(autoRun, 1, 0);
   gridLayout->addWidget(cgroups, 1, 2);
@@ -37,9 +38,11 @@ CommonSet::CommonSet(QWidget *parent) :
   gridLayout->addWidget(secLabel, 4, 2);
   gridLayout->addWidget(sandboxType, 5, 0);
   gridLayout->addWidget(securityLayer, 5, 2);
-  gridLayout->addWidget(execute, 6, 0);
-  gridLayout->addWidget(session, 6, 2);
-  gridLayout->addWidget(cmdWidget, 7, 0, 8, 5);
+  gridLayout->addWidget(timeoutLabel, 6, 0);
+  gridLayout->addWidget(checkTimeout, 6, 2);
+  gridLayout->addWidget(execute, 7, 0);
+  gridLayout->addWidget(session, 7, 2);
+  gridLayout->addWidget(cmdWidget, 8, 0, 9, 5);
 
   setLayout(gridLayout);
   //setFocusProxy(nameEdit);
@@ -77,6 +80,10 @@ CommonSet::~CommonSet()
   selectFile = 0;
   delete command;
   command = 0;
+  delete checkTimeout;
+  checkTimeout = 0;
+  delete timeoutLabel;
+  timeoutLabel = 0;
   delete cmdLayout;
   cmdLayout = 0;
   delete cmdWidget;
@@ -121,6 +128,16 @@ void CommonSet::initRadioButtons()
 
   connect(execute, SIGNAL(toggled(bool)), this, SLOT(enableCommand(bool)));
   connect(session, SIGNAL(toggled(bool)), this, SLOT(enableSLevel(bool)));
+}
+void CommonSet::initTimeoutWidget()
+{
+  timeoutLabel = new QLabel("Timeout for check child processes", this);
+  checkTimeout = new QSpinBox(this);
+  checkTimeout->setToolTip("If the task is not killed application,\nit means that the application\ndoes not have time to identify all child processes.\nTry to increase the timeout for.");
+  checkTimeout->setMaximum(10000);
+  checkTimeout->setMinimum(1);
+  checkTimeout->setSingleStep(1);
+  checkTimeout->setValue(TIMEOUT);
 }
 void CommonSet::enableCommand(bool b)
 {

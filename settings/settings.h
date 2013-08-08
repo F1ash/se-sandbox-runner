@@ -22,6 +22,7 @@ public:
     QTabWidget *tabWidget;
 
 signals:
+    void creatingJobCancelled();
 
 private:
     QVBoxLayout *commonLayout;
@@ -40,7 +41,6 @@ private:
 
 public slots:
     void setJobItem(QListWidgetItem *);
-    void setGuiCheckState(int);
 
 private slots:
     void initTabWidget();

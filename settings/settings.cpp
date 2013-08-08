@@ -4,16 +4,16 @@
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
 {
-  setWindowTitle("<noname>::Settings");
+  setWindowTitle("<noname>");
   restoreGeometry(settings.value("SetDlgGeometry").toByteArray());
   setModal(false);
-  setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
   setContentsMargins(1,1,1,1);
   initTabWidget();
   initButtons();
+  initParameters();
   commonLayout = new QVBoxLayout(this);
-  commonLayout->addWidget(tabWidget, 0, Qt::AlignHCenter);
-  commonLayout->addWidget(buttons, 0, Qt::AlignHCenter);
+  commonLayout->addWidget(tabWidget);
+  commonLayout->addWidget(buttons);
   setLayout(commonLayout);
 }
 SettingsDialog::~SettingsDialog()
@@ -101,7 +101,7 @@ void SettingsDialog::setJobItem(QListWidgetItem *i)
   item = i;
   name = item->text();
   previousName = name;
-  setWindowTitle(QString("%1::Settings").arg(name));
+  setWindowTitle(name);
   if (name!=QString("<noname>"))
     {
       w1->set_Job_Name(name);
@@ -150,7 +150,12 @@ void SettingsDialog::saveJob()
 }
 void SettingsDialog::cancelJob()
 {
-  //qDebug()<<"cancel"<<name;
+  //qDebug()<<"cancel"<<name<< newbe;
+  if ( newbe )
+    {
+      settings.remove(name);
+      emit creatingJobCancelled();
+    };
   close();
 }
 void SettingsDialog::initParameters()
@@ -158,6 +163,7 @@ void SettingsDialog::initParameters()
   int c;
   QStringList groups = settings.childGroups();
   newbe = !groups.contains(name);
+  //qDebug()<<"init"<<name<< newbe;
   settings.beginGroup(name);
   w1->autoRun->setChecked(settings.value("AutoRun", QVariant()).toBool() );
   w1->cgroups->setChecked( settings.value("CGroups", QVariant()).toBool() );
@@ -172,6 +178,7 @@ void SettingsDialog::initParameters()
   w1->command->setText( settings.value("Command", QVariant()).toString() );
   w1->execute->setChecked( settings.value("Execute", QVariant()).toBool() );
   w1->session->setChecked( settings.value("Session", QVariant()).toBool() );
+  w1->checkTimeout->setValue( settings.value("TimeOut", QVariant(TIMEOUT)).toInt() );
   w2->WM->setText( settings.value("WM", QVariant()).toString() );
   w2->DPI->setValue( settings.value("DPI", QVariant()).toInt() );
   w2->windowHeight->setValue( settings.value("wHeight", QVariant()).toInt() );
@@ -196,6 +203,7 @@ void SettingsDialog::saveParameters()
   settings.setValue("Execute", QVariant(w1->execute->isChecked()));
   settings.setValue("Session", QVariant(w1->session->isChecked()));
   settings.setValue("Command", QVariant(w1->command->text()));
+  settings.setValue("TimeOut", QVariant(w1->checkTimeout->value()));
   settings.setValue("DPI", QVariant(w2->DPI->value()));
   settings.setValue("WM", QVariant(w2->WM->text()));
   settings.setValue("wHeight", QVariant(w2->windowHeight->value()));
@@ -222,13 +230,24 @@ void SettingsDialog::windowSetsEnable(int i)
 {
   Qt::CheckState _state = (i) ? Qt::Checked : Qt::Unchecked;
   w2->setEnabled(_state==Qt::Checked);
+  int current_policy = w1->sandboxType->currentIndex();
+  if ( _state==Qt::Checked )
+    {
+      if ( current_policy < 2 )
+        {
+          w1->sandboxType->setCurrentIndex(2);
+        };
+    }
+  else
+    {
+      int c;
+      settings.beginGroup(name);
+      c = w1->sandboxType->findText( settings.value("SType", QVariant()).toString() );
+      settings.endGroup();
+      w1->sandboxType->setCurrentIndex(c);
+    };
 }
 void SettingsDialog::set_Title_Name(QString s)
 {
-  setWindowTitle(QString("%1::Settings").arg(s));
-}
-void SettingsDialog::setGuiCheckState(int i)
-{
-  Qt::CheckState _state = (i) ? Qt::Checked : Qt::Unchecked;
-  w1->guiApp->setCheckState(_state);
+  setWindowTitle(s);
 }

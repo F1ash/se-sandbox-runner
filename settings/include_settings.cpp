@@ -8,13 +8,14 @@ IncludeSet::IncludeSet(QWidget *parent) :
 {
   setContentsMargins(1,1,1,1);
   commonLayout = new QGridLayout(this);
+  commonLayout->setSpacing(1);
   fileList = new QListWidget(this);
   fileList->setSelectionMode(QAbstractItemView::MultiSelection);
-  addFile = new QPushButton(QIcon::fromTheme("list-add"),"", this);
+  addFile = new QPushButton(QIcon::fromTheme("archive-insert"),"", this);
   addFile->setToolTip("Add file(s) to list");
-  addDir  = new QPushButton(QIcon::fromTheme("list-add"),"", this);
+  addDir  = new QPushButton(QIcon::fromTheme("archive-insert-directory"),"", this);
   addDir->setToolTip("Add directory to list");
-  delPath = new QPushButton(QIcon::fromTheme("list-remove"),"", this);
+  delPath = new QPushButton(QIcon::fromTheme("archive-remove"),"", this);
   delPath->setToolTip("Delete path from list");
   connect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
   connect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));
@@ -60,9 +61,10 @@ void IncludeSet::addFilesToList()
 void IncludeSet::addDirToList()
 {
   QString dir = QFileDialog::getExistingDirectory(this, "Include directory", "~");
-  if (!dir.endsWith(QDir::separator())) dir.append(QDir::separator());
-  fileList->addItem(dir);
-  removeDuplicates();
+  if ( !dir.isEmpty() )
+    if ( !dir.endsWith(QDir::separator()) ) dir.append(QDir::separator());
+    fileList->addItem(dir);
+    removeDuplicates();
 }
 void IncludeSet::delPathFromList()
 {
@@ -77,15 +79,8 @@ void IncludeSet::delItem(QListWidgetItem *_item)
 {
   if (_item)
     {
-      QString _file = _item->text();
-      QString msg;
-      msg = QString("%1 \nwill delete.\nYou sure?").arg(_file);
-      int answer = QMessageBox::question(this, "File delete", msg, QMessageBox::Ok, QMessageBox::Cancel);
-      if (answer==QMessageBox::Ok)
-        {
-          fileList->takeItem(fileList->row(_item));
-          //qDebug()<<"delete"<<_file;
-        };
+      fileList->takeItem(fileList->row(_item));
+      //qDebug()<<"delete"<<_file;
     }
   else QMessageBox::information(this, "Info", "Item not exist.");
 }

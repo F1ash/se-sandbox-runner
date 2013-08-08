@@ -9,6 +9,7 @@ ElemProcess::ElemProcess(QObject *parent) :
   connect(this, SIGNAL(readyRead()), this, SLOT(sendMessage()));
   timerId = 0;
   commandLine = new String(this);
+  _diff = 0;
 }
 ElemProcess::~ElemProcess()
 {
@@ -48,6 +49,7 @@ QStringList ElemProcess::getCommand()
   execute = settings.value("Execute", QVariant()).toBool();
   session = settings.value("Session", QVariant()).toBool();
   command = settings.value("Command", QVariant()).toString();
+  checkTimeout = settings.value("TimeOut", QVariant(10)).toInt();
   DPI = settings.value("DPI", QVariant()).toInt();
   WM = settings.value("WM", QVariant()).toString();
   windowHeight = settings.value("wHeight", QVariant()).toInt();
@@ -139,7 +141,10 @@ void ElemProcess::runJob()
   bool started = waitForStarted();
   PID = QString::number(pid());
   if ( started )
-    QTimer::singleShot(10000, this, SLOT(appendChildren()));
+    {
+      QTimer::singleShot(checkTimeout * 1000, this, SLOT(appendChildren()));
+      waitTimerId = startTimer(1000);
+    }
   else emit processState(STOPPED);
 }
 void ElemProcess::setUnAvailableItemBrush()
@@ -177,6 +182,7 @@ void ElemProcess::setProcessState(bool status)
       item->setIcon(QIcon::fromTheme("process-stop"));
       item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg(PID));
       proc_Status.insert("isRunning", QVariant(RUNNING));
+      proc_Status.insert("reason", QVariant(TO_STOP));
     }
   else
     {
@@ -185,6 +191,7 @@ void ElemProcess::setProcessState(bool status)
       children.clear();
       PID.clear();
       proc_Status.insert("isRunning", QVariant(STOPPED));
+      proc_Status.insert("reason", QVariant(TO_RUN));
     };
   proc_Status.insert("availability", QVariant(AVAILABLE));
   item->setData(Qt::UserRole, QVariant(proc_Status));
@@ -198,6 +205,30 @@ void ElemProcess::timerEvent(QTimerEvent *event)
    if ( _timerId && timerId==_timerId )
      {
        if ( ::kill(PID.toInt(), SIGZERO)!=0 ) killJob();
+     }
+   else if ( _timerId && waitTimerId==_timerId )
+     {
+       if ( checkTimeout - _diff - 1 )
+         {
+           QString graph;
+           int percent = int (((float)(checkTimeout-_diff)/checkTimeout)*100);
+           for (int i = 0; i<percent/5; i++)
+             {
+               graph.append("|");
+             };
+           item->setForeground(QBrush(QColor ( 255 - percent*255/100, 0, 0, 255 - percent*128/100 ) ));
+           item->setBackground(QBrush(QColor ( percent*128/100, 0, 0, percent*255/100 ) ));
+           item->setText(QString("%1<%2").arg(graph).arg(name));
+           _diff++;
+         }
+       else
+         {
+           killTimer(waitTimerId);
+           _diff = 0;
+           item->setText(name);
+           item->setForeground(fgBrush);
+           item->setBackground(bgBrush);
+         };
      };
  }
 

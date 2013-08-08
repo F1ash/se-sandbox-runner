@@ -19,6 +19,8 @@ ToolBar::~ToolBar()
   _deleteAction = 0;
   delete _editAction;
   _editAction = 0;
+  delete _runAction;
+  _runAction = 0;
   delete _stopAction;
   _stopAction = 0;
   delete _stopAllAction;
@@ -32,11 +34,13 @@ void ToolBar::initActions()
   _hideAction = new QAction(QString("Hide to tray"), this);
   _hideAction->setIcon ( QIcon().fromTheme("arrow-down") );
   _createAction = new QAction(QString("Create new Job"), this);
-  _createAction->setIcon ( QIcon().fromTheme("list-add") );
+  _createAction->setIcon ( QIcon().fromTheme("run-build-install") );
   _editAction = new QAction(QString("Edit selected Job"), this);
-  _editAction->setIcon ( QIcon().fromTheme("edit-select") );
-  _deleteAction = new QAction(QString("Delete Job"), this);
-  _deleteAction->setIcon ( QIcon().fromTheme("list-remove") );
+  _editAction->setIcon ( QIcon().fromTheme("run-build-configure") );
+  _deleteAction = new QAction(QString("Delete selected Job"), this);
+  _deleteAction->setIcon ( QIcon().fromTheme("run-build-clean") );
+  _runAction = new QAction(QString("Run selected Job"), this);
+  _runAction->setIcon ( QIcon().fromTheme("run-build") );
   _stopAction = new QAction(QString("Kill selected Job"), this);
   _stopAction->setIcon ( QIcon().fromTheme("process-stop") );
   _stopAllAction = new QAction(QString("Kill all Job"), this);
@@ -50,6 +54,7 @@ void ToolBar::initActions()
   addAction(_editAction);
   addAction(_deleteAction);
   addSeparator();
+  addAction(_runAction);
   addAction(_stopAction);
   addAction(_stopAllAction);
   addSeparator();

@@ -44,6 +44,7 @@ private:
     QBrush fgBrush;
     QMap<QString, QVariant> proc_Status;
     QSettings settings;
+    int waitTimerId;
     int timerId;
 
     bool guiApp;
@@ -65,6 +66,8 @@ private:
     QString tempDir;
     QString homeDir;
     String *commandLine;
+    int checkTimeout;
+    int _diff;
 
 private slots:
     QStringList getCommand();

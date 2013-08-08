@@ -3,8 +3,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-  setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
   restoreGeometry(settings.value("Geometry").toByteArray());
+  setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
   setMinimumSize(100, 100);
   setWindowIcon(QIcon::fromTheme("applications-safety", QIcon(":/applications-safety.png")));
   initTrayIcon();
@@ -25,6 +25,7 @@ MainWindow::~MainWindow()
   disconnect(toolBar->_createAction, SIGNAL(triggered()), this, SLOT(createNewJobItem()));
   disconnect(toolBar->_editAction, SIGNAL(triggered()), this, SLOT(editCurrentJobItem()));
   disconnect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
+  disconnect(toolBar->_runAction, SIGNAL(triggered()), this, SLOT(runCurrentJob()));
   disconnect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   disconnect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
   disconnect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
@@ -121,6 +122,7 @@ void MainWindow::initToolBar()
   connect(toolBar->_createAction, SIGNAL(triggered()), this, SLOT(createNewJobItem()));
   connect(toolBar->_editAction, SIGNAL(triggered()), this, SLOT(editCurrentJobItem()));
   connect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
+  connect(toolBar->_runAction, SIGNAL(triggered()), this, SLOT(runCurrentJob()));
   connect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   connect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
   connect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
@@ -151,6 +153,14 @@ void MainWindow::removeJobItem(QString &job)
   f.remove();
   f.deleteLater();
   //qDebug()<<job<<"job deleted";
+}
+void MainWindow::runCurrentJob()
+{
+  QListWidgetItem *_item = jobWidget->currentItem();
+  if (_item)
+    {
+      jobWidget->runJob(_item);
+    };
 }
 void MainWindow::stopCurrentJob()
 {

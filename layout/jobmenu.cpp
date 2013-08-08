@@ -3,9 +3,9 @@
 JobMenu::JobMenu(QWidget *parent)
     : QMenu(parent)
 {
-  setMinimumSize(32, 32);
-  edit = addAction("Edit");
-  act  = addAction("Run Job");
+  //setMinimumSize(32, 32);
+  edit = addAction(QIcon::fromTheme("run-build-configure"), "Edit");
+  act  = addAction(QIcon::fromTheme("run-build"), "Run Job");
 }
 JobMenu::~JobMenu()
 {

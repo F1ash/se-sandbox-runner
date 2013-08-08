@@ -47,16 +47,23 @@ void JobList::jobItemClicked(const QPoint &pos)
       return;
     };
   //qDebug()<<_item->text()<<" Job detected";
-  if ( !_item->data(Qt::UserRole).toMap().value("availability", false).toBool() ) return;
+  QMap<QString, QVariant> proc_Status;
+  proc_Status = _item->data(Qt::UserRole).toMap();
+  if ( !proc_Status.value("availability", NOT_AVAILABLE).toBool() ) return;
   JobMenu *jobMenu = new JobMenu(this);
-  if ( _item->data(Qt::UserRole).toMap().value("isRunning", false).toBool() )
+  if ( proc_Status.value("isRunning", STOPPED).toBool() )
     {
       jobMenu->act->setText("Kill Job");
+      jobMenu->act->setIcon(QIcon::fromTheme("process-stop"));
+      proc_Status.insert(QString("reason"), QVariant(TO_STOP));
     }
   else
     {
       jobMenu->act->setText("Run Job");
+      jobMenu->act->setIcon(QIcon::fromTheme("run-build"));
+      proc_Status.insert(QString("reason"), QVariant(TO_RUN));
     };
+  _item->setData(Qt::UserRole, QVariant(proc_Status));
   connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemAction()));
   connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
   jobMenu->move(mapToGlobal(pos));
@@ -90,17 +97,27 @@ void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
   qDebug()<<key<<" Job doubleClicked"<<proc;
   bool reason;
   reason = _item->data(Qt::UserRole).toMap().value(QString("reason"), TO_STOP).toBool();
+  bool proc_state;
+  proc_state = _item->data(Qt::UserRole).toMap().value(QString("isRunning"), STOPPED).toBool();
   if ( !_item->data(Qt::UserRole).toMap().value(QString("availability"), NOT_AVAILABLE).toBool() )
     return;
-  else if ( proc->state()==QProcess::NotRunning && reason )
+  else if ( !proc_state && proc->state()==QProcess::NotRunning && reason )
     proc->runJob();
-  else if ( proc->state()==QProcess::Running )
+  else if ( proc_state && proc->state()==QProcess::Running && !reason )
     proc->killJob();
   clearSelection();
 }
 void JobList::jobItemAction()
 {
   jobItemDoubleClicked(currentItem());
+}
+void JobList::runJob(QListWidgetItem *_item)
+{
+  QMap<QString, QVariant> proc_Status;
+  proc_Status = _item->data(Qt::UserRole).toMap();
+  proc_Status.insert(QString("reason"), QVariant(TO_RUN));
+  _item->setData(Qt::UserRole, QVariant(proc_Status));
+  jobItemDoubleClicked(_item);
 }
 void JobList::stopJob(QListWidgetItem *_item)
 {
@@ -109,8 +126,6 @@ void JobList::stopJob(QListWidgetItem *_item)
   proc_Status.insert(QString("reason"), QVariant(TO_STOP));
   _item->setData(Qt::UserRole, QVariant(proc_Status));
   jobItemDoubleClicked(_item);
-  proc_Status.insert(QString("reason"), QVariant(TO_RUN));
-  _item->setData(Qt::UserRole, QVariant(proc_Status));
 }
 void JobList::editItemAction()
 {
@@ -122,7 +137,9 @@ void JobList::editItemAction()
     };
   sDialog = new SettingsDialog(this->parentWidget());
   sDialog->setJobItem(_item);
+  connect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
   sDialog->exec();
+  disconnect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
   sDialog->deleteLater();
 }
 void JobList::deleteCurrentJobItem()
@@ -132,26 +149,24 @@ void JobList::deleteCurrentJobItem()
   if (_item)
     {
       QString job = _item->text();
-      QString msg;
-      msg = QString("%1 will delete.\nYou sure?").arg(job);
-      int answer = QMessageBox::question(this, "Job delete", msg, QMessageBox::Ok, QMessageBox::Cancel);
-      if (answer==QMessageBox::Ok)
+      takeItem(currentRow());
+      ElemProcess *proc;
+      proc = jobProcess->value(job);
+      if ( proc && proc->state()==QProcess::Running )
         {
-          takeItem(currentRow());
-          ElemProcess *proc;
-          proc = jobProcess->value(job);
-          if ( proc && proc->state()==QProcess::Running )
-            {
-              proc->killJob();
-              jobProcess->remove(job);
-              qDebug()<<"delete"<<job;
-            };
-          emit removeJob(job);
+          proc->killJob();
+          jobProcess->remove(job);
+          qDebug()<<"delete"<<job;
         };
+      emit removeJob(job);
     }
   else QMessageBox::information(this, QString("Info"), QString("Item not exist."));
 }
 void JobList::showMessage(QString &title, QString &msg)
 {
   QMessageBox::information(this, title, msg);
+}
+void JobList::deleteCancelledCreation()
+{
+  deleteCurrentJobItem();
 }
