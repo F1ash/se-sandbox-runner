@@ -208,17 +208,13 @@ void ElemProcess::timerEvent(QTimerEvent *event)
      }
    else if ( _timerId && waitTimerId==_timerId )
      {
-       if ( checkTimeout - _diff - 1 )
+       if ( checkTimeout - _diff + 1 )
          {
-           QString graph;
-           int percent = int (((float)(checkTimeout-_diff)/checkTimeout)*100);
-           for (int i = 0; i<percent/5; i++)
-             {
-               graph.append("|");
-             };
-           item->setForeground(QBrush(QColor ( 255 - percent*255/100, 0, 0, 255 - percent*128/100 ) ));
-           item->setBackground(QBrush(QColor ( percent*128/100, 0, 0, percent*255/100 ) ));
-           item->setText(QString("%1<%2").arg(graph).arg(name));
+           int percent = int ((float(checkTimeout-_diff)/checkTimeout)*100.0);
+           if ( percent > 50 )
+             item->setBackground(QBrush(QColor ( 255 - int(255.0*(percent-50)/50), 255, 0, 128 ) ));
+           else
+             item->setBackground(QBrush(QColor ( 255, int(255*percent/50), 0, 128 ) ));
            _diff++;
          }
        else
