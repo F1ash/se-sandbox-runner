@@ -25,7 +25,6 @@ void ElemProcess::setItemReference(QListWidgetItem *i)
   name = item->text();
   proc_Status.insert("availability", QVariant(AVAILABLE));
   proc_Status.insert("isRunning", QVariant(STOPPED));
-  proc_Status.insert("reason", QVariant(TO_RUN));
   proc_Status.insert("initName", QVariant(name));
   item->setData(Qt::UserRole, QVariant(proc_Status));
   item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STANDBY --"));
@@ -182,7 +181,6 @@ void ElemProcess::setProcessState(bool status)
       item->setIcon(QIcon::fromTheme("process-stop"));
       item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg(PID));
       proc_Status.insert("isRunning", QVariant(RUNNING));
-      proc_Status.insert("reason", QVariant(TO_STOP));
     }
   else
     {
@@ -191,7 +189,6 @@ void ElemProcess::setProcessState(bool status)
       children.clear();
       PID.clear();
       proc_Status.insert("isRunning", QVariant(STOPPED));
-      proc_Status.insert("reason", QVariant(TO_RUN));
     };
   proc_Status.insert("availability", QVariant(AVAILABLE));
   item->setData(Qt::UserRole, QVariant(proc_Status));
@@ -238,7 +235,7 @@ void ElemProcess::_commandBuild()
   if (mountDirs) commandLine->appendMountDirs();
   if (guiApp) commandLine->appendGuiApp();
   if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
-  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty()) commandLine->appendTempDir(tempDir);
+  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty() ) commandLine->appendTempDir(tempDir);
   if (!includes.isEmpty()) commandLine->appendIncludes(includes);
   if (guiApp)
     {

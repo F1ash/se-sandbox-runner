@@ -40,7 +40,9 @@ private slots:
     void jobItemClicked(const QPoint &pos);
     void jobItemDoubleClicked(QListWidgetItem *_item);
     void createJobProcess(QListWidgetItem *_item);
-    void jobItemAction();
+    void jobItemKillAction();
+    void jobItemRunAction();
+    void checkJob(QListWidgetItem *, bool to_run);
     void deleteCancelledCreation();
 
 };

@@ -50,25 +50,28 @@ void JobList::jobItemClicked(const QPoint &pos)
   QMap<QString, QVariant> proc_Status;
   proc_Status = _item->data(Qt::UserRole).toMap();
   if ( !proc_Status.value("availability", NOT_AVAILABLE).toBool() ) return;
+  bool to_run = TO_RUN;
   JobMenu *jobMenu = new JobMenu(this);
   if ( proc_Status.value("isRunning", STOPPED).toBool() )
     {
       jobMenu->act->setText("Kill Job");
       jobMenu->act->setIcon(QIcon::fromTheme("process-stop"));
-      proc_Status.insert(QString("reason"), QVariant(TO_STOP));
+      connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
+      to_run = TO_STOP;
     }
   else
     {
       jobMenu->act->setText("Run Job");
       jobMenu->act->setIcon(QIcon::fromTheme("run-build"));
-      proc_Status.insert(QString("reason"), QVariant(TO_RUN));
+      connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
+      to_run = TO_RUN;
     };
   _item->setData(Qt::UserRole, QVariant(proc_Status));
-  connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemAction()));
   connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
   jobMenu->move(mapToGlobal(pos));
   jobMenu->exec();
-  disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemAction()));
+  if (to_run) disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
+  else disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
   disconnect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
   jobMenu->deleteLater();
 }
@@ -85,47 +88,50 @@ void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
 {
   QString key = _item->data(Qt::UserRole).toMap().value(QString("initName")).toString();
   QString _name = _item->text();
+  QMap<QString, QVariant> proc_Status;
+  proc_Status = _item->data(Qt::UserRole).toMap();
   ElemProcess *proc;
   proc = jobProcess->value(key);
   if ( key != _name )
     {
-      _item->data(Qt::UserRole).toMap().insert(QString("initName"), QVariant(_name));
+      proc_Status.insert(QString("initName"), QVariant(_name));
       jobProcess->insert(_name, proc);
       jobProcess->remove(key);
       proc->setItemReference(_item);
     };
   qDebug()<<key<<" Job doubleClicked"<<proc;
-  bool reason;
-  reason = _item->data(Qt::UserRole).toMap().value(QString("reason"), TO_STOP).toBool();
   bool proc_state;
-  proc_state = _item->data(Qt::UserRole).toMap().value(QString("isRunning"), STOPPED).toBool();
-  if ( !_item->data(Qt::UserRole).toMap().value(QString("availability"), NOT_AVAILABLE).toBool() )
+  proc_state = proc_Status.value(QString("isRunning"), STOPPED).toBool();
+  if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() )
     return;
-  else if ( !proc_state && proc->state()==QProcess::NotRunning && reason )
+  else if ( !proc_state && proc->state()==QProcess::NotRunning )
     proc->runJob();
-  else if ( proc_state && proc->state()==QProcess::Running && !reason )
+  else if ( proc_state && proc->state()==QProcess::Running )
     proc->killJob();
   clearSelection();
 }
-void JobList::jobItemAction()
+void JobList::jobItemKillAction()
 {
-  jobItemDoubleClicked(currentItem());
+  checkJob(currentItem(), TO_STOP);
+}
+void JobList::jobItemRunAction()
+{
+  checkJob(currentItem(), TO_RUN);
 }
 void JobList::runJob(QListWidgetItem *_item)
 {
-  QMap<QString, QVariant> proc_Status;
-  proc_Status = _item->data(Qt::UserRole).toMap();
-  proc_Status.insert(QString("reason"), QVariant(TO_RUN));
-  _item->setData(Qt::UserRole, QVariant(proc_Status));
-  jobItemDoubleClicked(_item);
+  checkJob(_item, TO_RUN);
 }
 void JobList::stopJob(QListWidgetItem *_item)
 {
-  QMap<QString, QVariant> proc_Status;
-  proc_Status = _item->data(Qt::UserRole).toMap();
-  proc_Status.insert(QString("reason"), QVariant(TO_STOP));
-  _item->setData(Qt::UserRole, QVariant(proc_Status));
-  jobItemDoubleClicked(_item);
+  checkJob(_item, TO_STOP);
+}
+void JobList::checkJob(QListWidgetItem *_item, bool to_run = TO_RUN)
+{
+  bool proc_state;
+  proc_state = _item->data(Qt::UserRole).toMap().value(QString("isRunning"), STOPPED).toBool();
+  if ( (to_run && !proc_state) || (!to_run && proc_state) )
+    jobItemDoubleClicked(_item);
 }
 void JobList::editItemAction()
 {
