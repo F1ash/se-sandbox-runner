@@ -129,8 +129,6 @@ void ElemProcess::runJob()
       QStringList _cmd;
       _cmd.append(getCommand());
       _cmd.prepend("/usr/bin/sandbox");
-      //_cmd.prepend("'");
-      //_cmd.append("'");
       cmd.append(_cmd.join(" "));
       runApp = QString("/usr/bin/xdg-terminal");
     };

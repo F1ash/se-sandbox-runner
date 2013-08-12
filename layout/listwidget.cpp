@@ -26,15 +26,20 @@ JobList::~JobList()
 void JobList::addJobItem(const QString &s)
 {
   QListWidgetItem *_item;
+  QList<QListWidgetItem *> _items;
   insertItem(0, s);
-  _item = findItems(s, Qt::MatchExactly).at(0);
-  _item->setIcon( stateIcon );
-  _item->setTextAlignment(Qt::AlignLeft);
-  createJobProcess(_item);
-  if ( _item->text() == QString("<noname>") )
+  _items = findItems(s, Qt::MatchExactly);
+  if ( !_items.isEmpty() )
     {
-      setCurrentItem(_item);
-      editItemAction();
+      _item = _items.first();
+      _item->setIcon( stateIcon );
+      _item->setTextAlignment(Qt::AlignLeft);
+      createJobProcess(_item);
+      if ( _item->text() == QString("<noname>") )
+        {
+          setCurrentItem(_item);
+          editItemAction();
+        };
     };
 }
 void JobList::jobItemClicked(const QPoint &pos)

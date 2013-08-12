@@ -14,22 +14,29 @@ void Wait::run()
   while (wdg->count())
     {
       int count = wdg->count();
-      QList<int> to_Delete;
+      QList<QString> to_Delete;
       for (int i=0; i<count; i++)
         {
           QListWidgetItem *_item;
           _item = wdg->item(i);
           QMap<QString, QVariant> map = _item->data(Qt::UserRole).toMap();
           if ( map.value("availability").toBool() && !map.value("isRunning").toBool() )
-            to_Delete.append(i);
+            {
+              to_Delete.append(_item->text());
+            }
           else if ( map.value("availability").toBool() && map.value("isRunning").toBool() )
             {
               wdg->jobProcess->value(_item->text())->killJob();
             };
         };
-      QList<int>::const_iterator j;
+      QList<QString>::const_iterator j;
       for (j=to_Delete.constBegin(); j!=to_Delete.constEnd(); j++)
-        wdg->takeItem(*j);
+        {
+          QList<QListWidgetItem *> _items;
+          _items = wdg->findItems(*j, Qt::MatchExactly);
+          if ( !_items.isEmpty() )
+          wdg->takeItem(wdg->row(_items.first()));
+        };
       msleep(500);
     };
   msleep(1000);

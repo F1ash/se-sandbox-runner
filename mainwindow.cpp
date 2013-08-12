@@ -182,7 +182,7 @@ void MainWindow::stopJob(int i)
 }
 bool MainWindow::runningJobsExist()
 {
-  bool result =- false;
+  bool result = false;
   for (int i=0; i<jobWidget->count(); i++)
     {
       //qDebug()<<jobWidget->item(i)->text()<< jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool();
