@@ -10,7 +10,6 @@ public :
   ~TrayIcon();
 
   QAction *hideAction;
-  QAction *reloadAction;
   QAction *closeAction;
 
 private :

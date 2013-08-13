@@ -115,8 +115,6 @@ void ElemProcess::runJob()
   item->setData(Qt::UserRole, QVariant(proc_Status));
   item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg("-- STARTED --"));
   setUnAvailableItemBrush();
-  /* testing command */
-  //start("/usr/bin/sandbox", QStringList()<<"-X"<<"-W"<<"kwin"<<"-t"<<"sandbox_web_t"<< "firefox");
   QStringList cmd;
   QString runApp;
   if (!runInTerm)
@@ -132,7 +130,7 @@ void ElemProcess::runJob()
       cmd.append(_cmd.join(" "));
       runApp = QString("/usr/bin/xdg-terminal");
     };
-  qDebug()<<runApp<<cmd.join(" ")<<name;
+  //qDebug()<<runApp<<cmd.join(" ")<<name;
   start(runApp, cmd);
 
   bool started = waitForStarted();

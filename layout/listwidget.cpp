@@ -104,7 +104,7 @@ void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
       jobProcess->remove(key);
       proc->setItemReference(_item);
     };
-  qDebug()<<key<<" Job doubleClicked"<<proc;
+  //qDebug()<<key<<" Job doubleClicked"<<proc;
   bool proc_state;
   proc_state = proc_Status.value(QString("isRunning"), STOPPED).toBool();
   if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() )
@@ -167,7 +167,7 @@ void JobList::deleteCurrentJobItem()
         {
           proc->killJob();
           jobProcess->remove(job);
-          qDebug()<<"delete"<<job;
+          //qDebug()<<"delete"<<job;
         };
       emit removeJob(job);
     }

@@ -3,17 +3,14 @@
 TrayIcon::TrayIcon(QWidget *parent = 0)
   : QSystemTrayIcon(parent)
 {
-  setIcon(QIcon::fromTheme("xorg"));
-  hideAction = new QAction(QString().fromUtf8(""), this);
-  reloadAction = new QAction(QString("Reload"), this);
-  reloadAction->setIcon ( QIcon().fromTheme("view-refresh") );
+  setIcon(QIcon::fromTheme("applications-safety", QIcon(":/applications-safety.png")));
+  hideAction = new QAction(QString("Down"), this);
+  hideAction->setIcon ( QIcon().fromTheme("arrow-down"));
   closeAction = new QAction(QString("Exit"), this);
-  closeAction->setIcon ( QIcon().fromTheme("shutdown") );
+  closeAction->setIcon ( QIcon().fromTheme("system-shutdown") );
 
   trayIconMenu = new QMenu(parent);
   trayIconMenu->addAction(hideAction);
-  trayIconMenu->addSeparator();
-  trayIconMenu->addAction(reloadAction);
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(closeAction);
 
@@ -28,8 +25,6 @@ TrayIcon::~TrayIcon()
   trayIconMenu = 0;
   delete hideAction;
   hideAction = 0;
-  delete reloadAction;
-  reloadAction = 0;
   delete closeAction;
   closeAction = 0;
 }

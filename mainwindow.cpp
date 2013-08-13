@@ -18,7 +18,6 @@ MainWindow::~MainWindow()
   disconnect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
                     SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
   disconnect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
-  //disconnect(trayIcon->reloadAction, SIGNAL(triggered()), this, SLOT(reloadAppAction()));
   disconnect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
   disconnect(jobWidget, SIGNAL(removeJob(QString &)), this, SLOT(removeJobItem(QString &)));
   disconnect(toolBar->_hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
@@ -76,11 +75,9 @@ void MainWindow::closeEvent()
 void MainWindow::initTrayIcon()
 {
   trayIcon = new TrayIcon(this);
-  trayIcon->setIcon(QIcon::fromTheme("applications-safety", QIcon(":/applications-safety.png")));
   connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
   SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
   connect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
-  //connect(trayIcon->reloadAction, SIGNAL(triggered()), this, SLOT(reloadAppAction()));
   connect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
 }
 void MainWindow::changeVisibility()
@@ -145,9 +142,10 @@ void MainWindow::deleteCurrentJobItem()
 void MainWindow::removeJobItem(QString &job)
 {
   settings.remove(job);
-  QString _fn = QDir::homePath();
-  _fn.append("/.config/se-sandbox-runner/");
-  _fn.append(QString("%1.included").arg(job));
+  QStringList fullPath = settings.fileName().split(QDir::separator());
+  fullPath.removeLast();
+  fullPath.append(QString("%1.included").arg(job));
+  QString _fn = fullPath.join(QDir::separator());
   QFile f;
   f.setFileName(_fn);
   f.remove();
@@ -177,7 +175,7 @@ void MainWindow::stopAllJob()
 }
 void MainWindow::stopJob(int i)
 {
-  qDebug()<<i<<" item to stop";
+  //qDebug()<<i<<" item to stop";
   jobWidget->stopJob(jobWidget->item(i));
 }
 bool MainWindow::runningJobsExist()
