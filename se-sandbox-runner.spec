@@ -14,9 +14,8 @@ BuildRequires: gcc-c++ qt4-devel desktop-file-utils cmake
 
 %description
 Qt-wrap for SELinux Sandbox.
-App run and control the configured jobs, running into sandbox.
-Job settings restores in application config.
-
+Application run and control the configured jobs, running into sandbox.
+Job settings restores in application`s config.
 
 %prep
 %setup -q
