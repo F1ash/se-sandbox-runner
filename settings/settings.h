@@ -5,12 +5,14 @@
 #include <QTabWidget>
 #include <QPushButton>
 #include <QListWidgetItem>
+#include <QTextEdit>
 #include <QSettings>
 #include <QCloseEvent>
 #include "common_settings.h"
 #include "window_settings.h"
 #include "include_settings.h"
 #include "directory_settings.h"
+#include "element/string_list.h"
 
 class SettingsDialog : public QDialog
 {
@@ -38,6 +40,9 @@ private:
     DirectorySet *w4;
     bool newbe;
     QString previousName;
+    QTextEdit *fullCommandWdg;
+    int timerId;
+    String *commandLine;
 
 public slots:
     void setJobItem(QListWidgetItem *);
@@ -52,6 +57,8 @@ private slots:
     void closeEvent(QCloseEvent *);
     void windowSetsEnable(int);
     void set_Title_Name(QString);
+    void timerEvent(QTimerEvent *);
+    QStringList _commandBuild();
 };
 
 #endif

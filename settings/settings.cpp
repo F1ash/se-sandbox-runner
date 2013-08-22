@@ -11,10 +11,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   initTabWidget();
   initButtons();
   initParameters();
+  fullCommandWdg = new QTextEdit(this);
+  fullCommandWdg->setReadOnly(true);
   commonLayout = new QVBoxLayout(this);
   commonLayout->addWidget(tabWidget);
+  commonLayout->addWidget(fullCommandWdg);
   commonLayout->addWidget(buttons);
   setLayout(commonLayout);
+  commandLine = new String(this);
+  timerId = startTimer(1000);
 }
 SettingsDialog::~SettingsDialog()
 {
@@ -40,12 +45,16 @@ SettingsDialog::~SettingsDialog()
   w4 = 0;
   delete tabWidget;
   tabWidget = 0;
+  delete fullCommandWdg;
+  fullCommandWdg = 0;
   delete buttonsLayout;
   buttonsLayout = 0;
   delete buttons;
   buttons = 0;
   delete commonLayout;
   commonLayout = 0;
+  delete commandLine;
+  commandLine = 0;
 }
 void SettingsDialog::initTabWidget()
 {
@@ -169,6 +178,9 @@ void SettingsDialog::initParameters()
   w1->cgroups->setChecked( settings.value("CGroups", QVariant()).toBool() );
   w1->guiApp->setChecked( settings.value("GuiApp", QVariant()).toBool() );
   w1->runInTerm->setChecked( settings.value("RunInTerm", QVariant()).toBool() );
+  w1->defaultTerminal->setChecked( settings.value("XDG-Util-Term", QVariant()).toBool() );
+  w1->customTerminal->setChecked( settings.value("CustomTerm", QVariant()).toBool() );
+  w1->termCommand->setText( settings.value("TermCommand", QVariant()).toString() );
   w1->capabilities->setChecked( settings.value("Capabilities", QVariant()).toBool() );
   w1->shred->setChecked( settings.value("Shred", QVariant()).toBool() );
   c = w1->securityLayer->findText( settings.value("SLeyer", QVariant()).toString() );
@@ -196,6 +208,9 @@ void SettingsDialog::saveParameters()
   settings.setValue("CGroups", QVariant(w1->cgroups->isChecked()));
   settings.setValue("GuiApp", QVariant(w1->guiApp->isChecked()));
   settings.setValue("RunInTerm", QVariant(w1->runInTerm->isChecked()));
+  settings.setValue("XDG-Util-Term", QVariant(w1->defaultTerminal->isChecked()));
+  settings.setValue("CustomTerm", QVariant(w1->customTerminal->isChecked()));
+  settings.setValue("TermCommand", QVariant(w1->termCommand->text()));
   settings.setValue("Capabilities", QVariant(w1->capabilities->isChecked()));
   settings.setValue("Shred", QVariant(w1->shred->isChecked()));
   settings.setValue("SLeyer", QVariant(w1->securityLayer->currentText()));
@@ -224,6 +239,7 @@ void SettingsDialog::closeEvent(QCloseEvent *ev)
 {
   settings.setValue("SetDlgGeometry", saveGeometry());
   settings.sync();
+  killTimer(timerId);
   ev->accept();
 }
 void SettingsDialog::windowSetsEnable(int i)
@@ -250,4 +266,89 @@ void SettingsDialog::windowSetsEnable(int i)
 void SettingsDialog::set_Title_Name(QString s)
 {
   setWindowTitle(s);
+}
+void SettingsDialog::timerEvent(QTimerEvent *event)
+ {
+   int _timerId = event->timerId();
+   if ( _timerId && timerId==_timerId )
+     {
+       QString runApp;
+       QStringList cmd;
+       QStringList commandString;
+       commandString = w1->termCommand->text().split(" ");
+       commandString.removeAll("");
+
+       if ( !w1->runInTerm->isChecked() )
+         {
+           runApp = QString("/usr/bin/sandbox");
+           cmd = _commandBuild();
+         }
+       else
+         {
+           QStringList _cmd = _commandBuild();
+           _cmd.prepend("/usr/bin/sandbox");
+           if ( !w1->customTerminal->isChecked() )
+             {
+               cmd.append(_cmd.join(" "));
+               runApp = QString("/usr/bin/xdg-terminal");
+             }
+           else
+             {
+               cmd = _cmd;
+               while ( commandString.count() > 1 )
+                 {
+                   cmd.prepend( commandString.takeLast() );
+                 };
+               if ( !commandString.isEmpty() && !commandString.first().isEmpty() )
+                 {
+                   runApp = commandString.first();
+                 }
+               else
+                 {
+                   cmd.prepend("-e");
+                   runApp = QString("xterm");
+                 };
+             };
+         };
+       //qDebug()<<runApp<<cmd.join(" ")<<name;
+       fullCommandWdg->setText(QString("%1 %2").arg(runApp).arg(cmd.join(" ")));
+     };
+ }
+
+QStringList SettingsDialog::_commandBuild()
+{
+  commandLine->clear();
+
+  if ( w1->capabilities->isChecked() ) commandLine->appendCapabilities();
+  if ( w1->cgroups->isChecked() ) commandLine->appendCGroups();
+  if ( w1->shred->isChecked() ) commandLine->appendShred();
+  if ( w1->guiApp->isChecked() && w2->DPI->value() ) commandLine->appendDPI( w2->DPI->value() );
+  QString str;
+  str = w1->securityLayer->currentText();
+  if ( !str.isEmpty() && w1->session->isChecked() )
+    commandLine->appendSecurityLayer( str );
+  if ( w4->mountDirs->isChecked() ) commandLine->appendMountDirs();
+  if ( w1->guiApp->isChecked() ) commandLine->appendGuiApp();
+  str = w4->homeDir->text();
+  if ( ( w1->guiApp->isChecked() || w4->mountDirs->isChecked() ) && !str.isEmpty() )
+    commandLine->appendHomeDir( str );
+  str = w4->tempDir->text();
+  if ( ( w1->guiApp->isChecked() || w4->mountDirs->isChecked() ) && !str.isEmpty() )
+    commandLine->appendTempDir( str );
+  str = w3->get_FileName();
+  if ( !str.isEmpty() ) commandLine->appendIncludes( str );
+  if ( w1->guiApp->isChecked() )
+    {
+      str = w2->WM->text();
+      if ( !str.isEmpty() ) commandLine->appendWM( str );
+      if ( w2->windowWidth->value() && w2->windowHeight->value() )
+          commandLine->appendWindowSize( w2->windowWidth->value(), w2->windowHeight->value() );
+    };
+  str = w1->sandboxType->currentText();
+  if ( !str.isEmpty() ) commandLine->appendSandboxType( str );
+  str = w1->command->text();
+  if      ( w1->session->isChecked() ) commandLine->appendSession();
+  else if ( w1->execute->isChecked() ) commandLine->appendCommand( str );
+
+  return commandLine->getList();
 }

@@ -108,6 +108,11 @@ void ElemProcess::runJob()
   name = item->text();  // for use real Job name
   settings.beginGroup(name);
   runInTerm = settings.value("RunInTerm", QVariant()).toBool();
+  customTerminal = settings.value("CustomTerm", QVariant()).toBool();
+  QStringList commandString;
+  QString _commandString = settings.value("TermCommand", QVariant()).toString();
+  commandString = _commandString.split(" ");
+  commandString.removeAll("");
   settings.endGroup();
 
   proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
@@ -120,15 +125,34 @@ void ElemProcess::runJob()
   if (!runInTerm)
     {
       runApp = QString("/usr/bin/sandbox");
-      cmd.append(getCommand());
+      cmd = getCommand();
     }
   else
     {
-      QStringList _cmd;
-      _cmd.append(getCommand());
+      QStringList _cmd = getCommand();
       _cmd.prepend("/usr/bin/sandbox");
-      cmd.append(_cmd.join(" "));
-      runApp = QString("/usr/bin/xdg-terminal");
+      if ( !customTerminal )
+        {
+          cmd.append(_cmd.join(" "));
+          runApp = QString("/usr/bin/xdg-terminal");
+        }
+      else
+        {
+          cmd = _cmd;
+          while ( commandString.count() > 1 )
+            {
+              cmd.prepend( commandString.takeLast() );
+            };
+          if ( !commandString.isEmpty() && !commandString.first().isEmpty() )
+            {
+              runApp = commandString.first();
+            }
+          else
+            {
+              cmd.prepend("-e");
+              runApp = QString("xterm");
+            };
+        };
     };
   //qDebug()<<runApp<<cmd.join(" ")<<name;
   start(runApp, cmd);
@@ -223,25 +247,25 @@ void ElemProcess::timerEvent(QTimerEvent *event)
 
 void ElemProcess::_commandBuild()
 {
-  if (capabilities) commandLine->appendCapabilities();
-  if (cgroups) commandLine->appendCGroups();
-  if (shred) commandLine->appendShred();
-  if (guiApp && DPI) commandLine->appendDPI(DPI);
-  if (!securityLayer.isEmpty() && session) commandLine->appendSecurityLayer(securityLayer);
-  if (mountDirs) commandLine->appendMountDirs();
-  if (guiApp) commandLine->appendGuiApp();
+  if ( capabilities ) commandLine->appendCapabilities();
+  if ( cgroups ) commandLine->appendCGroups();
+  if ( shred ) commandLine->appendShred();
+  if ( guiApp && DPI ) commandLine->appendDPI(DPI);
+  if ( !securityLayer.isEmpty() && session ) commandLine->appendSecurityLayer(securityLayer);
+  if ( mountDirs ) commandLine->appendMountDirs();
+  if ( guiApp ) commandLine->appendGuiApp();
   if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
   if ( ( guiApp || mountDirs ) && !tempDir.isEmpty() ) commandLine->appendTempDir(tempDir);
-  if (!includes.isEmpty()) commandLine->appendIncludes(includes);
-  if (guiApp)
+  if ( !includes.isEmpty() ) commandLine->appendIncludes(includes);
+  if ( guiApp )
     {
       if (!WM.isEmpty()) commandLine->appendWM(WM);
       if ( windowWidth && windowHeight )
           commandLine->appendWindowSize(windowWidth, windowHeight);
     };
-  if (!sandboxType.isEmpty()) commandLine->appendSandboxType(sandboxType);
-  if      (session) commandLine->appendSession();
-  else if (execute) commandLine->appendCommand(command);
+  if ( !sandboxType.isEmpty() ) commandLine->appendSandboxType(sandboxType);
+  if      ( session ) commandLine->appendSession();
+  else if ( execute ) commandLine->appendCommand(command);
 }
 void ElemProcess::sendMessage()
 {

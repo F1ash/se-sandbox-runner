@@ -18,6 +18,7 @@ CommonSet::CommonSet(QWidget *parent) :
   guiApp->setToolTip("Create an X based Sandbox for gui apps, \ntemporary files for $HOME and /tmp, \nsecondary Xserver");
   runInTerm = new QCheckBox("Run in terminal", this);
   runInTerm->setToolTip("Run in terminal\n(The process can be not controlled by application).");
+  connect(runInTerm, SIGNAL(toggled(bool)), this, SLOT(showTerminalChioseWdg(bool)));
   shred = new QCheckBox("Shred", this);
   shred->setToolTip("Shred temporary files created \nin $HOME and /tmp,\nbefore deleting.");
   capabilities = new QCheckBox("Capabilities", this);
@@ -42,10 +43,9 @@ CommonSet::CommonSet(QWidget *parent) :
   gridLayout->addWidget(checkTimeout, 6, 2);
   gridLayout->addWidget(execute, 7, 0);
   gridLayout->addWidget(session, 7, 2);
-  gridLayout->addWidget(cmdWidget, 8, 0, 9, 5);
+  gridLayout->addWidget(commonWdg, 8, 0, 9, 5);
 
   setLayout(gridLayout);
-  //setFocusProxy(nameEdit);
 }
 CommonSet::~CommonSet()
 {
@@ -53,6 +53,8 @@ CommonSet::~CommonSet()
   disconnect(execute, SIGNAL(toggled(bool)), this, SLOT(enableCommand(bool)));
   disconnect(session, SIGNAL(toggled(bool)), this, SLOT(enableSLevel(bool)));
   disconnect(selectFile, SIGNAL(clicked()), this, SLOT(setCommandPath()));
+  disconnect(runInTerm, SIGNAL(toggled(bool)), this, SLOT(showTerminalChioseWdg(bool)));
+  disconnect(customTerminal, SIGNAL(toggled(bool)), termCommand, SLOT(setVisible(bool)));
 
   delete guiApp;
   guiApp = 0;
@@ -90,6 +92,22 @@ CommonSet::~CommonSet()
   cmdWidget = 0;
   delete securityLayer;
   securityLayer = 0;
+  delete runInTermLabel;
+  runInTermLabel = 0;
+  delete defaultTerminal;
+  defaultTerminal = 0;
+  delete customTerminal;
+  customTerminal = 0;
+  delete termCommand;
+  termCommand = 0;
+  delete termChoiseLayout;
+  termChoiseLayout = 0;
+  delete termChoiseWidget;
+  termChoiseWidget = 0;
+  delete commonCmdLayout;
+  commonCmdLayout = 0;
+  delete commonWdg;
+  commonWdg = 0;
   delete gridLayout;
   gridLayout = 0;
 }
@@ -139,6 +157,24 @@ void CommonSet::initTimeoutWidget()
   checkTimeout->setSingleStep(1);
   checkTimeout->setValue(TIMEOUT);
 }
+void CommonSet::initTermChoiseWdg()
+{
+  termChoiseWidget = new QWidget(this);
+  termChoiseLayout = new QVBoxLayout();
+  runInTermLabel = new QLabel("Run in Terminal:", this);
+  defaultTerminal = new QRadioButton("use xdg-terminal util", this);
+  customTerminal = new QRadioButton("use custom terminal command (Recommended)", this);
+  termCommand = new QLineEdit(this);
+  termCommand->setVisible(false);
+  termCommand->setPlaceholderText("konsole --nofork -e");
+  termChoiseLayout->addWidget(runInTermLabel);
+  termChoiseLayout->addWidget(defaultTerminal);
+  termChoiseLayout->addWidget(customTerminal);
+  termChoiseLayout->addWidget(termCommand);
+  termChoiseWidget->setLayout(termChoiseLayout);
+  termChoiseWidget->setVisible(false);
+  connect(customTerminal, SIGNAL(toggled(bool)), termCommand, SLOT(setVisible(bool)));
+}
 void CommonSet::enableCommand(bool b)
 {
   if (b)
@@ -167,8 +203,10 @@ void CommonSet::enableSLevel(bool b)
 }
 void CommonSet::initCmdWidget()
 {
+  commonWdg = new QWidget(this);
   cmdWidget = new QWidget(this);
-  cmdLayout = new QHBoxLayout(this);
+  commonCmdLayout = new QVBoxLayout();
+  cmdLayout = new QHBoxLayout();
   command = new QLineEdit(this);
   command->setPlaceholderText("Enter command or path");
   selectFile = new QPushButton(QIcon::fromTheme("edit-find"), "", this);
@@ -177,11 +215,20 @@ void CommonSet::initCmdWidget()
   cmdLayout->addWidget(selectFile);
   cmdWidget->setLayout(cmdLayout);
   connect(selectFile, SIGNAL(clicked()), this, SLOT(setCommandPath()));
+
+  commonCmdLayout->addWidget(cmdWidget);
+  initTermChoiseWdg();
+  commonCmdLayout->addWidget(termChoiseWidget);
+  commonWdg->setLayout(commonCmdLayout);
 }
 void CommonSet::setCommandPath()
 {
   QString s = QFileDialog::getOpenFileName(this, "Command Path", "~" );
   command->setText(s);
+}
+void CommonSet::showTerminalChioseWdg(bool b)
+{
+  termChoiseWidget->setVisible(b);
 }
 
 QString CommonSet::get_Job_Name() const

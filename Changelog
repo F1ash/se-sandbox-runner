@@ -1,2 +1,7 @@
 v.1.0 :
 release accomplish;
+
+v.1.2 :
+added terminal choise;
+added display command in Job Settings;
+improved close Event & some improvements;

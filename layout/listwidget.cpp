@@ -48,7 +48,8 @@ void JobList::jobItemClicked(const QPoint &pos)
   _item = itemAt(pos);
   if (_item==0)
     {
-      QMessageBox::information(this, QString("Info"), QString("Item not exist."));
+      clearSelection();
+      //QMessageBox::information(this, QString("Info"), QString("Item not exist."));
       return;
     };
   //qDebug()<<_item->text()<<" Job detected";

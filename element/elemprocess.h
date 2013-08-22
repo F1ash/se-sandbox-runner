@@ -49,6 +49,7 @@ private:
 
     bool guiApp;
     bool runInTerm;
+    bool customTerminal;
     bool cgroups;
     bool capabilities;
     bool shred;

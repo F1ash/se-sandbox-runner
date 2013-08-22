@@ -33,6 +33,9 @@ public:
     QRadioButton *session;
     QLineEdit *command;
     QSpinBox *checkTimeout;
+    QRadioButton *defaultTerminal;
+    QRadioButton *customTerminal;
+    QLineEdit *termCommand;
 
 signals:
 
@@ -42,8 +45,13 @@ private:
     QLabel *typeLabel;
     QLabel *timeoutLabel;
     QPushButton *selectFile;
+    QWidget *commonWdg;
+    QVBoxLayout *commonCmdLayout;
+    QLabel *runInTermLabel;
     QWidget *cmdWidget;
     QHBoxLayout *cmdLayout;
+    QWidget *termChoiseWidget;
+    QVBoxLayout *termChoiseLayout;
 
 public slots:
     QString get_Job_Name() const;
@@ -55,10 +63,12 @@ private slots:
     void initSLevelBox();
     void initRadioButtons();
     void initTimeoutWidget();
+    void initTermChoiseWdg();
     void enableCommand(bool b);
     void enableSLevel(bool);
     void initCmdWidget();
     void setCommandPath();
+    void showTerminalChioseWdg(bool);
 };
 
 #endif

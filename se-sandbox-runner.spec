@@ -1,7 +1,7 @@
 %define cmake_build_dir build-cmake
 
 Name: se-sandbox-runner
-Version: 1.0
+Version: 1.2
 Release: 1%{?dist}
 Summary: Qt-wrap for SELinux Sandbox
 Group: Applications/System
@@ -53,5 +53,8 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Thu Aug 22 2013 Fl@sh <kaperang07@gmail.com> - 1.2-1
+- version updated;
+
 * Sat Jul 20 2013 Fl@sh <kaperang07@gmail.com> - 1.0-1
 - Initial build

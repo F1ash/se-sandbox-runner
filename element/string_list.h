@@ -1,3 +1,6 @@
+#ifndef STRING_H
+#define STRING_H
+
 #include <QStringList>
 
 class String : public QObject
@@ -30,3 +33,5 @@ public slots:
     void appendSession();
 
 };
+
+#endif

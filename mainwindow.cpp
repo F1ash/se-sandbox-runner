@@ -10,7 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
   initTrayIcon();
   initJobWidget();
   initToolBar();
-  wait_thread = 0;
+  wait_thread = new Wait(this);
+  connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
 }
 MainWindow::~MainWindow()
 {
@@ -28,6 +29,10 @@ MainWindow::~MainWindow()
   disconnect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   disconnect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
   disconnect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
+  disconnect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+
+  delete wait_thread;
+  wait_thread = 0;
 
   delete trayIcon;
   trayIcon = 0;
@@ -41,7 +46,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
   settings.setValue("Geometry", saveGeometry());
   settings.setValue("ToolBarArea", toolBarArea(toolBar));
   settings.sync();
-  if ( runningJobsExist() )
+  if ( runningJobsExist() && !wait_thread->isRunning() && !wait_thread->isFinished() )
     {
       QString q;
       q.append("Running Jobs are exist.\nKill it at exit?");
@@ -51,8 +56,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
           if ( answer == QMessageBox::Yes )
             {
               jobWidget->setEnabled(false);
-              Wait *wait_thread = new Wait(this);
-              connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+              toolBar->setEnabled(false);
               wait_thread->setWdgReference(jobWidget);
               wait_thread->start();
             };
@@ -60,16 +64,12 @@ void MainWindow::closeEvent(QCloseEvent *ev)
           return;
         };
     };
-  ev->accept();
+  if ( !wait_thread->isRunning() || wait_thread->isFinished() )
+    ev->accept();
+  else ev->ignore();
 }
 void MainWindow::closeEvent()
 {
-  if ( wait_thread )
-    {
-      disconnect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
-      delete wait_thread;
-      wait_thread = 0;
-    };
   this->close();
 }
 void MainWindow::initTrayIcon()
