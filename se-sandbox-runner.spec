@@ -2,7 +2,7 @@
 
 Name: se-sandbox-runner
 Version: 1.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Qt-wrap for SELinux Sandbox
 Group: Applications/System
 License: GPLv2+
@@ -14,8 +14,8 @@ BuildRequires: gcc-c++ qt4-devel desktop-file-utils cmake
 
 %description
 Qt-wrap for SELinux Sandbox.
-Application run and control the configured jobs, running into sandbox.
-Job settings restores in application`s config.
+This application runs and controls the configured jobs, running in a sandbox.
+Job settings are saved in the application's configuration.
 
 %prep
 %setup -q
@@ -53,6 +53,10 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri Aug 23 2013 Fl@sh <kaperang07@gmail.com> - 1.2-2
+- fixed description;
+- release updated
+
 * Thu Aug 22 2013 Fl@sh <kaperang07@gmail.com> - 1.2-1
 - version updated;
 

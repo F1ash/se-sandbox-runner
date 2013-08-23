@@ -47,25 +47,6 @@ private:
     int waitTimerId;
     int timerId;
 
-    bool guiApp;
-    bool runInTerm;
-    bool customTerminal;
-    bool cgroups;
-    bool capabilities;
-    bool shred;
-    QString securityLayer;
-    QString sandboxType;
-    bool execute;
-    bool session;
-    QString command;
-    int DPI;
-    QString WM;
-    int windowHeight;
-    int windowWidth;
-    QString includes;
-    bool mountDirs;
-    QString tempDir;
-    QString homeDir;
     String *commandLine;
     int checkTimeout;
     int _diff;
@@ -77,7 +58,6 @@ private slots:
     void setUnAvailableItemBrush();
     void setProcessState(bool status);
     void timerEvent(QTimerEvent *);
-    void _commandBuild();
     void sendMessage();
 };
 

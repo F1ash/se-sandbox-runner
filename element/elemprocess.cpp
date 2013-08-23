@@ -38,28 +38,46 @@ void ElemProcess::setItemReference(QListWidgetItem *i)
 QStringList ElemProcess::getCommand()
 {
   settings.beginGroup(name);
-  guiApp = settings.value("GuiApp", QVariant()).toBool();
-  runInTerm = settings.value("RunInTerm", QVariant()).toBool();
-  cgroups = settings.value("CGroups", QVariant()).toBool();
-  capabilities = settings.value("Capabilities", QVariant()).toBool();
-  shred = settings.value("Shred", QVariant()).toBool();
-  securityLayer = settings.value("SLeyer", QVariant()).toString();
-  sandboxType = settings.value("SType", QVariant()).toString();
-  execute = settings.value("Execute", QVariant()).toBool();
-  session = settings.value("Session", QVariant()).toBool();
-  command = settings.value("Command", QVariant()).toString();
+  bool guiApp = settings.value("GuiApp", QVariant()).toBool();
+  bool cgroups = settings.value("CGroups", QVariant()).toBool();
+  bool capabilities = settings.value("Capabilities", QVariant()).toBool();
+  bool shred = settings.value("Shred", QVariant()).toBool();
+  QString securityLayer = settings.value("SLeyer", QVariant()).toString();
+  QString sandboxType = settings.value("SType", QVariant()).toString();
+  bool execute = settings.value("Execute", QVariant()).toBool();
+  bool session = settings.value("Session", QVariant()).toBool();
+  QString command = settings.value("Command", QVariant()).toString();
   checkTimeout = settings.value("TimeOut", QVariant(10)).toInt();
-  DPI = settings.value("DPI", QVariant()).toInt();
-  WM = settings.value("WM", QVariant()).toString();
-  windowHeight = settings.value("wHeight", QVariant()).toInt();
-  windowWidth = settings.value("wWidth", QVariant()).toInt();
-  includes = settings.value("Includes", QVariant()).toString();
-  mountDirs = settings.value("Mount", QVariant()).toBool();
-  tempDir = settings.value("TempDir", QVariant()).toString();
-  homeDir = settings.value("HomeDir", QVariant()).toString();
+  int DPI = settings.value("DPI", QVariant()).toInt();
+  QString WM = settings.value("WM", QVariant()).toString();
+  int windowHeight = settings.value("wHeight", QVariant()).toInt();
+  int windowWidth = settings.value("wWidth", QVariant()).toInt();
+  QString includes = settings.value("Includes", QVariant()).toString();
+  bool mountDirs = settings.value("Mount", QVariant()).toBool();
+  QString tempDir = settings.value("TempDir", QVariant()).toString();
+  QString homeDir = settings.value("HomeDir", QVariant()).toString();
   settings.endGroup();
   commandLine->clear();
-  _commandBuild();
+  // command building
+  if ( capabilities ) commandLine->appendCapabilities();
+  if ( cgroups ) commandLine->appendCGroups();
+  if ( shred ) commandLine->appendShred();
+  if ( guiApp && DPI ) commandLine->appendDPI(DPI);
+  if ( !securityLayer.isEmpty() && session ) commandLine->appendSecurityLayer(securityLayer);
+  if ( mountDirs ) commandLine->appendMountDirs();
+  if ( guiApp ) commandLine->appendGuiApp();
+  if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
+  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty() ) commandLine->appendTempDir(tempDir);
+  if ( !includes.isEmpty() ) commandLine->appendIncludes(includes);
+  if ( guiApp )
+    {
+      if (!WM.isEmpty()) commandLine->appendWM(WM);
+      if ( windowWidth && windowHeight )
+          commandLine->appendWindowSize(windowWidth, windowHeight);
+    };
+  if ( !sandboxType.isEmpty() ) commandLine->appendSandboxType(sandboxType);
+  if      ( session ) commandLine->appendSession();
+  else if ( execute ) commandLine->appendCommand(command);
   return commandLine->getList();
 }
 void ElemProcess::appendChildren()
@@ -107,8 +125,8 @@ void ElemProcess::runJob()
 {
   name = item->text();  // for use real Job name
   settings.beginGroup(name);
-  runInTerm = settings.value("RunInTerm", QVariant()).toBool();
-  customTerminal = settings.value("CustomTerm", QVariant()).toBool();
+  bool runInTerm = settings.value("RunInTerm", QVariant()).toBool();
+  bool customTerminal = settings.value("CustomTerm", QVariant()).toBool();
   QStringList commandString;
   QString _commandString = settings.value("TermCommand", QVariant()).toString();
   commandString = _commandString.split(" ");
@@ -244,29 +262,6 @@ void ElemProcess::timerEvent(QTimerEvent *event)
          };
      };
  }
-
-void ElemProcess::_commandBuild()
-{
-  if ( capabilities ) commandLine->appendCapabilities();
-  if ( cgroups ) commandLine->appendCGroups();
-  if ( shred ) commandLine->appendShred();
-  if ( guiApp && DPI ) commandLine->appendDPI(DPI);
-  if ( !securityLayer.isEmpty() && session ) commandLine->appendSecurityLayer(securityLayer);
-  if ( mountDirs ) commandLine->appendMountDirs();
-  if ( guiApp ) commandLine->appendGuiApp();
-  if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
-  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty() ) commandLine->appendTempDir(tempDir);
-  if ( !includes.isEmpty() ) commandLine->appendIncludes(includes);
-  if ( guiApp )
-    {
-      if (!WM.isEmpty()) commandLine->appendWM(WM);
-      if ( windowWidth && windowHeight )
-          commandLine->appendWindowSize(windowWidth, windowHeight);
-    };
-  if ( !sandboxType.isEmpty() ) commandLine->appendSandboxType(sandboxType);
-  if      ( session ) commandLine->appendSession();
-  else if ( execute ) commandLine->appendCommand(command);
-}
 void ElemProcess::sendMessage()
 {
   QByteArray _data;

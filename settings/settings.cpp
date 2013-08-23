@@ -146,13 +146,14 @@ void SettingsDialog::saveJob()
   else if ( !groups.contains(name) && !newbe )
     {
       settings.remove(previousName);
-      QString _fn = QDir::homePath();
-      _fn.append("/.config/se-sandbox-runner/");
-      _fn.append(QString("%1.included").arg(previousName));
+      QStringList fullPath = settings.fileName().split(QDir::separator());
+      fullPath.removeLast();
+      fullPath.append(QString("%1.included").arg(previousName));
+      QString _fn = fullPath.join(QDir::separator());
       QFile f;
       f.setFileName(_fn);
       f.remove();
-      qDebug()<<previousName<<"included deleted";
+      //qDebug()<<previousName<<"included deleted";
       saveParameters();
       close();
     }
@@ -178,7 +179,7 @@ void SettingsDialog::initParameters()
   w1->cgroups->setChecked( settings.value("CGroups", QVariant()).toBool() );
   w1->guiApp->setChecked( settings.value("GuiApp", QVariant()).toBool() );
   w1->runInTerm->setChecked( settings.value("RunInTerm", QVariant()).toBool() );
-  w1->defaultTerminal->setChecked( settings.value("XDG-Util-Term", QVariant()).toBool() );
+  w1->defaultTerminal->setChecked( settings.value("XDG-Utility-Term", QVariant()).toBool() );
   w1->customTerminal->setChecked( settings.value("CustomTerm", QVariant()).toBool() );
   w1->termCommand->setText( settings.value("TermCommand", QVariant()).toString() );
   w1->capabilities->setChecked( settings.value("Capabilities", QVariant()).toBool() );
@@ -208,7 +209,7 @@ void SettingsDialog::saveParameters()
   settings.setValue("CGroups", QVariant(w1->cgroups->isChecked()));
   settings.setValue("GuiApp", QVariant(w1->guiApp->isChecked()));
   settings.setValue("RunInTerm", QVariant(w1->runInTerm->isChecked()));
-  settings.setValue("XDG-Util-Term", QVariant(w1->defaultTerminal->isChecked()));
+  settings.setValue("XDG-Utility-Term", QVariant(w1->defaultTerminal->isChecked()));
   settings.setValue("CustomTerm", QVariant(w1->customTerminal->isChecked()));
   settings.setValue("TermCommand", QVariant(w1->termCommand->text()));
   settings.setValue("Capabilities", QVariant(w1->capabilities->isChecked()));
