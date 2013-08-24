@@ -62,9 +62,11 @@ void IncludeSet::addDirToList()
 {
   QString dir = QFileDialog::getExistingDirectory(this, "Include directory", "~");
   if ( !dir.isEmpty() )
-    if ( !dir.endsWith(QDir::separator()) ) dir.append(QDir::separator());
-    fileList->addItem(dir);
-    removeDuplicates();
+    {
+      if ( !dir.endsWith(QDir::separator()) ) dir.append(QDir::separator());
+      fileList->addItem(dir);
+      removeDuplicates();
+    };
 }
 void IncludeSet::delPathFromList()
 {
