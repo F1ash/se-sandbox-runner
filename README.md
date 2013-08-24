@@ -11,4 +11,5 @@ Therefore it's necessary to increase children processes checking timeout.
 
 * Since Fedora 18 for complete application operating
 you need to enable Sandbox Policy by executing the following as root
+(after selinux-policy update too)
 # semodule -e sandbox

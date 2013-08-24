@@ -6,3 +6,7 @@ added terminal choise;
 added display command in Job Settings;
 improved close Event;
 fixed spec Description & some improvements;
+
+v.1.2.1 :
+fixed the addition empty directory path in Include_Settings;
+improved README;
