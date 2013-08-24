@@ -52,7 +52,7 @@ fi
 %posttrans
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
-%changelogchangelog
+%changelog
 * Sat Aug 24 2013 Fl@sh <kaperang07@gmail.com> - 1.2.1-1
 - some fixes
 
