@@ -50,6 +50,7 @@ public slots:
 private slots:
     void initTabWidget();
     void initButtons();
+    QString includesFileName(QString) const;
     void initParameters();
     void saveJob();
     void cancelJob();

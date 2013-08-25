@@ -105,6 +105,13 @@ void SettingsDialog::initButtons()
   connect(ok, SIGNAL(clicked()), this, SLOT(saveJob()));
   connect(cancel, SIGNAL(clicked()), this, SLOT(cancelJob()));
 }
+QString SettingsDialog::includesFileName(QString s) const
+{
+  QStringList fullPath = settings.fileName().split(QDir::separator());
+  fullPath.removeLast();
+  fullPath.append(QString("%1.included").arg(s));
+  return fullPath.join(QDir::separator());
+}
 void SettingsDialog::setJobItem(QListWidgetItem *i)
 {
   item = i;
@@ -114,14 +121,14 @@ void SettingsDialog::setJobItem(QListWidgetItem *i)
   if (name!=QString("<noname>"))
     {
       w1->set_Job_Name(name);
-      w3->set_JobName(name);
+      w3->set_FileName(includesFileName(name));
       initParameters();
     };
 }
 void SettingsDialog::saveJob()
 {
   name = w1->get_Job_Name();
-  w3->set_JobName(name);
+  w3->set_FileName(includesFileName(name));
   //qDebug()<<"ok"<<name;
   QStringList groups = settings.childGroups();
   if ( name.isEmpty() ) QMessageBox::information(this, QString("Info"), QString("JobName is empty."));
@@ -146,12 +153,8 @@ void SettingsDialog::saveJob()
   else if ( !groups.contains(name) && !newbe )
     {
       settings.remove(previousName);
-      QStringList fullPath = settings.fileName().split(QDir::separator());
-      fullPath.removeLast();
-      fullPath.append(QString("%1.included").arg(previousName));
-      QString _fn = fullPath.join(QDir::separator());
       QFile f;
-      f.setFileName(_fn);
+      f.setFileName(includesFileName(previousName));
       f.remove();
       //qDebug()<<previousName<<"included deleted";
       saveParameters();

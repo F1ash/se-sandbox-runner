@@ -26,7 +26,7 @@ private:
     QPushButton *delPath;
 
 public slots:
-    void set_JobName(const QString);
+    void set_FileName(const QString);
     QStringList get_Included_Path() const;
     const QString get_FileName();
     void setIncludesList(QString s);

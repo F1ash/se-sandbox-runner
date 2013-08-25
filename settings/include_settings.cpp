@@ -45,12 +45,9 @@ IncludeSet::~IncludeSet()
   delete commonLayout;
   commonLayout = 0;
 }
-void IncludeSet::set_JobName(const QString s)
+void IncludeSet::set_FileName(const QString s)
 {
-  fileName = QDir::homePath();
-  fileName.append("/.config/se-sandbox-runner/");
-  fileName.append(QString("%1.included").arg(s));
-  //qDebug()<<fileName<<s<<"Incl::setJobName()";
+  fileName = s;
 }
 void IncludeSet::addFilesToList()
 {
