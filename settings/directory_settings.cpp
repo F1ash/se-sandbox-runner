@@ -1,6 +1,6 @@
 #include "directory_settings.h"
 
-/* [[-M | -X]  -H homedir -T tempdir ] */
+/* [-l level ] [[-M | -X]  -H homedir -T tempdir ] */
 
 DirectorySet::DirectorySet(QWidget *parent) :
     QWidget(parent)
@@ -12,25 +12,33 @@ DirectorySet::DirectorySet(QWidget *parent) :
   mountDirs->setToolTip("Create a Sandbox with temporary files \nfor $HOME and /tmp.");
   guiApp = new QCheckBox("GUI App", this);
   guiApp->setToolTip("Create an X based Sandbox for gui apps, \ntemporary files for $HOME and /tmp, \nsecondary Xserver");
+  securityLevel = new QCheckBox("Set the Security Level", this);
+  selinuxLabel = new QLineEdit(this);
+  selinuxLabel->setPlaceholderText("s0:c111,c222");
+  selinuxLabel->setEnabled(false);
   initTempDirWidget();
   initHomeDirWidget();
   commonLayout->addWidget(mountDirs, 0, 0);
   commonLayout->addWidget(guiApp, 0, 1);
-  commonLayout->addWidget(tempLabel, 1, 0, 1, 2);
-  commonLayout->addWidget(tempDirWdg, 2, 0, 4, 2);
-  commonLayout->addWidget(homeLabel, 5, 0, 5, 2);
-  commonLayout->addWidget(homeDirWdg, 6, 0, 7, 2);
+  commonLayout->addWidget(securityLevel, 1, 0);
+  commonLayout->addWidget(selinuxLabel, 1, 1);
+  commonLayout->addWidget(tempLabel, 2, 0, 2, 2);
+  commonLayout->addWidget(tempDirWdg, 3, 0, 5, 2);
+  commonLayout->addWidget(homeLabel, 6, 0, 6, 2);
+  commonLayout->addWidget(homeDirWdg, 7, 0, 8, 2);
 
   setLayout(commonLayout);
+  connect(guiApp, SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
   connect(mountDirs, SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
-  connect(guiApp,    SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
-  connect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
+  connect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
+  connect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
 }
 DirectorySet::~DirectorySet()
 {
-  disconnect(mountDirs, SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
-  disconnect(guiApp,    SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
   disconnect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
+  disconnect(mountDirs, SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
+  disconnect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
+  disconnect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
   disconnect(getTempDir, SIGNAL(clicked()), this, SLOT(setTempDir()));
   disconnect(getHomeDir, SIGNAL(clicked()), this, SLOT(setHomeDir()));
 
@@ -38,6 +46,10 @@ DirectorySet::~DirectorySet()
   mountDirs = 0;
   delete guiApp;
   guiApp = 0;
+  delete securityLevel;
+  securityLevel = 0;
+  delete selinuxLabel;
+  selinuxLabel = 0;
   delete tempLabel;
   tempLabel = 0;
   delete homeLabel;
@@ -115,8 +127,9 @@ QString DirectorySet::get_Mount() const
 }
 void DirectorySet::setWorkDirsState()
 {
-  bool b;
-  b = ( guiApp->isChecked() || mountDirs->isChecked() || sessionUsed );
+  // this directories strictly used when secLevel is enabled
+  // or mountDir enabled
+  bool b = ( securityLevel->isChecked() || mountDirs->isChecked() );
   tempDirWdg->setEnabled(b);
   homeDirWdg->setEnabled(b);
 }
@@ -129,8 +142,22 @@ void DirectorySet::gui_StateChanged(bool b)
 {
   emit guiStateChanged(b);
 }
-void DirectorySet::changeDirsState(bool b)
+void DirectorySet::setSELinuxLabelState(bool b)
 {
-  sessionUsed = b;
+  if ( sessionUsed && !securityLevel->isChecked() )
+    {
+      securityLevel->setChecked(Qt::Checked);
+      selinuxLabel->setEnabled(true);
+    }
+  else
+    {
+      selinuxLabel->setEnabled(b);
+      securityLevel->setCheckState( (b) ? Qt::Checked : Qt::Unchecked );
+    };
   setWorkDirsState();
+}
+void DirectorySet::check_SecLevelState()
+{
+  if ( sessionUsed && securityLevel->isChecked() )
+    QMessageBox::information(this, "Info", "\"Security Level\" can't be changed\nbecause \"Session\" key is enabled.");
 }

@@ -20,7 +20,7 @@ public slots:
     void appendCGroups();
     void appendShred();
     void appendDPI(int i);
-    void appendSecurityLayer(QString &s);
+    void appendSecurityLevel(QString &s);
     void appendWM(QString &s);
     void appendWindowSize(int w, int h);
     void appendIncludes(QString &s);

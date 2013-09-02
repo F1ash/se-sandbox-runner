@@ -28,7 +28,6 @@ public:
     QCheckBox *shred;
     QCheckBox *capabilities;
     QComboBox *sandboxType;
-    QComboBox *securityLayer;
     QRadioButton *execute;
     QRadioButton *session;
     QLineEdit *command;
@@ -38,10 +37,10 @@ public:
     QLineEdit *termCommand;
 
 signals:
+    void securityLevelState(bool);
 
 private:
     QGridLayout *gridLayout;
-    QLabel *secLabel;
     QLabel *typeLabel;
     QLabel *timeoutLabel;
     QPushButton *selectFile;
@@ -60,7 +59,6 @@ public slots:
 private slots:
     void initTypeBox();
     void setTypeToolTip(QString);
-    void initSLevelBox();
     void initRadioButtons();
     void initTimeoutWidget();
     void initTermChoiseWdg();

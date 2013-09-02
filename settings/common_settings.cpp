@@ -1,6 +1,6 @@
 #include "common_settings.h"
 
-/* [-C] [-c] [-s] [-l level ] [-X] [ -t type ] [cmd || -S ] */
+/* [-C] [-c] [-s] [-X] [ -t type ] [cmd || -S ] */
 
 CommonSet::CommonSet(QWidget *parent) :
     QWidget(parent)
@@ -24,7 +24,6 @@ CommonSet::CommonSet(QWidget *parent) :
   capabilities = new QCheckBox("Capabilities", this);
   capabilities->setToolTip("Use capabilities \nwithin the sandbox.");
   initTypeBox();
-  initSLevelBox();
   initRadioButtons();
   initCmdWidget();
   initTimeoutWidget();
@@ -36,13 +35,11 @@ CommonSet::CommonSet(QWidget *parent) :
   gridLayout->addWidget(shred, 3, 0);
   gridLayout->addWidget(capabilities, 3, 2);
   gridLayout->addWidget(typeLabel, 4, 0);
-  gridLayout->addWidget(secLabel, 4, 2);
   gridLayout->addWidget(sandboxType, 5, 0);
-  gridLayout->addWidget(securityLayer, 5, 2);
-  gridLayout->addWidget(timeoutLabel, 6, 0);
-  gridLayout->addWidget(checkTimeout, 6, 2);
-  gridLayout->addWidget(execute, 7, 0);
-  gridLayout->addWidget(session, 7, 2);
+  gridLayout->addWidget(timeoutLabel, 4, 2);
+  gridLayout->addWidget(checkTimeout, 5, 2);
+  gridLayout->addWidget(execute, 6, 0);
+  gridLayout->addWidget(session, 6, 2);
   gridLayout->addWidget(commonWdg, 8, 0, 9, 5);
 
   setLayout(gridLayout);
@@ -72,8 +69,6 @@ CommonSet::~CommonSet()
   sandboxType = 0;
   delete typeLabel;
   typeLabel = 0;
-  delete secLabel;
-  secLabel = 0;
   delete execute;
   execute = 0;
   delete session;
@@ -90,8 +85,6 @@ CommonSet::~CommonSet()
   cmdLayout = 0;
   delete cmdWidget;
   cmdWidget = 0;
-  delete securityLayer;
-  securityLayer = 0;
   delete runInTermLabel;
   runInTermLabel = 0;
   delete defaultTerminal;
@@ -120,7 +113,7 @@ void CommonSet::initTypeBox()
   sandboxType->addItem("Default", "sandbox_t");
   sandboxType->addItem("No Network Access", "sandbox_min_t");
   sandboxType->addItem("Printer Ports", "sandbox_x_t");
-  sandboxType->addItem("Ports required for web browsing","sandbox_web_t");
+  sandboxType->addItem("Ports required for Web","sandbox_web_t");
   sandboxType->addItem("All network ports", "sandbox_net_t");
   connect(sandboxType, SIGNAL(currentIndexChanged(QString)), this, SLOT(setTypeToolTip(QString)));
 }
@@ -128,20 +121,13 @@ void CommonSet::setTypeToolTip(QString s)
 {
   sandboxType->setToolTip(QString("Alternate sandbox type:\n%1\n(%2)").arg(s).arg(sandboxType->itemData(sandboxType->currentIndex()).toString()));
 }
-void CommonSet::initSLevelBox()
-{
-  secLabel = new QLabel("Secuity Level", this);
-  securityLayer = new QComboBox(this);
-  securityLayer->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-  securityLayer->setToolTip("MLS/MCS Security Level");
-  securityLayer->addItem("MLS", "MLS");
-  securityLayer->addItem("MCS", "MCS");
-}
 void CommonSet::initRadioButtons()
 {
   execute = new QRadioButton("Command", this);
+  execute->setAutoExclusive(true);
   execute->setToolTip("Run  the <Command> application \nwithin a tightly \nconfined SELinux domain.");
   session = new QRadioButton("Session", this);
+  session->setAutoExclusive(true);
   session->setToolTip("Run a full desktop session, \nRequires level, \nand home and tmpdir.");
 
   connect(execute, SIGNAL(toggled(bool)), this, SLOT(enableCommand(bool)));
@@ -149,7 +135,7 @@ void CommonSet::initRadioButtons()
 }
 void CommonSet::initTimeoutWidget()
 {
-  timeoutLabel = new QLabel("Timeout for check child processes", this);
+  timeoutLabel = new QLabel("Timeout for check\nchild processes", this);
   checkTimeout = new QSpinBox(this);
   checkTimeout->setToolTip("If the task is not killed application,\nit means that the application\ndoes not have time to identify all child processes.\nTry to increase the timeout for.");
   checkTimeout->setMaximum(10000);
@@ -177,29 +163,14 @@ void CommonSet::initTermChoiseWdg()
 }
 void CommonSet::enableCommand(bool b)
 {
-  if (b)
-    {
-      securityLayer->setEnabled(!b);
-      cmdWidget->setEnabled(b);
-    }
-  else
-    {
-      securityLayer->setEnabled(b);
-      cmdWidget->setEnabled(!b);
-    };
+  cmdWidget->setEnabled(b);
+  session->setChecked(!b);
 }
 void CommonSet::enableSLevel(bool b)
 {
-  if (b)
-    {
-      securityLayer->setEnabled(b);
-      cmdWidget->setEnabled(!b);
-    }
-  else
-    {
-      securityLayer->setEnabled(!b);
-      cmdWidget->setEnabled(b);
-    };
+  execute->setChecked(!b);
+  //enable SLevel, homeDir, tempDir
+  emit securityLevelState(b);
 }
 void CommonSet::initCmdWidget()
 {
@@ -230,7 +201,6 @@ void CommonSet::showTerminalChioseWdg(bool b)
 {
   termChoiseWidget->setVisible(b);
 }
-
 QString CommonSet::get_Job_Name() const
 {
   return nameEdit->text();

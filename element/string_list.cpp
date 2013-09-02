@@ -33,7 +33,7 @@ void String::appendCapabilities()
 {
   list.append("-C");
 }
-void String::appendSecurityLayer(QString &s)
+void String::appendSecurityLevel(QString &s)
 {
   list.append("-l");
   list.append(s);

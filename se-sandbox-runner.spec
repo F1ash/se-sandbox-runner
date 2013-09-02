@@ -1,9 +1,9 @@
 %define cmake_build_dir build-cmake
 
 Name: se-sandbox-runner
-Version: 1.2.1
+Version: 1.3.2
 Release: 1%{?dist}
-Summary: Qt-wrap for SELinux Sandbox
+Summary: Qt wrapper for SELinux Sandbox
 Group: Applications/System
 License: GPLv2+
 Source0: https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
@@ -13,7 +13,7 @@ Requires: qt4 oxygen-icon-theme xdg-utils policycoreutils-sandbox
 BuildRequires: gcc-c++ qt4-devel desktop-file-utils cmake
 
 %description
-Qt-wrap for SELinux Sandbox.
+Qt wrapper for SELinux Sandbox.
 This application runs and controls the configured jobs, running in a sandbox.
 Job settings are saved in the application's configuration.
 
@@ -53,6 +53,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Sep  2 2013 Fl@sh <kaperang07@gmail.com> - 1.3.2-1
+- version updated
+
 * Sat Aug 24 2013 Fl@sh <kaperang07@gmail.com> - 1.2.1-1
 - some fixes
 

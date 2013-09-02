@@ -9,6 +9,7 @@ IncludeSet::IncludeSet(QWidget *parent) :
   setContentsMargins(1,1,1,1);
   commonLayout = new QGridLayout(this);
   commonLayout->setSpacing(1);
+  fileName = QString();
   fileList = new QListWidget(this);
   fileList->setSelectionMode(QAbstractItemView::MultiSelection);
   addFile = new QPushButton(QIcon::fromTheme("archive-insert"),"", this);
@@ -100,6 +101,7 @@ QStringList IncludeSet::get_Included_Path() const
 }
 const QString IncludeSet::get_FileName()
 {
+  if ( fileName.isEmpty() ) return QString();
   const QString res;
   QString s = get_Included_Path().join("\n");
   //qDebug()<<fileName<<s<<"Incl::get_FileName()";
@@ -113,7 +115,7 @@ const QString IncludeSet::get_FileName()
 }
 void IncludeSet::setIncludesList(QString s)
 {
-  if (s.isEmpty()) return;
+  if ( s.isEmpty() ) return;
   fileName = s;
   QFile *f = new QFile(fileName);
   if (f->exists())

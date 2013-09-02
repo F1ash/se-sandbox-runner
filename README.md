@@ -1,7 +1,7 @@
 se-sandbox-runner
 =================
 
-Qt-wrap for (SELinux) Sandbox
+Qt wrapper for (SELinux) Sandbox
 
 Known Issues:
 
@@ -10,6 +10,9 @@ the application may not detect all child processes.
 Therefore it's necessary to increase children processes checking timeout.
 
 * Since Fedora 18 for complete application operating
-you need to enable Sandbox Policy by executing the following as root
-(after selinux-policy update too)
-# semodule -e sandbox
+you need to enable Sandbox Policy by executing the following as root :
+semodule -e sandbox
+
+* If a Job has Shred enabled and you kill this running Job, then
+sandbox utility is not completed correctly, however the application tries
+to clear the used directories.

@@ -42,7 +42,7 @@ QStringList ElemProcess::getCommand()
   bool cgroups = settings.value("CGroups", QVariant()).toBool();
   bool capabilities = settings.value("Capabilities", QVariant()).toBool();
   bool shred = settings.value("Shred", QVariant()).toBool();
-  QString securityLayer = settings.value("SLeyer", QVariant()).toString();
+  QString securityLevel = settings.value("SLevel", QVariant()).toString();
   QString sandboxType = settings.value("SType", QVariant()).toString();
   bool execute = settings.value("Execute", QVariant()).toBool();
   bool session = settings.value("Session", QVariant()).toBool();
@@ -63,7 +63,7 @@ QStringList ElemProcess::getCommand()
   if ( cgroups ) commandLine->appendCGroups();
   if ( shred ) commandLine->appendShred();
   if ( guiApp && DPI ) commandLine->appendDPI(DPI);
-  if ( !securityLayer.isEmpty() && session ) commandLine->appendSecurityLayer(securityLayer);
+  if ( !securityLevel.isEmpty() && session ) commandLine->appendSecurityLevel(securityLevel);
   if ( mountDirs ) commandLine->appendMountDirs();
   if ( guiApp ) commandLine->appendGuiApp();
   if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
@@ -127,6 +127,7 @@ void ElemProcess::runJob()
   settings.beginGroup(name);
   bool runInTerm = settings.value("RunInTerm", QVariant()).toBool();
   bool customTerminal = settings.value("CustomTerm", QVariant()).toBool();
+  shred = settings.value("Shred", QVariant()).toBool();
   QStringList commandString;
   QString _commandString = settings.value("TermCommand", QVariant()).toString();
   commandString = _commandString.split(" ");
@@ -209,6 +210,16 @@ void ElemProcess::killJob()
           //qDebug() <<_pid<< ::kill(_pid, SIGZERO);
           ::kill(_pid, SIGKILL);
         };
+    };
+  if ( shred )
+    {
+      name = item->text();  // for use real Job name
+      settings.beginGroup(name);
+      QString tempDir = settings.value("TempDir", QVariant()).toString();
+      QString homeDir = settings.value("HomeDir", QVariant()).toString();
+      SettingsDialog::clean_Directory( tempDir );
+      SettingsDialog::clean_Directory( homeDir );
+      settings.endGroup();
     };
   emit processState(STOPPED);
 }

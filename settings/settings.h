@@ -8,6 +8,7 @@
 #include <QTextEdit>
 #include <QSettings>
 #include <QCloseEvent>
+#include <QProcess>
 #include "common_settings.h"
 #include "window_settings.h"
 #include "include_settings.h"
@@ -46,6 +47,7 @@ private:
 
 public slots:
     void setJobItem(QListWidgetItem *);
+    static bool clean_Directory(QString);
 
 private slots:
     void initTabWidget();
@@ -60,6 +62,11 @@ private slots:
     void set_Title_Name(QString);
     void timerEvent(QTimerEvent *);
     QStringList _commandBuild();
+    void changeSecLevelState(bool);
+    bool make_Directory(QString, QString);
+    bool make_SpecifiedDirectories();
+    bool set_SpecifiedLabel(QString);
+    bool exist_Directory(QLineEdit *obj);
 };
 
 #endif

@@ -11,3 +11,7 @@ v.1.2.1 :
 fixed the addition empty directory path in Include_Settings;
 improved README;
 some improvements;
+
+v.1.3.2 :
+fixed "Security Level" implementation;
+improved Settings for Session, Security Level, Directory;

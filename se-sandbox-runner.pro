@@ -41,4 +41,3 @@ HEADERS  += mainwindow.h\
         element/string_list.h \
         wait_thread.h
 
-LIBS     += -lprocps

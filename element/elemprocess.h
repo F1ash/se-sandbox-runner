@@ -10,6 +10,7 @@
 #include <QTimerEvent>
 #include "signal.h"
 #include "string_list.h"
+#include "settings/settings.h"
 
 #define RUNNING true
 #define STOPPED false
@@ -50,6 +51,7 @@ private:
     String *commandLine;
     int checkTimeout;
     int _diff;
+    bool shred;
 
 private slots:
     QStringList getCommand();
