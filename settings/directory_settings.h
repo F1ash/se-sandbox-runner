@@ -49,7 +49,7 @@ private slots:
     void initHomeDirWidget();
     void setTempDir();
     void setHomeDir();
-    void setWorkDirsState();
+    void setWorkDirsState(bool);
     void gui_StateChanged(bool);
     void check_SecLevelState();
 

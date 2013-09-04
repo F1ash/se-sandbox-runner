@@ -28,15 +28,17 @@ DirectorySet::DirectorySet(QWidget *parent) :
   commonLayout->addWidget(homeDirWdg, 7, 0, 8, 2);
 
   setLayout(commonLayout);
-  connect(guiApp, SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
-  connect(mountDirs, SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
+  connect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
+  connect(guiApp,    SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
+  connect(mountDirs, SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
   connect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
   connect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
 }
 DirectorySet::~DirectorySet()
 {
   disconnect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
-  disconnect(mountDirs, SIGNAL(clicked()), this, SLOT(setWorkDirsState()));
+  disconnect(guiApp,    SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
+  disconnect(mountDirs, SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
   disconnect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
   disconnect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
   disconnect(getTempDir, SIGNAL(clicked()), this, SLOT(setTempDir()));
@@ -125,18 +127,27 @@ QString DirectorySet::get_Mount() const
 {
   return (mountDirs->isChecked()) ? "-M" : "";
 }
-void DirectorySet::setWorkDirsState()
+void DirectorySet::setWorkDirsState(bool b)
 {
-  // this directories strictly used when secLevel is enabled
-  // or mountDir enabled
-  bool b = ( securityLevel->isChecked() || mountDirs->isChecked() );
-  tempDirWdg->setEnabled(b);
-  homeDirWdg->setEnabled(b);
+  // this directories strictly used when mountDir is enabled
+  // or Session used
+  if ( sessionUsed && !mountDirs->isChecked() )
+    {
+      mountDirs->setCheckState(Qt::Checked);
+      tempDirWdg->setEnabled(true);
+      homeDirWdg->setEnabled(true);
+      QMessageBox::information(this, "Info",
+        "\"Mount\" can't be changed\nbecause \"Session\" key is enabled.");
+    }
+  else
+    {
+      tempDirWdg->setEnabled(b);
+      homeDirWdg->setEnabled(b);
+    };
 }
 void DirectorySet::setGuiCheckState(int i)
 {
   guiApp->setCheckState((i) ? Qt::Checked : Qt::Unchecked);
-  setWorkDirsState();
 }
 void DirectorySet::gui_StateChanged(bool b)
 {
@@ -144,17 +155,13 @@ void DirectorySet::gui_StateChanged(bool b)
 }
 void DirectorySet::setSELinuxLabelState(bool b)
 {
-  if ( sessionUsed && !securityLevel->isChecked() )
+  if ( sessionUsed && ( !securityLevel->isChecked() || !mountDirs->isChecked() ) )
     {
-      securityLevel->setChecked(Qt::Checked);
+      securityLevel->setCheckState(Qt::Checked);
       selinuxLabel->setEnabled(true);
+      mountDirs->setChecked(true);
     }
-  else
-    {
-      selinuxLabel->setEnabled(b);
-      securityLevel->setCheckState( (b) ? Qt::Checked : Qt::Unchecked );
-    };
-  setWorkDirsState();
+  else selinuxLabel->setEnabled(b);
 }
 void DirectorySet::check_SecLevelState()
 {

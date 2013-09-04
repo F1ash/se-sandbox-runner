@@ -170,7 +170,7 @@ void CommonSet::enableSLevel(bool b)
 {
   execute->setChecked(!b);
   //enable SLevel, homeDir, tempDir
-  emit securityLevelState(b);
+  emit sessionUsed(b);
 }
 void CommonSet::initCmdWidget()
 {

@@ -1,4 +1,5 @@
 #include "settings/settings.h"
+//#include <QDebug>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
@@ -28,7 +29,7 @@ SettingsDialog::~SettingsDialog()
   disconnect(w4, SIGNAL(guiStateChanged(bool)), w1->guiApp, SLOT(setChecked(bool)));
   disconnect(ok, SIGNAL(clicked()), this, SLOT(saveJob()));
   disconnect(cancel, SIGNAL(clicked()), this, SLOT(cancelJob()));
-  disconnect(w1, SIGNAL(securityLevelState(bool)), this, SLOT(changeSecLevelState(bool)));
+  disconnect(w1, SIGNAL(sessionUsed(bool)), this, SLOT(sessionStateChanged(bool)));
 
   delete ok;
   ok = 0;
@@ -90,7 +91,7 @@ void SettingsDialog::initTabWidget()
   connect(w1->guiApp, SIGNAL(stateChanged(int)),w4, SLOT(setGuiCheckState(int)));
   connect(w1->nameEdit, SIGNAL(textChanged(QString)), this, SLOT(set_Title_Name(QString)));
   connect(w4, SIGNAL(guiStateChanged(bool)), w1->guiApp, SLOT(setChecked(bool)));
-  connect(w1, SIGNAL(securityLevelState(bool)), this, SLOT(changeSecLevelState(bool)));
+  connect(w1, SIGNAL(sessionUsed(bool)), this, SLOT(sessionStateChanged(bool)));
 }
 void SettingsDialog::initButtons()
 {
@@ -129,47 +130,57 @@ void SettingsDialog::saveJob()
   name = w1->get_Job_Name();
   w3->set_FileName(includesFileName(name));
   QStringList groups = settings.childGroups();
-  if      ( w1->session->isChecked() &&
-            (
-              w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
-              w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty()
-            )
-          )
+  if ( w4->mountDirs->isChecked() && !w4->homeDir->text().isEmpty() )
+    {
+      QString s;
+      s.append("Note: A permanent home directory and included files\ncan be used together only once --\nwhen the home directory is empty.");
+      QMessageBox::information(this, QString("Info"), s);
+    };
+  if ( w1->session->isChecked() &&
+       ( w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
+         w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty()
+       )
+     )
     {
       QMessageBox::information(this, QString("Info"),
         QString("You must to specify\na Security Level,\nHOME and TEMP directories."));
       return;
     }
   else if ( w1->session->isChecked() &&
-            !(
-              w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
-              w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty()
-            )
-          )
+            !( w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
+               w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty() ) )
     {
       QMessageBox::information(this, QString("Info"),
-        QString("In this case a TempDir and a HomeDir\nmust to be used together."));
+        QString("In this case a TempDir and a HomeDir\nmust to be cpecified together."));
       make_SpecifiedDirectories();
       return;
     }
+  // set specified context if directories enabled and not empty
   else if ( !w1->session->isChecked() &&
              w4->securityLevel->isChecked() &&
-            !w4->selinuxLabel->text().isEmpty() &&
-            ( w4->tempDir->text().isEmpty() ||
-              w4->homeDir->text().isEmpty()
-            )
-          )
+            !w4->selinuxLabel->text().isEmpty() )
     {
-      QMessageBox::information(this, QString("Info"),
-        QString("In this case a TempDir and a HomeDir\nmust to be used together."));
-      make_SpecifiedDirectories();
-      return;
-    };
-  if ( w4->securityLevel->isChecked() && !w4->selinuxLabel->text().isEmpty() )
+      if ( !w4->tempDir->text().isEmpty() && w4->mountDirs->isChecked() &&
+           !set_SpecifiedLabel(w4->tempDir->text()) )
+        return;
+      if ( !w4->homeDir->text().isEmpty() && w4->mountDirs->isChecked() &&
+           !set_SpecifiedLabel(w4->homeDir->text()) )
+        return;
+    }
+  // set user_dir_t for normalize context if directories enabled and not empty
+  else if ( !w1->session->isChecked() &&
+          (  w4->selinuxLabel->text().isEmpty() ||
+            !w4->securityLevel->isChecked() ) )
     {
-      if ( !exist_Directory(w4->tempDir) ) return;
-      if ( !exist_Directory(w4->homeDir) ) return;
+      if ( !w4->tempDir->text().isEmpty() && w4->mountDirs->isChecked() &&
+           !set_User_Dir_Label(w4->tempDir->text()) )
+        return;
+      if ( !w4->homeDir->text().isEmpty() && w4->mountDirs->isChecked() &&
+           !set_User_Dir_Label(w4->homeDir->text()) )
+        return;
     };
+  if ( !w4->tempDir->text().isEmpty() && !exist_Directory(w4->tempDir) ) return;
+  if ( !w4->homeDir->text().isEmpty() && !exist_Directory(w4->homeDir) ) return;
   if ( name.isEmpty() ) QMessageBox::information(this, QString("Info"), QString("JobName is empty."));
   else if ( groups.contains(name) && !newbe && name==previousName )
     {
@@ -234,13 +245,14 @@ void SettingsDialog::initParameters()
   w2->DPI->setValue( settings.value("DPI", QVariant()).toInt() );
   w2->windowHeight->setValue( settings.value("wHeight", QVariant()).toInt() );
   w2->windowWidth->setValue( settings.value("wWidth", QVariant()).toInt() );
+  w3->enabled->setChecked( settings.value("EnableIncluded", QVariant(false)).toBool() );
   w3->setIncludesList( settings.value("Includes", QVariant()).toString() );
   w4->mountDirs->setChecked( settings.value("Mount", QVariant()).toBool() );
   w4->securityLevel->setChecked( settings.value("SLevel", QVariant()).toBool() );
   w4->selinuxLabel->setText( settings.value("SELinuxLabel", QVariant()).toString() );
   w4->tempDir->setText( settings.value("TempDir", QVariant()).toString() );
   w4->homeDir->setText( settings.value("HomeDir", QVariant()).toString() );
-  // it last settings because it define the directory_settings
+  // it last settings because it (session key) define the directory_settings
   w1->execute->setChecked( settings.value("Execute", QVariant()).toBool() );
   w1->session->setChecked( settings.value("Session", QVariant()).toBool() );
   settings.endGroup();
@@ -266,6 +278,7 @@ void SettingsDialog::saveParameters()
   settings.setValue("WM", QVariant(w2->WM->text()));
   settings.setValue("wHeight", QVariant(w2->windowHeight->value()));
   settings.setValue("wWidth", QVariant(w2->windowWidth->value()));
+  settings.setValue("EnableIncluded", QVariant(w3->enabled->isChecked()));
   settings.setValue("Includes", QVariant(w3->get_FileName()));
   settings.setValue("SLevel", QVariant(w4->securityLevel->isChecked()));
   settings.setValue("SELinuxLabel", QVariant(w4->selinuxLabel->text()));
@@ -280,6 +293,7 @@ void SettingsDialog::saveParameters()
   if ( item->data(Qt::UserRole).toMap().value("isRunning").toBool() )
     QMessageBox::information(this, "Info", "New settings apply\nat next job start.");
 }
+
 void SettingsDialog::closeEvent(QCloseEvent *ev)
 {
   settings.setValue("SetDlgGeometry", saveGeometry());
@@ -287,6 +301,7 @@ void SettingsDialog::closeEvent(QCloseEvent *ev)
   killTimer(timerId);
   ev->accept();
 }
+
 void SettingsDialog::windowSetsEnable(int i)
 {
   Qt::CheckState _state = (i) ? Qt::Checked : Qt::Unchecked;
@@ -308,10 +323,12 @@ void SettingsDialog::windowSetsEnable(int i)
       w1->sandboxType->setCurrentIndex(c);
     };
 }
+
 void SettingsDialog::set_Title_Name(QString s)
 {
   setWindowTitle(s);
 }
+
 void SettingsDialog::timerEvent(QTimerEvent *event)
  {
    int _timerId = event->timerId();
@@ -359,6 +376,7 @@ void SettingsDialog::timerEvent(QTimerEvent *event)
        fullCommandWdg->setText(QString("%1 %2").arg(runApp).arg(cmd.join(" ")));
      };
  }
+
 QStringList SettingsDialog::_commandBuild()
 {
   commandLine->clear();
@@ -380,7 +398,7 @@ QStringList SettingsDialog::_commandBuild()
   if ( ( w1->guiApp->isChecked() || w4->mountDirs->isChecked() ) && !str.isEmpty() )
     commandLine->appendTempDir( str );
   str = w3->get_FileName();
-  if ( !str.isEmpty() ) commandLine->appendIncludes( str );
+  if ( w3->enabled->isChecked() && !str.isEmpty() ) commandLine->appendIncludes( str );
   if ( w1->guiApp->isChecked() )
     {
       str = w2->WM->text();
@@ -396,7 +414,8 @@ QStringList SettingsDialog::_commandBuild()
 
   return commandLine->getList();
 }
-void SettingsDialog::changeSecLevelState(bool b)
+
+void SettingsDialog::sessionStateChanged(bool b)
 {
   w4->sessionUsed = b;
   if (b) w4->setSELinuxLabelState(b);
@@ -404,15 +423,16 @@ void SettingsDialog::changeSecLevelState(bool b)
     {
       settings.beginGroup(name);
       w4->securityLevel->setChecked( settings.value("SLevel", QVariant()).toBool() );
+      w4->mountDirs->setChecked( settings.value("Mount", QVariant()).toBool() );
       settings.endGroup();
     };
 }
+
 bool SettingsDialog::make_Directory(QString s, QString Dir)
 {
   QString dirPath;
   QDir d;
   QString q = QString(" not specified.\nCreate temporary directory?");
-  QString l = QString("can`t marked by label\n");
   QString p = QString("cleaning not completed.\nTo continue anyway?");
   if ( s.isEmpty() )
     {
@@ -451,16 +471,12 @@ bool SettingsDialog::make_Directory(QString s, QString Dir)
       QMessageBox::information(this, QString("Info"), QString("Path\n\"%1\"\nis failed.").arg(dirPath));
       return false;
     }
-  else if ( !set_SpecifiedLabel(dirPath) )
-    {
-      QMessageBox::information(this, QString("Info"),
-      QString("\"%1\"\n%2\n%3").arg(dirPath).arg(l).arg(w4->selinuxLabel->text()));
-      return false;
-    };
+  else if ( !set_SpecifiedLabel(dirPath) ) return false;
   QLineEdit *obj = ( Dir == "TempDir" ) ? w4->tempDir : w4->homeDir;
   obj->setText(dirPath);
   return true;
 }
+
 bool SettingsDialog::make_SpecifiedDirectories()
 {
   /* set specify label to specified directories
@@ -472,16 +488,40 @@ bool SettingsDialog::make_SpecifiedDirectories()
     if ( !make_Directory(w4->homeDir->text(), "HomeDir") ) return false;
   return true;
 }
+
 bool SettingsDialog::set_SpecifiedLabel(QString s)
 {
   /*
-   * chcon -t sandbox_file_t -l s0:c123,c456 /home/Flash/Example_HOME
+   * chcon -R -t sandbox_file_t -l s0:c123,c456 /home/Flash/Example_HOME
    */
-  QStringList args = QStringList()<<"-t"<<"sandbox_file_t"<<"-l"<< w4->selinuxLabel->text()<< s;
+  QString SELabel = w4->selinuxLabel->text();
+  QStringList args = QStringList()<<"-R"<<"-t"<<"sandbox_file_t"<<"-l"<< SELabel<< s;
   int exitCode = QProcess::execute(QString("chcon"), args);
-  if ( exitCode != 0 ) return false;
+  if ( exitCode != 0 )
+    {
+      QMessageBox::information(this, QString("Info"),
+        QString("\"%1\"\n%2\n%3").arg(s).arg("can`t marked by label:\n").arg(SELabel));
+      return false;
+    };
   return true;
 }
+
+bool SettingsDialog::set_User_Dir_Label(QString s)
+{
+  /*
+   * chcon -R -t user_home_t -l s0: /home/Flash/Example_HOME
+   */
+  QStringList args = QStringList()<<"-R"<<"-t"<<"user_home_t"<< "-l"<< "s0"<< s;
+  int exitCode = QProcess::execute(QString("chcon"), args);
+  if ( exitCode != 0 )
+    {
+      QMessageBox::information(NULL, QString("Info"),
+        QString("\"%1\"\n%2").arg(s).arg("can`t marked by label: s0"));
+      return false;
+    };
+  return true;
+}
+
 bool SettingsDialog::clean_Directory(QString dir)
 {
   bool result = true;
@@ -505,6 +545,7 @@ bool SettingsDialog::clean_Directory(QString dir)
                   QString fileName;
                   fileName = item.fileName();
                   path.append(item.dir().path());
+                  //qDebug()<<path;
                   if ( !redundant.contains( fileName ) )
                     {
                       path.append(QDir::separator());
@@ -515,6 +556,7 @@ bool SettingsDialog::clean_Directory(QString dir)
               else if ( item.isFile() )
                 {
                   _result = _result && QFile::remove(item.canonicalFilePath());
+                  //qDebug()<<item.canonicalFilePath();
                 };
             };
           result = result && _result;
@@ -522,6 +564,7 @@ bool SettingsDialog::clean_Directory(QString dir)
     };
   return result;
 }
+
 bool SettingsDialog::exist_Directory(QLineEdit *obj)
 {
   QDir d;

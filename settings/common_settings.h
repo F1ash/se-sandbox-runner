@@ -37,7 +37,7 @@ public:
     QLineEdit *termCommand;
 
 signals:
-    void securityLevelState(bool);
+    void sessionUsed(bool);
 
 private:
     QGridLayout *gridLayout;

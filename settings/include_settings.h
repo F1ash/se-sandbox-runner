@@ -2,6 +2,7 @@
 #define INCLUDE_SETTINGS_H
 
 #include <QPushButton>
+#include <QCheckBox>
 #include <QListWidget>
 #include <QFileDialog>
 #include <QGridLayout>
@@ -15,6 +16,7 @@ public:
     IncludeSet(QWidget *parent=0);
     ~IncludeSet();
     QString fileName;
+    QCheckBox *enabled;
 
 signals:
 
@@ -32,6 +34,7 @@ public slots:
     void setIncludesList(QString s);
 
 private slots:
+    void enableFileList(bool);
     void addFilesToList();
     void addDirToList();
     void delPathFromList();

@@ -48,6 +48,7 @@ private:
 public slots:
     void setJobItem(QListWidgetItem *);
     static bool clean_Directory(QString);
+    static bool set_User_Dir_Label(QString);
 
 private slots:
     void initTabWidget();
@@ -62,7 +63,7 @@ private slots:
     void set_Title_Name(QString);
     void timerEvent(QTimerEvent *);
     QStringList _commandBuild();
-    void changeSecLevelState(bool);
+    void sessionStateChanged(bool);
     bool make_Directory(QString, QString);
     bool make_SpecifiedDirectories();
     bool set_SpecifiedLabel(QString);

@@ -42,7 +42,8 @@ QStringList ElemProcess::getCommand()
   bool cgroups = settings.value("CGroups", QVariant()).toBool();
   bool capabilities = settings.value("Capabilities", QVariant()).toBool();
   bool shred = settings.value("Shred", QVariant()).toBool();
-  QString securityLevel = settings.value("SLevel", QVariant()).toString();
+  bool securityLevel = settings.value("SLevel", QVariant()).toBool();
+  QString selinuxLabel = settings.value("SELinuxLabel", QVariant()).toString();
   QString sandboxType = settings.value("SType", QVariant()).toString();
   bool execute = settings.value("Execute", QVariant()).toBool();
   bool session = settings.value("Session", QVariant()).toBool();
@@ -52,6 +53,7 @@ QStringList ElemProcess::getCommand()
   QString WM = settings.value("WM", QVariant()).toString();
   int windowHeight = settings.value("wHeight", QVariant()).toInt();
   int windowWidth = settings.value("wWidth", QVariant()).toInt();
+  bool enableIncluded = settings.value("EnableIncluded", QVariant()).toBool();
   QString includes = settings.value("Includes", QVariant()).toString();
   bool mountDirs = settings.value("Mount", QVariant()).toBool();
   QString tempDir = settings.value("TempDir", QVariant()).toString();
@@ -63,12 +65,14 @@ QStringList ElemProcess::getCommand()
   if ( cgroups ) commandLine->appendCGroups();
   if ( shred ) commandLine->appendShred();
   if ( guiApp && DPI ) commandLine->appendDPI(DPI);
-  if ( !securityLevel.isEmpty() && session ) commandLine->appendSecurityLevel(securityLevel);
+  if ( !selinuxLabel.isEmpty() && securityLevel ) commandLine->appendSecurityLevel(selinuxLabel);
   if ( mountDirs ) commandLine->appendMountDirs();
   if ( guiApp ) commandLine->appendGuiApp();
-  if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() ) commandLine->appendHomeDir(homeDir);
-  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty() ) commandLine->appendTempDir(tempDir);
-  if ( !includes.isEmpty() ) commandLine->appendIncludes(includes);
+  if ( ( guiApp || mountDirs ) && !homeDir.isEmpty() )
+    commandLine->appendHomeDir(homeDir);
+  if ( ( guiApp || mountDirs ) && !tempDir.isEmpty() )
+    commandLine->appendTempDir(tempDir);
+  if ( enableIncluded && !includes.isEmpty() ) commandLine->appendIncludes(includes);
   if ( guiApp )
     {
       if (!WM.isEmpty()) commandLine->appendWM(WM);
@@ -217,9 +221,11 @@ void ElemProcess::killJob()
       settings.beginGroup(name);
       QString tempDir = settings.value("TempDir", QVariant()).toString();
       QString homeDir = settings.value("HomeDir", QVariant()).toString();
+      settings.endGroup();
+      SettingsDialog::set_User_Dir_Label( tempDir );
+      SettingsDialog::set_User_Dir_Label( homeDir );
       SettingsDialog::clean_Directory( tempDir );
       SettingsDialog::clean_Directory( homeDir );
-      settings.endGroup();
     };
   emit processState(STOPPED);
 }

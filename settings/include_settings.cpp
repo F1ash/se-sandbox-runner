@@ -10,27 +10,37 @@ IncludeSet::IncludeSet(QWidget *parent) :
   commonLayout = new QGridLayout(this);
   commonLayout->setSpacing(1);
   fileName = QString();
+  enabled = new QCheckBox("Enable Included Files", this);
+  enabled->setChecked(false);
+  enabled->setToolTip("Note: A permanent home directory and included files\ncan be used together only once --\nwhen the home directory is empty");
   fileList = new QListWidget(this);
+  fileList->setEnabled(false);
   fileList->setSelectionMode(QAbstractItemView::MultiSelection);
   addFile = new QPushButton(QIcon::fromTheme("archive-insert"),"", this);
+  addFile->setEnabled(false);
   addFile->setToolTip("Add file(s) to list");
   addDir  = new QPushButton(QIcon::fromTheme("archive-insert-directory"),"", this);
+  addDir->setEnabled(false);
   addDir->setToolTip("Add directory to list");
   delPath = new QPushButton(QIcon::fromTheme("archive-remove"),"", this);
+  delPath->setEnabled(false);
   delPath->setToolTip("Delete path from list");
+  connect(enabled, SIGNAL(toggled(bool)), this, SLOT(enableFileList(bool)));
   connect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
   connect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));
   connect(delPath, SIGNAL(clicked()), this, SLOT(delPathFromList()));
 
-  commonLayout->addWidget(fileList, 0, 0, 5, 5);
-  commonLayout->addWidget(addFile, 6, 0);
-  commonLayout->addWidget(addDir, 6, 1);
-  commonLayout->addWidget(delPath, 6, 4);
+  commonLayout->addWidget(enabled, 0, 0, 1, 4);
+  commonLayout->addWidget(fileList, 2, 0, 5, 4);
+  commonLayout->addWidget(addFile, 7, 0);
+  commonLayout->addWidget(addDir, 7, 1);
+  commonLayout->addWidget(delPath, 7, 3);
 
   setLayout(commonLayout);
 }
 IncludeSet::~IncludeSet()
 {
+  disconnect(enabled, SIGNAL(toggled(bool)), this, SLOT(enableFileList(bool)));
   disconnect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
   disconnect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));
   disconnect(delPath, SIGNAL(clicked()), this, SLOT(delPathFromList()));
@@ -43,12 +53,21 @@ IncludeSet::~IncludeSet()
   delPath = 0;
   delete fileList;
   fileList = 0;
+  delete enabled;
+  enabled = 0;
   delete commonLayout;
   commonLayout = 0;
 }
 void IncludeSet::set_FileName(const QString s)
 {
   fileName = s;
+}
+void IncludeSet::enableFileList(bool b)
+{
+  fileList->setEnabled(b);
+  addFile->setEnabled(b);
+  addDir->setEnabled(b);
+  delPath->setEnabled(b);
 }
 void IncludeSet::addFilesToList()
 {
