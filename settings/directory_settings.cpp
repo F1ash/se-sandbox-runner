@@ -29,7 +29,6 @@ DirectorySet::DirectorySet(QWidget *parent) :
 
   setLayout(commonLayout);
   connect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
-  connect(guiApp,    SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
   connect(mountDirs, SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
   connect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
   connect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
@@ -37,7 +36,6 @@ DirectorySet::DirectorySet(QWidget *parent) :
 DirectorySet::~DirectorySet()
 {
   disconnect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
-  disconnect(guiApp,    SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
   disconnect(mountDirs, SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
   disconnect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
   disconnect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
@@ -131,7 +129,7 @@ void DirectorySet::setWorkDirsState(bool b)
 {
   // this directories strictly used when mountDir is enabled
   // or Session used
-  if ( sessionUsed && !mountDirs->isChecked() )
+  if ( sessionUsed && !b )
     {
       mountDirs->setCheckState(Qt::Checked);
       tempDirWdg->setEnabled(true);
@@ -139,7 +137,13 @@ void DirectorySet::setWorkDirsState(bool b)
       QMessageBox::information(this, "Info",
         "\"Mount\" can't be changed\nbecause \"Session\" key is enabled.");
     }
-  else
+  // workDirs can to be used in case running graphic application
+  else if ( !b && !guiApp->isChecked() )
+    {
+      tempDirWdg->setEnabled(b);
+      homeDirWdg->setEnabled(b);
+  }
+  else if ( b )
     {
       tempDirWdg->setEnabled(b);
       homeDirWdg->setEnabled(b);
@@ -152,6 +156,17 @@ void DirectorySet::setGuiCheckState(int i)
 void DirectorySet::gui_StateChanged(bool b)
 {
   emit guiStateChanged(b);
+  // workDirs can to be used in case running graphic application
+  if ( b )
+    {
+      tempDirWdg->setEnabled(b);
+      homeDirWdg->setEnabled(b);
+    }
+  else if ( !b && !mountDirs->isChecked() )
+    {
+      tempDirWdg->setEnabled(b);
+      homeDirWdg->setEnabled(b);
+  };
 }
 void DirectorySet::setSELinuxLabelState(bool b)
 {
