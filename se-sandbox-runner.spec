@@ -1,16 +1,20 @@
-%define cmake_build_dir build-cmake
+%global cmake_build_dir build-cmake
 
-Name: se-sandbox-runner
-Version: 1.3.2
-Release: 1%{?dist}
-Summary: Qt wrapper for SELinux Sandbox
-Group: Applications/System
-License: GPLv2+
-Source0: https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
-URL: https://github.com/F1ash/%{name}
+Name:           se-sandbox-runner
+Version:        1.3.2
+Release:        2%{?dist}
+Summary:        Qt wrapper for SELinux Sandbox
+Group:          Applications/System
+License:        GPLv2+
+Source0:        https://github.com/F1ash/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+URL:            https://github.com/F1ash/%{name}
 
-Requires: qt4 oxygen-icon-theme xdg-utils policycoreutils-sandbox
-BuildRequires: gcc-c++ qt4-devel desktop-file-utils cmake
+Requires:       xdg-utils
+Requires:       policycoreutils-sandbox
+Requires:       hicolor-icon-theme oxygen-icon-theme
+BuildRequires:  qt4-devel
+BuildRequires:  desktop-file-utils
+BuildRequires:  cmake
 
 %description
 Qt wrapper for SELinux Sandbox.
@@ -29,16 +33,11 @@ popd
 
 %install
 pushd %{cmake_build_dir}
-      make install DESTDIR=%{buildroot}
+      %make_install
 popd
 
+%check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
-
-%files
-%{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/256x256/apps/applications-safety.png
-%doc README.md COPYING Changelog Licenses
 
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
@@ -52,7 +51,21 @@ fi
 %posttrans
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
+%files
+%doc README.md COPYING Changelog Licenses
+%{_bindir}/%{name}
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/256x256/apps/applications-safety.png
+
 %changelog
+* Fri Sep  6 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 1.3.2-2
+- move desktop-file-validate to %%check section
+- use %%make_install tag instead of make install DESTDIR=%%{buildroot}
+- remove gcc-c++ from BR
+- %%global instead of %%define
+- remove qt4 from R
+- add hicolor-icon-theme as R
+
 * Mon Sep  2 2013 Fl@sh <kaperang07@gmail.com> - 1.3.2-1
 - version updated
 
