@@ -32,7 +32,7 @@ private :
     Wait     *wait_thread;
 
 private slots:
-    void closeEvent(QCloseEvent *ev );
+    void closeEvent(QCloseEvent *ev);
     void closeEvent();
     void changeVisibility();
     void initTrayIcon();

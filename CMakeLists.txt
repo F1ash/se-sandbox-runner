@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.3)
 
 set (PROJECT_NAME se-sandbox-runner)
-set (PROJECT_VERSION 1.0)
+set (PROJECT_VERSION 1.3.3)
 set (HEADERS 
   mainwindow.h
   tray/traywidget.h
@@ -31,9 +31,8 @@ set (SOURCES
   settings/directory_settings.cpp
   element/string_list.cpp
   wait_thread.cpp)
-set (DOC_FILES README.md COPYING Changelog Licenses)
+set (SOURCES_DIRS . tray toolbar layout element settings)
 set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
-set (ICON_SIZES 256x256)
 
 project (${PROJECT_NAME})
 
@@ -41,8 +40,8 @@ if (NOT CMAKE_INSTALL_PREFIX)
  set (CMAKE_INSTALL_PREFIX /usr) 
 endif ()
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR} . tray toolbar layout element settings)
-find_package (Qt4 COMPONENTS QtCore QtGui REQUIRED)
+include_directories (${CMAKE_CURRENT_BINARY_DIR} SOURCES_DIRS)
+find_package (Qt4 COMPONENTS QtCore QtGui)
 include (${QT_USE_FILE})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
 set (BUILD_PROJECT_LIBRARIES ${QT_LIBRARIES})
@@ -55,8 +54,7 @@ add_executable (${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MOC_SOURCES})
 target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
-install(FILES ${DESKTOP_FILE} DESTINATION share/applications)
+install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
 
-install(FILES icons/applications-safety.png 
-        DESTINATION share/icons/hicolor/${ICON_SIZES}/apps)
+install (FILES icons/applications-safety.png DESTINATION share/pixmaps)
 
