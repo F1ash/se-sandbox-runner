@@ -49,7 +49,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 * Thu Sep 12 2013 Fl@sh <kaperang07@gmail.com> - 1.3.3-1
 - version updated
 - spec simplified :
-- changed Icon path in .desktop file to %%{_datadir}/pixmaps;
+- Application's Icon directory changed to %%{_datadir}/pixmaps;
 - remove hicolor-icon-theme from R;
 - remove Icon_Cache ScriptletSnippets
 
