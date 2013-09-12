@@ -40,7 +40,7 @@ if (NOT CMAKE_INSTALL_PREFIX)
  set (CMAKE_INSTALL_PREFIX /usr) 
 endif ()
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR} SOURCES_DIRS)
+include_directories (${CMAKE_CURRENT_BINARY_DIR} ${SOURCES_DIRS})
 find_package (Qt4 COMPONENTS QtCore QtGui)
 include (${QT_USE_FILE})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
