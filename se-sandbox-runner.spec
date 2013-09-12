@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
 License:        GPLv2+
-Source0:        https://github.com/F1ash/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/F1ash/%{name}/archive/%{version}.tar.gz 
 URL:            https://github.com/F1ash/%{name}
 
 Requires:       xdg-utils
@@ -51,7 +51,8 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 - spec simplified :
 - Application's Icon directory changed to %%{_datadir}/pixmaps;
 - remove hicolor-icon-theme from R;
-- remove Icon_Cache ScriptletSnippets
+- remove Icon_Cache ScriptletSnippets;
+- returned short Source0 path
 
 * Fri Sep  6 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 1.3.2-2
 - move desktop-file-validate to %%check section
