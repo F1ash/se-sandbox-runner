@@ -2,7 +2,7 @@
 
 Name:           se-sandbox-runner
 Version:        1.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
 License:        GPLv2+
@@ -46,6 +46,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/applications-safety.png
 
 %changelog
+* Sat Sep 14 2013 Fl@sh <kaperang07@gmail.com> - 1.3.3-2
+- release updated;
+
 * Thu Sep 12 2013 Fl@sh <kaperang07@gmail.com> - 1.3.3-1
 - version updated;
 - spec simplified :

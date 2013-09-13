@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
   restoreGeometry(settings.value("Geometry").toByteArray());
   setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
   setMinimumSize(100, 100);
-  setWindowIcon(QIcon::fromTheme("applications-safety", QIcon(":/applications-safety.png")));
+  setWindowIcon(QIcon("/usr/share/pixmaps/applications-safety.png"));
   initTrayIcon();
   initJobWidget();
   initToolBar();

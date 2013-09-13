@@ -3,7 +3,7 @@
 TrayIcon::TrayIcon(QWidget *parent = 0)
   : QSystemTrayIcon(parent)
 {
-  setIcon(QIcon::fromTheme("applications-safety", QIcon(":/applications-safety.png")));
+  setIcon(QIcon("/usr/share/pixmaps/applications-safety.png"));
   hideAction = new QAction(QString("Down"), this);
   hideAction->setIcon ( QIcon().fromTheme("arrow-down"));
   closeAction = new QAction(QString("Exit"), this);
