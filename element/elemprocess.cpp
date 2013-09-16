@@ -132,6 +132,7 @@ void ElemProcess::runJob()
   bool runInTerm = settings.value("RunInTerm", QVariant()).toBool();
   bool customTerminal = settings.value("CustomTerm", QVariant()).toBool();
   shred = settings.value("Shred", QVariant()).toBool();
+  mountDirs = settings.value("Mount", QVariant()).toBool();
   QStringList commandString;
   QString _commandString = settings.value("TermCommand", QVariant()).toString();
   commandString = _commandString.split(" ");
@@ -215,7 +216,7 @@ void ElemProcess::killJob()
           ::kill(_pid, SIGKILL);
         };
     };
-  if ( shred )
+  if ( mountDirs && shred )
     {
       name = item->text();  // for use real Job name
       settings.beginGroup(name);

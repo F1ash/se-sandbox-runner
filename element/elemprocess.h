@@ -52,6 +52,7 @@ private:
     int checkTimeout;
     int _diff;
     bool shred;
+    bool mountDirs;
 
 private slots:
     QStringList getCommand();
