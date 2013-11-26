@@ -19,3 +19,6 @@ improved Settings for Session, Security Level, Directory;
 v.1.3.3 :
 Application's Icon directory changed to %%{_datadir}/pixmaps
 (fixed spec, code, CMakeLists.txt);
+
+v.1.3.4 :
+fixed the building of Command string for SandBoxType;
