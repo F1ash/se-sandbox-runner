@@ -1,5 +1,4 @@
 #include "toolbar.h"
-#include <QDebug>
 
 ToolBar::ToolBar (QWidget *parent = 0) : QToolBar(parent)
 {
@@ -27,26 +26,25 @@ ToolBar::~ToolBar()
   _stopAllAction = 0;
   delete _exitAction;
   _exitAction = 0;
-
 }
 void ToolBar::initActions()
 {
   _hideAction = new QAction(QString("Hide to tray"), this);
-  _hideAction->setIcon ( QIcon().fromTheme("arrow-down") );
+  _hideAction->setIcon ( QIcon::fromTheme("arrow-down") );
   _createAction = new QAction(QString("Create new Job"), this);
-  _createAction->setIcon ( QIcon().fromTheme("run-build-install") );
+  _createAction->setIcon ( QIcon::fromTheme("run-build-install") );
   _editAction = new QAction(QString("Edit selected Job"), this);
-  _editAction->setIcon ( QIcon().fromTheme("run-build-configure") );
+  _editAction->setIcon ( QIcon::fromTheme("run-build-configure") );
   _deleteAction = new QAction(QString("Delete selected Job"), this);
-  _deleteAction->setIcon ( QIcon().fromTheme("run-build-clean") );
+  _deleteAction->setIcon ( QIcon::fromTheme("run-build-clean") );
   _runAction = new QAction(QString("Run selected Job"), this);
-  _runAction->setIcon ( QIcon().fromTheme("run-build") );
+  _runAction->setIcon ( QIcon::fromTheme("run-build") );
   _stopAction = new QAction(QString("Kill selected Job"), this);
-  _stopAction->setIcon ( QIcon().fromTheme("process-stop") );
+  _stopAction->setIcon ( QIcon::fromTheme("stop-sandbox") );
   _stopAllAction = new QAction(QString("Kill all Job"), this);
-  _stopAllAction->setIcon ( QIcon().fromTheme("system-log-out") );
+  _stopAllAction->setIcon ( QIcon::fromTheme("process-stop") );
   _exitAction = new QAction(QString("Exit"), this);
-  _exitAction->setIcon ( QIcon().fromTheme("system-shutdown") );
+  _exitAction->setIcon ( QIcon::fromTheme("application-exit") );
 
   addAction(_hideAction);
   addSeparator();

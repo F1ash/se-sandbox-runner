@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.3)
 
 set (PROJECT_NAME se-sandbox-runner)
-set (PROJECT_VERSION 1.3.4)
+set (PROJECT_VERSION 1.3.5)
 set (HEADERS 
   mainwindow.h
   tray/traywidget.h
@@ -33,6 +33,7 @@ set (SOURCES
   wait_thread.cpp)
 set (SOURCES_DIRS . tray toolbar layout element settings)
 set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
+set (SIZE 22x22 24x24 32x32 48x48 64x64)
 
 project (${PROJECT_NAME})
 
@@ -46,15 +47,14 @@ include (${QT_USE_FILE})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
 set (BUILD_PROJECT_LIBRARIES ${QT_LIBRARIES})
 
-source_group ("Header Files" FILES ${HEADERS})
-source_group ("Source Files" FILES ${SOURCES})
-source_group ("Generated Files" FILES ${MOC_SOURCES})
-
 add_executable (${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MOC_SOURCES})
 target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
 
-install (FILES icons/applications-safety.png DESTINATION share/pixmaps)
-
+install (FILES icons/applications-safety-selinux.png DESTINATION share/pixmaps)
+foreach (size ${SIZE})
+    install (FILES icons/${size}/stop-sandbox.png
+                 DESTINATION ${SHARE_INSTALL_PREFIX}/icons/hicolor/${size}/actions)
+endforeach (size ${SIZE})

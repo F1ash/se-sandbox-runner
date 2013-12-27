@@ -1,9 +1,9 @@
 [Desktop Entry]
 Name=SELinux Sandbox Runner
-GenericName=Run an application within a tightly confined SELinux domain.
+GenericName=Run cmd under an SELinux sandbox
 Type=Application
-Categories=Utility;Qt;
-Icon=applications-safety
+Categories=Development;System;Qt;
+Icon=applications-safety-selinux
 Exec=se-sandbox-runner
 Terminal=false
 StartupNotify=true

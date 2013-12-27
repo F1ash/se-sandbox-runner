@@ -1,3 +1,5 @@
+#ifndef TRAY_WIDGET_H
+#define TRAY_WIDGET_H
 
 #include <QSystemTrayIcon>
 #include <QMenu>
@@ -13,6 +15,7 @@ public :
   QAction *closeAction;
 
 private :
-  QMenu *trayIconMenu;
+  QMenu   *trayIconMenu;
 };
 
+#endif //TRAY_WIDGET_H

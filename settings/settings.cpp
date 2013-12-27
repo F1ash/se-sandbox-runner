@@ -1,5 +1,4 @@
 #include "settings/settings.h"
-//#include <QDebug>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
@@ -69,7 +68,6 @@ void SettingsDialog::initTabWidget()
    */
   tabWidget = new QTabWidget(this);
   tabWidget->setContentsMargins(1,1,1,1);
-  tabWidget->setIconSize(QSize(32,32));
   tabWidget->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
   w1 = new CommonSet(this);
   QIcon i1 = QIcon::fromTheme("preferences-other");

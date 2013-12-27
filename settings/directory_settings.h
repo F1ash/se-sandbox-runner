@@ -22,16 +22,16 @@ public:
     QLineEdit *selinuxLabel;
     QLineEdit *tempDir;
     QLineEdit *homeDir;
-    bool sessionUsed;
+    bool       sessionUsed;
 
 signals:
     void guiStateChanged(bool);
 
 private:
-    QWidget *tempDirWdg;
-    QWidget *homeDirWdg;
-    QLabel *tempLabel;
-    QLabel *homeLabel;
+    QWidget     *tempDirWdg;
+    QWidget     *homeDirWdg;
+    QLabel      *tempLabel;
+    QLabel      *homeLabel;
     QGridLayout *commonLayout;
     QHBoxLayout *tempWdgLayout;
     QHBoxLayout *homeWdgLayout;
@@ -42,7 +42,7 @@ public slots:
     QString get_TempDir() const;
     QString get_HomeDir() const;
     QString get_Mount() const;
-    void setGuiCheckState(int);
+    void    setGuiCheckState(int);
 
 private slots:
     void initTempDirWidget();
@@ -57,4 +57,4 @@ public slots:
     void setSELinuxLabelState(bool);
 };
 
-#endif
+#endif //DIRECTORY_SETTINGS_H

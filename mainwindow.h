@@ -20,7 +20,7 @@ public:
     ~MainWindow();
 
     QSettings settings;
-    JobList  *jobWidget;
+    JobList   *jobWidget;
 
 signals:
 
@@ -32,20 +32,20 @@ private :
     Wait     *wait_thread;
 
 private slots:
-    void closeEvent(QCloseEvent *ev);
+    void closeEvent(QCloseEvent*);
     void closeEvent();
     void changeVisibility();
     void initTrayIcon();
-    void trayIconActivated(QSystemTrayIcon::ActivationReason r);
+    void trayIconActivated(QSystemTrayIcon::ActivationReason);
     void initJobWidget();
     void initToolBar();
     void editCurrentJobItem();
     void createNewJobItem();
     void deleteCurrentJobItem();
-    void removeJobItem(QString &);
+    void removeJobItem(QString&);
     void runCurrentJob();
     void stopCurrentJob();
-    void stopJob(int i);
+    void stopJob(int);
     void stopAllJob();
     bool runningJobsExist();
 

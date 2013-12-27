@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
   restoreGeometry(settings.value("Geometry").toByteArray());
   setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
   setMinimumSize(100, 100);
-  setWindowIcon(QIcon("/usr/share/pixmaps/applications-safety.png"));
+  setWindowIcon(QIcon("/usr/share/pixmaps/applications-safety-selinux.png"));
   initTrayIcon();
   initJobWidget();
   initToolBar();
@@ -15,12 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 }
 MainWindow::~MainWindow()
 {
-
   disconnect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
                     SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
   disconnect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
   disconnect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
-  disconnect(jobWidget, SIGNAL(removeJob(QString &)), this, SLOT(removeJobItem(QString &)));
+  disconnect(jobWidget, SIGNAL(removeJob(QString&)), this, SLOT(removeJobItem(QString&)));
   disconnect(toolBar->_hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
   disconnect(toolBar->_createAction, SIGNAL(triggered()), this, SLOT(createNewJobItem()));
   disconnect(toolBar->_editAction, SIGNAL(triggered()), this, SLOT(editCurrentJobItem()));
@@ -46,6 +45,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
   settings.setValue("Geometry", saveGeometry());
   settings.setValue("ToolBarArea", toolBarArea(toolBar));
   settings.sync();
+  if ( !this->isVisible() ) changeVisibility();
   if ( runningJobsExist() && !wait_thread->isRunning() && !wait_thread->isFinished() )
     {
       QString q;
@@ -85,14 +85,14 @@ void MainWindow::changeVisibility()
   if (this->isVisible())
     {
       this->hide();
-      trayIcon->hideAction->setText (QString("Up"));
-      trayIcon->hideAction->setIcon ( QIcon().fromTheme("arrow-up"));
+      trayIcon->hideAction->setText ( QString("Up") );
+      trayIcon->hideAction->setIcon ( QIcon::fromTheme("arrow-up") );
     }
   else
     {
       this->show();
-      trayIcon->hideAction->setText (QString("Down"));
-      trayIcon->hideAction->setIcon ( QIcon().fromTheme("arrow-down"));
+      trayIcon->hideAction->setText ( QString("Down") );
+      trayIcon->hideAction->setIcon ( QIcon::fromTheme("arrow-down") );
     };
 }
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason r)
@@ -110,7 +110,7 @@ void MainWindow::initJobWidget()
       jobWidget->addJobItem(s);
     };
   setCentralWidget(jobWidget);
-  connect(jobWidget, SIGNAL(removeJob(QString &)), this, SLOT(removeJobItem(QString &)));
+  connect(jobWidget, SIGNAL(removeJob(QString&)), this, SLOT(removeJobItem(QString&)));
 }
 void MainWindow::initToolBar()
 {
@@ -146,10 +146,7 @@ void MainWindow::removeJobItem(QString &job)
   fullPath.removeLast();
   fullPath.append(QString("%1.included").arg(job));
   QString _fn = fullPath.join(QDir::separator());
-  QFile f;
-  f.setFileName(_fn);
-  f.remove();
-  f.deleteLater();
+  QFile::remove(_fn);
   //qDebug()<<job<<"job deleted";
 }
 void MainWindow::runCurrentJob()

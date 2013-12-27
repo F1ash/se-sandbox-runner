@@ -6,8 +6,9 @@
 #include "jobmenu.h"
 #include "settings/settings.h"
 #include "element/elemprocess.h"
+#include <QDebug>
 
-#define TO_RUN true
+#define TO_RUN  true
 #define TO_STOP false
 
 class JobList : public QListWidget
@@ -22,29 +23,29 @@ public:
 
 signals:
     void clickedItem(QString);
-    void removeJob(QString &);
+    void removeJob(QString&);
 
 public slots:
     void editItemAction();
-    void addJobItem(const QString &s);
+    void addJobItem(const QString&);
     void deleteCurrentJobItem();
-    void runJob(QListWidgetItem *_item);
-    void stopJob(QListWidgetItem *_item);
-    void showMessage(QString &, QString &);
+    void runJob(QListWidgetItem*);
+    void stopJob(QListWidgetItem*);
 
 private :
-    QIcon stateIcon;
+    QIcon           stateIcon;
     SettingsDialog *sDialog;
 
 private slots:
-    void jobItemClicked(const QPoint &pos);
-    void jobItemDoubleClicked(QListWidgetItem *_item);
-    void createJobProcess(QListWidgetItem *_item);
+    void jobItemClicked(const QPoint&);
+    void jobItemDoubleClicked(QListWidgetItem*);
+    void createJobProcess(QListWidgetItem*);
     void jobItemKillAction();
     void jobItemRunAction();
-    void checkJob(QListWidgetItem *, bool to_run);
+    void checkJob(QListWidgetItem*, bool);
     void deleteCancelledCreation();
+    void showMessage(QString, QString);
 
 };
 
-#endif
+#endif //LISTWIDGET_H

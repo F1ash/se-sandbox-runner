@@ -22,3 +22,7 @@ Application's Icon directory changed to %%{_datadir}/pixmaps
 
 v.1.3.4 :
 fixed the building of Command string for SandBoxType;
+
+v.1.3.5 :
+changed Icon set;
+some fixes & improvements;

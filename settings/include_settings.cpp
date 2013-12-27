@@ -1,5 +1,4 @@
 #include "include_settings.h"
-#include <QDebug>
 
 /* [-I includefile ] [[-i file ]...] */
 

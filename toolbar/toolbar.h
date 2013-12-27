@@ -1,5 +1,9 @@
+#ifndef TOOLBAR_H
+#define TOOLBAR_H
+
 #include <QToolBar>
 #include <QAction>
+#include <QDebug>
 
 class ToolBar : public QToolBar
 {
@@ -28,3 +32,4 @@ public slots:
   Qt::ToolBarArea get_ToolBarArea(int) const;
 };
 
+#endif //TOOLBAR_H

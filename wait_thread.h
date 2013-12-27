@@ -1,6 +1,8 @@
+#ifndef WAIT_THREAD_H
+#define WAIT_THREAD_H
+
 #include <QThread>
 #include "layout/listwidget.h"
-//#include "element/elemprocess.h"
 
 class Wait : public QThread
 {
@@ -15,9 +17,10 @@ private:
     JobList *wdg;
 
 public slots:
-    void setWdgReference(JobList *);
+    void setWdgReference(JobList*);
 
 private slots:
     void run();
 };
 
+#endif //WAIT_THREAD_H

@@ -1,7 +1,21 @@
-application-safety.png
+        PROJECT ICONS
 
-is the mix of
-applications-engineering.png
-   and
-applications-system.png
-from oxygen-icon-theme package
+  applications-safety-selinux.png
+==================================
+
+    is the mix of
+    applications-engineering.png
+       and
+    applications-system.png
+    from oxygen-icon-theme package
+______________________________________
+
+         stop-sandbox.png
+==================================
+
+    is the mix of
+    run-build.png
+        and
+    process-stop.png
+    from oxygen-icon-theme package
+______________________________________

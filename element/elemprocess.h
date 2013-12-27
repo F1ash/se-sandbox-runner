@@ -11,13 +11,14 @@
 #include "signal.h"
 #include "string_list.h"
 #include "settings/settings.h"
+#include <QDebug>
 
-#define RUNNING true
-#define STOPPED false
-#define TO_RUN true
-#define TO_STOP false
-#define SIGZERO 0
-#define AVAILABLE true
+#define RUNNING       true
+#define STOPPED       false
+#define TO_RUN        true
+#define TO_STOP       false
+#define SIGZERO       0
+#define AVAILABLE     true
 #define NOT_AVAILABLE false
 
 class ElemProcess : public QProcess
@@ -35,33 +36,33 @@ public slots:
     void killJob();
 
 signals:
-    void processState(bool state);
+    void processState(bool);
 
 private:
-    QStringList children;
-    QString PID;
-    QString name;
-    QBrush bgBrush;
-    QBrush fgBrush;
+    QStringList  children;
+    QString      PID;
+    QString      name;
+    QBrush       bgBrush;
+    QBrush       fgBrush;
     QMap<QString, QVariant> proc_Status;
-    QSettings settings;
-    int waitTimerId;
-    int timerId;
+    QSettings    settings;
+    int          waitTimerId;
+    int          timerId;
 
-    String *commandLine;
-    int checkTimeout;
-    int _diff;
-    bool shred;
-    bool mountDirs;
+    String  *commandLine;
+    int      checkTimeout;
+    int      _diff;
+    bool     shred;
+    bool     mountDirs;
 
 private slots:
     QStringList getCommand();
     void appendChildren();
     void readChildren();
     void setUnAvailableItemBrush();
-    void setProcessState(bool status);
-    void timerEvent(QTimerEvent *);
+    void setProcessState(bool);
+    void timerEvent(QTimerEvent*);
     void sendMessage();
 };
 
-#endif
+#endif //ELEMPROCESS_H

@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QFile>
+#include <QDebug>
 
 class IncludeSet : public QWidget
 {
@@ -15,7 +16,7 @@ class IncludeSet : public QWidget
 public:
     IncludeSet(QWidget *parent=0);
     ~IncludeSet();
-    QString fileName;
+    QString   fileName;
     QCheckBox *enabled;
 
 signals:
@@ -31,7 +32,7 @@ public slots:
     void set_FileName(const QString);
     QStringList get_Included_Path() const;
     const QString get_FileName();
-    void setIncludesList(QString s);
+    void setIncludesList(QString);
 
 private slots:
     void enableFileList(bool);
@@ -42,4 +43,4 @@ private slots:
     void removeDuplicates();
 };
 
-#endif
+#endif //INCLUDE_SETTINGS_H

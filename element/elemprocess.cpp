@@ -1,5 +1,4 @@
 #include "element/elemprocess.h"
-#include <QDebug>
 
 ElemProcess::ElemProcess(QObject *parent) :
     QProcess(parent)

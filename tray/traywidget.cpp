@@ -3,11 +3,11 @@
 TrayIcon::TrayIcon(QWidget *parent = 0)
   : QSystemTrayIcon(parent)
 {
-  setIcon(QIcon("/usr/share/pixmaps/applications-safety.png"));
+  setIcon(QIcon("/usr/share/pixmaps/applications-safety-selinux.png"));
   hideAction = new QAction(QString("Down"), this);
-  hideAction->setIcon ( QIcon().fromTheme("arrow-down"));
+  hideAction->setIcon ( QIcon::fromTheme("arrow-down"));
   closeAction = new QAction(QString("Exit"), this);
-  closeAction->setIcon ( QIcon().fromTheme("system-shutdown") );
+  closeAction->setIcon ( QIcon::fromTheme("application-exit") );
 
   trayIconMenu = new QMenu(parent);
   trayIconMenu->addAction(hideAction);

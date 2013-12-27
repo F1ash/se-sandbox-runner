@@ -1,5 +1,4 @@
 #include "layout/listwidget.h"
-#include <QDebug>
 
 JobList::JobList(QWidget *parent = 0)
     : QListWidget(parent)
@@ -10,17 +9,16 @@ JobList::JobList(QWidget *parent = 0)
   setCursor(Qt::ArrowCursor);
   setSortingEnabled(true);
   jobProcess = new QMap<QString, ElemProcess*>();
-  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(jobItemClicked(const QPoint&)));
   connect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
   stateIcon = QIcon::fromTheme("system-run");
 }
 JobList::~JobList()
 {
+  disconnect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(jobItemClicked(const QPoint&)));
+  disconnect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
   delete jobProcess;
   jobProcess = 0;
-
-  disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
-  disconnect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
   clear();
 }
 void JobList::addJobItem(const QString &s)
@@ -49,7 +47,7 @@ void JobList::jobItemClicked(const QPoint &pos)
   if (_item==0)
     {
       clearSelection();
-      //QMessageBox::information(this, QString("Info"), QString("Item not exist."));
+      //showMessage("Info", "Item not exist.");
       return;
     };
   //qDebug()<<_item->text()<<" Job detected";
@@ -144,7 +142,7 @@ void JobList::editItemAction()
   QListWidgetItem *_item = currentItem();
   if (!_item)
     {
-      QMessageBox::information(this, QString("Info"), QString("Item not exist."));
+      showMessage("Info", "Item not exist.");
       return;
     };
   sDialog = new SettingsDialog(this->parentWidget());
@@ -172,13 +170,13 @@ void JobList::deleteCurrentJobItem()
         };
       emit removeJob(job);
     }
-  else QMessageBox::information(this, QString("Info"), QString("Item not exist."));
-}
-void JobList::showMessage(QString &title, QString &msg)
-{
-  QMessageBox::information(this, title, msg);
+  else showMessage("Info", "Item not exist.");
 }
 void JobList::deleteCancelledCreation()
 {
   deleteCurrentJobItem();
+}
+void JobList::showMessage(QString title, QString msg)
+{
+  QMessageBox::information(this, title, msg);
 }
