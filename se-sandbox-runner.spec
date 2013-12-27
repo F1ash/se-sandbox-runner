@@ -57,11 +57,7 @@ fi
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/applications-safety-selinux.png
-%{_datadir}/icons/hicolor/22x22/actions/stop-sandbox.png
-%{_datadir}/icons/hicolor/24x24/actions/stop-sandbox.png
-%{_datadir}/icons/hicolor/32x32/actions/stop-sandbox.png
-%{_datadir}/icons/hicolor/48x48/actions/stop-sandbox.png
-%{_datadir}/icons/hicolor/64x64/actions/stop-sandbox.png
+%{_datadir}/icons/hicolor/*/actions/stop-sandbox.png
 
 %changelog
 * Fri Dec 27 2013 Fl@sh <kaperang07@gmail.com> - 1.3.5-1
