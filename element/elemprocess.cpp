@@ -89,8 +89,6 @@ void ElemProcess::appendChildren()
   //qDebug()<<children.join(" ")<<" begin";
   readChildren();
   //qDebug()<<children.join(" ")<<" end";
-  emit processState(RUNNING);
-  timerId = startTimer(1000);
 }
 void ElemProcess::readChildren()
 {
@@ -184,7 +182,8 @@ void ElemProcess::runJob()
   PID = QString::number(pid());
   if ( started )
     {
-      QTimer::singleShot(checkTimeout * 1000, this, SLOT(appendChildren()));
+      emit processState(RUNNING);
+      timerId = startTimer(1000);
       waitTimerId = startTimer(1000);
     }
   else emit processState(STOPPED);
@@ -205,6 +204,8 @@ void ElemProcess::killJob()
   proc_Status.insert("isRunning", QVariant(STOPPED));
   item->setData(Qt::UserRole, QVariant(proc_Status));
   setUnAvailableItemBrush();
+  appendChildren();
+  this->kill();
   QList<QString>::const_iterator i;
   for (i = children.constBegin(); i != children.constEnd(); ++i)
     {
@@ -233,7 +234,7 @@ void ElemProcess::setProcessState(bool status)
 {
   if ( status )
     {
-      item->setIcon(QIcon::fromTheme("process-stop"));
+      item->setIcon(QIcon::fromTheme("run"));
       item->setToolTip(QString("Process %1\nPID: %2").arg(name).arg(PID));
       proc_Status.insert("isRunning", QVariant(RUNNING));
     }

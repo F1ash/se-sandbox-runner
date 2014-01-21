@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.3)
 
 set (PROJECT_NAME se-sandbox-runner)
-set (PROJECT_VERSION 1.3.5)
+set (PROJECT_VERSION 1.4.7)
 set (HEADERS 
   mainwindow.h
   tray/traywidget.h
@@ -33,7 +33,6 @@ set (SOURCES
   wait_thread.cpp)
 set (SOURCES_DIRS . tray toolbar layout element settings)
 set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
-set (SIZE 22x22 24x24 32x32 48x48 64x64)
 
 project (${PROJECT_NAME})
 
@@ -52,9 +51,3 @@ target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
-
-install (FILES icons/applications-safety-selinux.png DESTINATION share/pixmaps)
-foreach (size ${SIZE})
-    install (FILES icons/${size}/stop-sandbox.png
-                 DESTINATION ${SHARE_INSTALL_PREFIX}/icons/hicolor/${size}/actions)
-endforeach (size ${SIZE})

@@ -10,6 +10,9 @@ ToolBar::ToolBar (QWidget *parent = 0) : QToolBar(parent)
 }
 ToolBar::~ToolBar()
 {
+  disconnect(_hideAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
+  disconnect(itemControlAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
+  disconnect(_exitAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
   delete _hideAction;
   _hideAction = 0;
   delete _createAction;
@@ -26,37 +29,64 @@ ToolBar::~ToolBar()
   _stopAllAction = 0;
   delete _exitAction;
   _exitAction = 0;
+  delete itemControlMenu;
+  itemControlMenu = 0;
+  delete itemControlAction;
+  itemControlAction = 0;
 }
 void ToolBar::initActions()
 {
   _hideAction = new QAction(QString("Hide to tray"), this);
-  _hideAction->setIcon ( QIcon::fromTheme("arrow-down") );
+  _hideAction->setIcon ( QIcon::fromTheme("down") );
   _createAction = new QAction(QString("Create new Job"), this);
-  _createAction->setIcon ( QIcon::fromTheme("run-build-install") );
+  _createAction->setIcon ( QIcon::fromTheme("install") );
   _editAction = new QAction(QString("Edit selected Job"), this);
-  _editAction->setIcon ( QIcon::fromTheme("run-build-configure") );
+  _editAction->setIcon ( QIcon::fromTheme("configure") );
   _deleteAction = new QAction(QString("Delete selected Job"), this);
-  _deleteAction->setIcon ( QIcon::fromTheme("run-build-clean") );
+  _deleteAction->setIcon ( QIcon::fromTheme("clean") );
   _runAction = new QAction(QString("Run selected Job"), this);
-  _runAction->setIcon ( QIcon::fromTheme("run-build") );
+  _runAction->setIcon ( QIcon::fromTheme("run") );
   _stopAction = new QAction(QString("Kill selected Job"), this);
-  _stopAction->setIcon ( QIcon::fromTheme("stop-sandbox") );
+  _stopAction->setIcon ( QIcon::fromTheme("stop") );
   _stopAllAction = new QAction(QString("Kill all Job"), this);
-  _stopAllAction->setIcon ( QIcon::fromTheme("process-stop") );
+  _stopAllAction->setIcon ( QIcon::fromTheme("stop-all") );
   _exitAction = new QAction(QString("Exit"), this);
-  _exitAction->setIcon ( QIcon::fromTheme("application-exit") );
+  _exitAction->setIcon ( QIcon::fromTheme("exit") );
+
+  itemControlMenu = new QMenu(this);
+
+  itemControlAction = new QAction(this);
+  itemControlAction->setIcon(QIcon::fromTheme("job"));
+  itemControlAction->setToolTip("Job Control");
+  connect(_hideAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
+  connect(itemControlAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
+  connect(_exitAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
+
+  itemControlMenu->addAction(_createAction);
+  itemControlMenu->addAction(_editAction);
+  itemControlMenu->addAction(_deleteAction);
+  itemControlMenu->addSeparator();
+  itemControlMenu->addAction(_runAction);
+  itemControlMenu->addAction(_stopAction);
+  itemControlMenu->addAction(_stopAllAction);
+  itemControlAction->setMenu(itemControlMenu);
 
   addAction(_hideAction);
   addSeparator();
-  addAction(_createAction);
-  addAction(_editAction);
-  addAction(_deleteAction);
-  addSeparator();
-  addAction(_runAction);
-  addAction(_stopAction);
-  addAction(_stopAllAction);
+  addAction( itemControlAction );
   addSeparator();
   addAction(_exitAction);
+}
+void ToolBar::showHoveredMenu()
+{
+    QAction *act = static_cast<QAction*>(sender());
+    if ( act==itemControlAction ) {
+        act->menu()->show();
+        act->menu()->move(QCursor::pos());
+    } else {
+        if ( itemControlAction->menu()->isVisible() )
+            itemControlAction->menu()->hide();
+    }
 }
 Qt::ToolBarArea ToolBar::get_ToolBarArea(int i) const
 {

@@ -3,8 +3,8 @@
 JobMenu::JobMenu(QWidget *parent)
     : QMenu(parent)
 {
-  edit = addAction(QIcon::fromTheme("run-build-configure"), "Edit");
-  act  = addAction(QIcon::fromTheme("run-build"), "Run Job");
+  edit = addAction(QIcon::fromTheme("configure"), "Edit");
+  act  = addAction(QIcon::fromTheme("run"), "Run Job");
 }
 JobMenu::~JobMenu()
 {

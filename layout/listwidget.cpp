@@ -59,14 +59,14 @@ void JobList::jobItemClicked(const QPoint &pos)
   if ( proc_Status.value("isRunning", STOPPED).toBool() )
     {
       jobMenu->act->setText("Kill Job");
-      jobMenu->act->setIcon(QIcon::fromTheme("process-stop"));
+      jobMenu->act->setIcon(QIcon::fromTheme("stop"));
       connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
       to_run = TO_STOP;
     }
   else
     {
       jobMenu->act->setText("Run Job");
-      jobMenu->act->setIcon(QIcon::fromTheme("run-build"));
+      jobMenu->act->setIcon(QIcon::fromTheme("run"));
       connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
       to_run = TO_RUN;
     };
@@ -145,7 +145,7 @@ void JobList::editItemAction()
       showMessage("Info", "Item not exist.");
       return;
     };
-  sDialog = new SettingsDialog(this->parentWidget());
+  sDialog = new SettingsDialog(this);
   sDialog->setJobItem(_item);
   connect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
   sDialog->exec();

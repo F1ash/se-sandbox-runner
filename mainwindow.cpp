@@ -5,8 +5,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
   restoreGeometry(settings.value("Geometry").toByteArray());
   setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
+  setWindowTitle("SELinux Sandbox Runner");
   setMinimumSize(100, 100);
-  setWindowIcon(QIcon("/usr/share/pixmaps/applications-safety-selinux.png"));
+  QStringList searchThemePath;
+  searchThemePath.append(QIcon::themeSearchPaths());
+  searchThemePath.insert(0, "/usr/share/sandbox-runner-data/");
+  QIcon::setThemeSearchPaths(searchThemePath);
+  QIcon::setThemeName("icons");
+  setWindowIcon(QIcon::fromTheme("applications-safety-selinux"));
   initTrayIcon();
   initJobWidget();
   initToolBar();
@@ -86,13 +92,13 @@ void MainWindow::changeVisibility()
     {
       this->hide();
       trayIcon->hideAction->setText ( QString("Up") );
-      trayIcon->hideAction->setIcon ( QIcon::fromTheme("arrow-up") );
+      trayIcon->hideAction->setIcon ( QIcon::fromTheme("up") );
     }
   else
     {
       this->show();
       trayIcon->hideAction->setText ( QString("Down") );
-      trayIcon->hideAction->setIcon ( QIcon::fromTheme("arrow-down") );
+      trayIcon->hideAction->setIcon ( QIcon::fromTheme("down") );
     };
 }
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason r)

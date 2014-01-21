@@ -1,7 +1,7 @@
 %global cmake_build_dir build-cmake
 
 Name:           se-sandbox-runner
-Version:        1.3.5
+Version:        1.4.7
 Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
@@ -11,8 +11,8 @@ URL:            https://github.com/F1ash/%{name}
 
 Requires:       xdg-utils
 Requires:       policycoreutils-sandbox
-Requires:       oxygen-icon-theme
-Requires:       hicolor-icon-theme
+# for compatibility with the current version
+Requires:       sandbox-runner-data >= 0.2.2
 BuildRequires:  qt4-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -40,26 +40,19 @@ popd
 %check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
-%post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %files
-%doc README.md COPYING Changelog Licenses
+%doc README.md COPYING Changelog
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/pixmaps/applications-safety-selinux.png
-%{_datadir}/icons/hicolor/*/actions/stop-sandbox.png
 
 %changelog
+* Wed Jan 22 2014 Fl@sh <kaperang07@gmail.com> - 1.4.7-1
+- added sandbox-runner-data to R;
+- removed hicolor-icon-theme, oxygen-icon-theme from R;
+- removed Icon_Cache ScriptletSnippets;
+- removed unnecessary %%files path;
+- version updated;
+
 * Fri Dec 27 2013 Fl@sh <kaperang07@gmail.com> - 1.3.5-1
 - added new icon path & Icon_Cache ScriptletSnippets;
 - added hicolor-icon-theme to R;
