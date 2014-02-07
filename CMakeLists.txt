@@ -1,20 +1,24 @@
 cmake_minimum_required (VERSION 2.8.3)
 
 set (PROJECT_NAME se-sandbox-runner)
-set (PROJECT_VERSION 1.4.7)
+set (PROJECT_VERSION 1.6.8)
 set (HEADERS 
   mainwindow.h
   tray/traywidget.h
   toolbar/toolbar.h
   layout/listwidget.h
   layout/jobmenu.h
+  layout/job_item_index.h
+  layout/jobitem_model.h
+  layout/progressbar_delegate.h
   element/elemprocess.h
+  element/string_list.h
+  element/shred_thread.h
   settings/settings.h
   settings/common_settings.h
   settings/window_settings.h
   settings/include_settings.h
   settings/directory_settings.h
-  element/string_list.h
   wait_thread.h)
 set (SOURCES 
   main.cpp
@@ -23,13 +27,17 @@ set (SOURCES
   toolbar/toolbar.cpp
   layout/listwidget.cpp
   layout/jobmenu.cpp
+  layout/job_item_index.cpp
+  layout/jobitem_model.cpp
+  layout/progressbar_delegate.cpp
   element/elemprocess.cpp
+  element/string_list.cpp
+  element/shred_thread.cpp
   settings/settings.cpp
   settings/common_settings.cpp
   settings/window_settings.cpp
   settings/include_settings.cpp
   settings/directory_settings.cpp
-  element/string_list.cpp
   wait_thread.cpp)
 set (SOURCES_DIRS . tray toolbar layout element settings)
 set (DESKTOP_FILE ${PROJECT_NAME}.desktop)

@@ -1,7 +1,7 @@
 %global cmake_build_dir build-cmake
 
 Name:           se-sandbox-runner
-Version:        1.4.7
+Version:        1.6.8
 Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
@@ -11,6 +11,7 @@ URL:            https://github.com/F1ash/%{name}
 
 Requires:       xdg-utils
 Requires:       policycoreutils-sandbox
+Requires:       selinux-policy-sandbox
 # for compatibility with the current version
 Requires:       sandbox-runner-data >= 0.2.2
 BuildRequires:  qt4-devel
@@ -46,6 +47,10 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Fri Feb  7 2014 Fl@sh <kaperang07@gmail.com> - 1.6.8-1
+- added selinux-policy-sandbox to R;
+- version updated;
+
 * Wed Jan 22 2014 Fl@sh <kaperang07@gmail.com> - 1.4.7-1
 - added sandbox-runner-data to R;
 - removed hicolor-icon-theme, oxygen-icon-theme from R;

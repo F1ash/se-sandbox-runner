@@ -53,8 +53,8 @@ private:
     QVBoxLayout  *termChoiseLayout;
 
 public slots:
-    QString get_Job_Name() const;
-    void    set_Job_Name(QString&);
+    QString       get_Job_Name() const;
+    void          set_Job_Name(QString&);
 
 private slots:
     void initTypeBox();

@@ -1,176 +1,203 @@
 #include "layout/listwidget.h"
 
 JobList::JobList(QWidget *parent = 0)
-    : QListWidget(parent)
+    : QTreeView(parent)
 {
   this->setContextMenuPolicy ( Qt::CustomContextMenu );
   setContentsMargins (1, 1, 1, 1);
   setDefaultDropAction ( Qt::IgnoreAction );
   setCursor(Qt::ArrowCursor);
   setSortingEnabled(true);
+  this->setItemsExpandable(false);
+  this->setRootIsDecorated(false);
+  jobItemModel = new JobItemModel(this);
+  this->setModel(jobItemModel);
+  progressBarDlg = new ProgressBarDelegate();
+  this->setItemDelegate(progressBarDlg);
   jobProcess = new QMap<QString, ElemProcess*>();
-  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(jobItemClicked(const QPoint&)));
-  connect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
-  stateIcon = QIcon::fromTheme("system-run");
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
+  connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
+
 }
 JobList::~JobList()
 {
-  disconnect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(jobItemClicked(const QPoint&)));
-  disconnect(this, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(jobItemDoubleClicked(QListWidgetItem*)));
-  delete jobProcess;
-  jobProcess = 0;
-  clear();
+    disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
+    disconnect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
+    delete progressBarDlg;
+    progressBarDlg = 0;
+    delete jobItemModel;
+    jobItemModel = 0;
+    jobProcess->clear();
+    delete jobProcess;
+    jobProcess = 0;
 }
 void JobList::addJobItem(const QString &s)
 {
-  QListWidgetItem *_item;
-  QList<QListWidgetItem *> _items;
-  insertItem(0, s);
-  _items = findItems(s, Qt::MatchExactly);
-  if ( !_items.isEmpty() )
-    {
-      _item = _items.first();
-      _item->setIcon( stateIcon );
-      _item->setTextAlignment(Qt::AlignLeft);
-      createJobProcess(_item);
-      if ( _item->text() == QString("<noname>") )
-        {
-          setCurrentItem(_item);
-          editItemAction();
+    int count = jobItemModel->rowCount();
+    bool exist = false;
+    for (int i=0; i<count; i++) {
+        JobItemIndex *idx = jobItemModel->jobItemDataList.at(i);
+        if ( idx->getName()==s ) {
+            exist = true;
+            break;
+        }
+    };
+    if ( !exist ) {
+        jobItemModel->insertRow(0);
+        QModelIndex item;
+        for (int j=0; j<3; j++) {
+            QString data;
+            if (j) {
+                data = "-";
+            } else data = s;
+            item = jobItemModel->index(0,j);
+            jobItemModel->setData(item, data, Qt::EditRole);
         };
+        if ( s==QString("<noname>") && item.isValid() ) {
+            setCurrentIndex(item);
+            editItemAction();
+        };
+        createJobProcess(item);
     };
 }
 void JobList::jobItemClicked(const QPoint &pos)
 {
-  QListWidgetItem *_item;
-  _item = itemAt(pos);
-  if (_item==0)
-    {
-      clearSelection();
-      //showMessage("Info", "Item not exist.");
-      return;
+    QModelIndex _item = indexAt(pos);
+    if ( !_item.isValid() ) {
+        clearSelection();
+        //showMessage("Info", "Item not exist.");
+        return;
     };
-  //qDebug()<<_item->text()<<" Job detected";
-  QMap<QString, QVariant> proc_Status;
-  proc_Status = _item->data(Qt::UserRole).toMap();
-  if ( !proc_Status.value("availability", NOT_AVAILABLE).toBool() ) return;
-  bool to_run = TO_RUN;
-  JobMenu *jobMenu = new JobMenu(this);
-  if ( proc_Status.value("isRunning", STOPPED).toBool() )
-    {
-      jobMenu->act->setText("Kill Job");
-      jobMenu->act->setIcon(QIcon::fromTheme("stop"));
-      connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
-      to_run = TO_STOP;
-    }
-  else
-    {
-      jobMenu->act->setText("Run Job");
-      jobMenu->act->setIcon(QIcon::fromTheme("run"));
-      connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
-      to_run = TO_RUN;
-    };
-  _item->setData(Qt::UserRole, QVariant(proc_Status));
-  connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
-  jobMenu->move(mapToGlobal(pos));
-  jobMenu->exec();
-  if (to_run) disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
-  else disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
-  disconnect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
-  jobMenu->deleteLater();
+    //qDebug()<<_item->text()<<" Job detected";
+    DATA proc_Status;
+    JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+    proc_Status = idx->getData();
+    if ( !proc_Status.value("availability", NOT_AVAILABLE).toBool() ) return;
+    bool to_run = TO_RUN;
+    JobMenu *jobMenu = new JobMenu(this);
+    if ( proc_Status.value("isRunning", STOPPED).toBool() )
+      {
+        jobMenu->act->setText("Kill Job");
+        jobMenu->act->setIcon(QIcon::fromTheme("stop"));
+        connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
+        to_run = TO_STOP;
+      }
+    else
+      {
+        jobMenu->act->setText("Run Job");
+        jobMenu->act->setIcon(QIcon::fromTheme("run"));
+        connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
+        to_run = TO_RUN;
+      };
+    idx->setData(proc_Status);
+    connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
+    jobMenu->move(mapToGlobal(pos));
+    jobMenu->exec();
+    if (to_run) disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
+    else disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
+    disconnect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
+    jobMenu->deleteLater();
 }
-void JobList::createJobProcess(QListWidgetItem *_item)
+void JobList::createJobProcess(QModelIndex &_item)
 {
-  QString key = _item->text();
+  JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+  QString key = idx->getName();
   ElemProcess *proc = new ElemProcess(this);
-  proc->setItemReference(_item);
+  proc->setItemReference(jobItemModel, idx);
   jobProcess->insert(key, proc);
   //qDebug()<<key<<" create Job process";
   clearSelection();
 }
-void JobList::jobItemDoubleClicked(QListWidgetItem *_item)
+void JobList::jobItemDoubleClicked(const QModelIndex &_item)
 {
-  QString key = _item->data(Qt::UserRole).toMap().value(QString("initName")).toString();
-  QString _name = _item->text();
-  QMap<QString, QVariant> proc_Status;
-  proc_Status = _item->data(Qt::UserRole).toMap();
+  JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+  QString _name = idx->getName();
+  DATA proc_Status;
+  proc_Status = idx->getData();
+  QString key = proc_Status.value(QString("initName")).toString();
   ElemProcess *proc;
   proc = jobProcess->value(key);
-  if ( key != _name )
-    {
+  if ( key != _name ) {
       proc_Status.insert(QString("initName"), QVariant(_name));
       jobProcess->insert(_name, proc);
       jobProcess->remove(key);
-      proc->setItemReference(_item);
-    };
+      proc->setItemReference(jobItemModel, idx);
+  };
   //qDebug()<<key<<" Job doubleClicked"<<proc;
   bool proc_state;
   proc_state = proc_Status.value(QString("isRunning"), STOPPED).toBool();
-  if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() )
-    return;
+  if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() ) {
+      showMessage("Info", "Job is busy.");
+  }
   else if ( !proc_state && proc->state()==QProcess::NotRunning )
-    proc->runJob();
+      proc->runJob();
   else if ( proc_state && proc->state()==QProcess::Running )
-    proc->killJob();
+      proc->killJob();
   clearSelection();
 }
 void JobList::jobItemKillAction()
 {
-  checkJob(currentItem(), TO_STOP);
+    QModelIndex idx = currentIndex();
+    checkJob(idx, TO_STOP);
 }
 void JobList::jobItemRunAction()
 {
-  checkJob(currentItem(), TO_RUN);
+    QModelIndex idx = currentIndex();
+    checkJob(idx, TO_RUN);
 }
-void JobList::runJob(QListWidgetItem *_item)
+void JobList::runJob(QModelIndex &_item)
 {
-  checkJob(_item, TO_RUN);
+    checkJob(_item, TO_RUN);
 }
-void JobList::stopJob(QListWidgetItem *_item)
+void JobList::stopJob(QModelIndex &_item)
 {
-  checkJob(_item, TO_STOP);
+    checkJob(_item, TO_STOP);
 }
-void JobList::checkJob(QListWidgetItem *_item, bool to_run = TO_RUN)
+void JobList::checkJob(QModelIndex &_item, bool to_run = TO_RUN)
 {
-  bool proc_state;
-  proc_state = _item->data(Qt::UserRole).toMap().value(QString("isRunning"), STOPPED).toBool();
-  if ( (to_run && !proc_state) || (!to_run && proc_state) )
-    jobItemDoubleClicked(_item);
+    bool proc_state;
+    JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+    proc_state = idx->getData().value(QString("isRunning"), STOPPED).toBool();
+    if ( (to_run && !proc_state) || (!to_run && proc_state) )
+        jobItemDoubleClicked(_item);
 }
 void JobList::editItemAction()
 {
-  QListWidgetItem *_item = currentItem();
-  if (!_item)
-    {
-      showMessage("Info", "Item not exist.");
-      return;
+    QModelIndex _item = currentIndex();
+    if ( !_item.isValid() ) {
+        showMessage("Info", "Item not exist.");
+        return;
     };
-  sDialog = new SettingsDialog(this);
-  sDialog->setJobItem(_item);
-  connect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
-  sDialog->exec();
-  disconnect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
-  sDialog->deleteLater();
+    JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+    sDialog = new SettingsDialog(this->parentWidget());
+    sDialog->setJobItem(idx);
+    connect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
+    sDialog->exec();
+    disconnect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
+    sDialog->deleteLater();
 }
 void JobList::deleteCurrentJobItem()
 {
-  QListWidgetItem *_item;
-  _item = currentItem();
-  if (_item)
-    {
-      QString job = _item->text();
-      takeItem(currentRow());
-      ElemProcess *proc;
-      proc = jobProcess->value(job);
-      if ( proc && proc->state()==QProcess::Running )
-        {
-          proc->killJob();
-          jobProcess->remove(job);
-          //qDebug()<<"delete"<<job;
+    QModelIndex _item = currentIndex();
+    if ( _item.isValid() ) {
+        JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+        QString job = idx->getName();
+        ElemProcess *proc;
+        proc = jobProcess->value(job);
+        bool proc_state;
+        proc_state = idx->getData().value(QString("availability"), AVAILABLE).toBool();
+        if ( !proc_state ) {
+            showMessage("Info", "Job is busy.");
+            clearSelection();
+            return;
         };
-      emit removeJob(job);
-    }
-  else showMessage("Info", "Item not exist.");
+        if ( proc && proc->state()==QProcess::Running ) {
+            proc->killJob();
+        };
+        jobProcess->remove(job);
+        jobItemModel->removeRow(_item.row());
+        emit removeJob(job);
+    } else showMessage("Info", "Item not exist.");
 }
 void JobList::deleteCancelledCreation()
 {

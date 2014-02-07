@@ -14,6 +14,7 @@
 #include "include_settings.h"
 #include "directory_settings.h"
 #include "element/string_list.h"
+#include "layout/jobitem_model.h"
 #include <QDebug>
 
 class SettingsDialog : public QDialog
@@ -22,34 +23,35 @@ class SettingsDialog : public QDialog
 public:
     SettingsDialog(QWidget *parent=0);
     ~SettingsDialog();
-    QSettings   settings;
+    QSettings    settings;
     QTabWidget  *tabWidget;
 
 signals:
     void creatingJobCancelled();
 
 private:
+    JobItemIndex     *own_index;
+
     QVBoxLayout      *commonLayout;
     QHBoxLayout      *buttonsLayout;
     QWidget          *buttons;
     QListWidgetItem  *item;
-    QString          name;
+    QString           name;
     QPushButton      *ok;
     QPushButton      *cancel;
     CommonSet        *w1;
     WindowSet        *w2;
     IncludeSet       *w3;
     DirectorySet     *w4;
-    bool             newbe;
-    QString          previousName;
+    bool              newbe;
+    QString           previousName;
     QTextEdit        *fullCommandWdg;
-    int              timerId;
+    int               timerId;
     String           *commandLine;
 
 public slots:
-    void        setJobItem(QListWidgetItem*);
-    static bool clean_Directory(QString);
-    static bool set_User_Dir_Label(QString);
+    void         setJobItem(JobItemIndex*);
+    static bool  clean_Directory(QString);
 
 private slots:
     void initTabWidget();

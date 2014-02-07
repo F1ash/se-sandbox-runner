@@ -3,14 +3,14 @@
 
 #include <QStringList>
 #include <QSettings>
-#include <QListWidgetItem>
 #include <QProcess>
 #include <QDir>
 #include <QTimer>
 #include <QTimerEvent>
 #include "signal.h"
 #include "string_list.h"
-#include "settings/settings.h"
+#include "shred_thread.h"
+#include "layout/jobitem_model.h"
 #include <QDebug>
 
 #define RUNNING       true
@@ -28,10 +28,9 @@ class ElemProcess : public QProcess
 public:
     ElemProcess(QObject *parent = 0);
     ~ElemProcess();
-    QListWidgetItem *item;
 
 public slots:
-    void setItemReference(QListWidgetItem*);
+    void setItemReference(JobItemModel*, JobItemIndex*);
     void runJob();
     void killJob();
 
@@ -39,30 +38,35 @@ signals:
     void processState(bool);
 
 private:
-    QStringList  children;
-    QString      PID;
-    QString      name;
-    QBrush       bgBrush;
-    QBrush       fgBrush;
-    QMap<QString, QVariant> proc_Status;
-    QSettings    settings;
-    int          waitTimerId;
-    int          timerId;
+    JobItemModel  *own_model;
+    JobItemIndex  *own_index;
 
-    String  *commandLine;
-    int      checkTimeout;
-    int      _diff;
-    bool     shred;
-    bool     mountDirs;
+    QStringList    children;
+    QString        PID;
+    QString        name;
+    DATA           proc_Status;
+    QSettings      settings;
+    int            waitTimerId;
+    int            timerId;
+
+    String        *commandLine;
+    int            checkTimeout;
+    int            _diff;
+    bool           shred;
+    bool           mountDirs;
+    QString        tempDir;
+    QString        homeDir;
+    QString        SELabel;
+    ShredThread   *shredder;
 
 private slots:
     QStringList getCommand();
     void appendChildren();
     void readChildren();
-    void setUnAvailableItemBrush();
     void setProcessState(bool);
     void timerEvent(QTimerEvent*);
     void sendMessage();
+    void shreddingFinished();
 };
 
 #endif //ELEMPROCESS_H

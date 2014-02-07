@@ -50,6 +50,11 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 {
   settings.setValue("Geometry", saveGeometry());
   settings.setValue("ToolBarArea", toolBarArea(toolBar));
+  // save JobListColumns
+  settings.setValue("column0", jobWidget->columnWidth(0));
+  settings.setValue("column1", jobWidget->columnWidth(1));
+  settings.setValue("column2", jobWidget->columnWidth(2));
+  //
   settings.sync();
   if ( !this->isVisible() ) changeVisibility();
   if ( runningJobsExist() && !wait_thread->isRunning() && !wait_thread->isFinished() )
@@ -108,6 +113,11 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason r)
 void MainWindow::initJobWidget()
 {
   jobWidget= new JobList(this);
+  // init JobListColumns
+  jobWidget->setColumnWidth(0, settings.value("column0", 132).toInt());
+  jobWidget->setColumnWidth(1, settings.value("column1", 32).toInt());
+  jobWidget->setColumnWidth(2, settings.value("column2", 32).toInt());
+  //
   QStringList groups = settings.childGroups();
   QList<QString>::const_iterator i;
   for (i=groups.constBegin(); i!=groups.constEnd(); ++i)
@@ -157,42 +167,41 @@ void MainWindow::removeJobItem(QString &job)
 }
 void MainWindow::runCurrentJob()
 {
-  QListWidgetItem *_item = jobWidget->currentItem();
-  if (_item)
-    {
-      jobWidget->runJob(_item);
+    QModelIndex _item = jobWidget->currentIndex();
+    if (_item.isValid()) {
+        jobWidget->runJob(_item);
     };
 }
 void MainWindow::stopCurrentJob()
 {
-  QListWidgetItem *_item = jobWidget->currentItem();
-  if (_item)
-    {
-      jobWidget->stopJob(_item);
+    QModelIndex _item = jobWidget->currentIndex();
+    if (_item.isValid()) {
+        jobWidget->stopJob(_item);
     };
 }
 void MainWindow::stopAllJob()
 {
-  int count = jobWidget->count();
-  for (int i = 0; i< count; i++) stopJob(i);
+    int count = jobWidget->jobItemModel->rowCount();
+    for (int i = 0; i< count; i++) stopJob(i);
 }
 void MainWindow::stopJob(int i)
 {
-  //qDebug()<<i<<" item to stop";
-  jobWidget->stopJob(jobWidget->item(i));
+    //qDebug()<<i<<" item to stop";
+    QModelIndex _item = jobWidget->jobItemModel->index(i, 0);
+    jobWidget->stopJob(_item);
 }
 bool MainWindow::runningJobsExist()
 {
-  bool result = false;
-  for (int i=0; i<jobWidget->count(); i++)
-    {
-      //qDebug()<<jobWidget->item(i)->text()<< jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool();
-      if ( jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool() ||
-           !jobWidget->item(i)->data(Qt::UserRole).toMap().value("availability").toBool() )
-        {
-          result = true;
-          break;
+    bool result = false;
+    int count = jobWidget->jobItemModel->rowCount();
+    for (int i=0; i<count; i++) {
+        JobItemIndex *item = jobWidget->jobItemModel->jobItemDataList.at(i);
+        //qDebug()<<jobWidget->item(i)->text()<< jobWidget->item(i)->data(Qt::UserRole).toMap().value("isRunning").toBool();
+        if ( item->getData().value("isRunning").toBool() ||
+            !item->getData().value("availability").toBool() ) {
+            result = true;
+            break;
         };
     };
-  return result;
+    return result;
 }

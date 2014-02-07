@@ -31,3 +31,8 @@ v.1.4.7 :
 released from oxygen icon set;
 improved toolbar;
 some fixes & improvements;
+
+v.1.6.8 :
+reimplemented JobList;
+reimplemented shredding;
+some improvements;

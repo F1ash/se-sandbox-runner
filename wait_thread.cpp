@@ -11,33 +11,34 @@ Wait::~Wait()
 }
 void Wait::run()
 {
-  while (wdg->count())
-    {
-      int count = wdg->count();
-      QList<QString> to_Delete;
-      for (int i=0; i<count; i++)
-        {
-          QListWidgetItem *_item;
-          _item = wdg->item(i);
-          QMap<QString, QVariant> map = _item->data(Qt::UserRole).toMap();
-          if ( map.value("availability").toBool() && !map.value("isRunning").toBool() )
-            {
-              to_Delete.append(_item->text());
-            }
-          else if ( map.value("availability").toBool() && map.value("isRunning").toBool() )
-            {
-              wdg->jobProcess->value(_item->text())->killJob();
+    while (wdg->jobItemModel->jobItemDataList.count()) {
+        int count = wdg->jobItemModel->jobItemDataList.count();
+        QList<QString> to_Delete;
+        for (int i=0; i<count; i++) {
+            JobItemIndex *idx = wdg->jobItemModel->jobItemDataList.at(i);
+            DATA map = idx->getData();
+            if ( map.value("availability").toBool() && !map.value("isRunning").toBool() ) {
+                to_Delete.append(idx->getName());
+            } else if ( map.value("availability").toBool() && map.value("isRunning").toBool() ) {
+                wdg->jobProcess->value(idx->getName())->killJob();
             };
         };
-      QList<QString>::const_iterator j;
-      for (j=to_Delete.constBegin(); j!=to_Delete.constEnd(); j++)
-        {
-          QList<QListWidgetItem *> _items;
-          _items = wdg->findItems(*j, Qt::MatchExactly);
-          if ( !_items.isEmpty() )
-          wdg->takeItem(wdg->row(_items.first()));
+        JobItemIndex *idx;
+        QList<QString>::const_iterator j;
+        for (j=to_Delete.constBegin(); j!=to_Delete.constEnd(); j++) {
+            int count = wdg->jobItemModel->rowCount();
+            bool exist = false;;
+            for (int i=0; i<count; i++) {
+                idx = wdg->jobItemModel->jobItemDataList.at(i);
+                if ( idx->getName()==*j ) {
+                    exist = true;
+                    break;
+                }
+            };
+            int row = wdg->jobItemModel->jobItemDataList.indexOf(idx);
+            if (exist) wdg->jobItemModel->removeRow(row);
         };
-      msleep(500);
+        msleep(500);
     };
   msleep(1000);
 }

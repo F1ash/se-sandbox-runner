@@ -1,4 +1,5 @@
 #include "settings/settings.h"
+#define MAX_LEN 1048576
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
@@ -110,113 +111,78 @@ QString SettingsDialog::includesFileName(QString s) const
   fullPath.append(QString("%1.included").arg(s));
   return fullPath.join(QDir::separator());
 }
-void SettingsDialog::setJobItem(QListWidgetItem *i)
+void SettingsDialog::setJobItem(JobItemIndex *idx)
 {
-  item = i;
-  name = item->text();
-  previousName = name;
-  setWindowTitle(name);
-  if (name!=QString("<noname>"))
-    {
-      w1->set_Job_Name(name);
-      w3->set_FileName(includesFileName(name));
-      initParameters();
+    own_index = idx;
+    name = idx->getName();
+    previousName = name;
+    setWindowTitle(name);
+    if ( name!=QString("<noname>") ) {
+        w1->set_Job_Name(name);
+        w3->set_FileName(includesFileName(name));
+        initParameters();
     };
 }
 void SettingsDialog::saveJob()
 {
   name = w1->get_Job_Name();
   w3->set_FileName(includesFileName(name));
-  QStringList groups = settings.childGroups();
-  if ( w4->mountDirs->isChecked() && !w4->homeDir->text().isEmpty() )
-    {
+  if ( ( w4->mountDirs->isChecked() )
+       && w3->enabled->isChecked() ) {
       QString s;
       s.append("Note: A permanent home directory and included files\ncan be used together only once --\nwhen the home directory is empty.");
       QMessageBox::information(this, QString("Info"), s);
-    };
-  if ( w1->session->isChecked() &&
-       ( w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
-         w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty()
-       )
-     )
-    {
-      QMessageBox::information(this, QString("Info"),
-        QString("You must to specify\na Security Level,\nHOME and TEMP directories."));
-      return;
-    }
-  else if ( w1->session->isChecked() &&
-            !( w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
-               w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty() ) )
-    {
-      QMessageBox::information(this, QString("Info"),
-        QString("In this case a TempDir and a HomeDir\nmust to be cpecified together."));
+  };
+  // make specified directories
+  if ( w4->mountDirs->isChecked() ) {
+      if ( !w4->homeDir->text().isEmpty() && !exist_Directory(w4->homeDir) ) return;
+      if ( !w4->tempDir->text().isEmpty() && !exist_Directory(w4->tempDir) ) return;
       make_SpecifiedDirectories();
-      return;
-    }
-  // set specified context if directories enabled and not empty
-  else if ( !w1->session->isChecked() &&
-             w4->securityLevel->isChecked() &&
-            !w4->selinuxLabel->text().isEmpty() )
-    {
-      if ( !w4->tempDir->text().isEmpty() && w4->mountDirs->isChecked() &&
-           !set_SpecifiedLabel(w4->tempDir->text()) )
-        return;
-      if ( !w4->homeDir->text().isEmpty() && w4->mountDirs->isChecked() &&
-           !set_SpecifiedLabel(w4->homeDir->text()) )
-        return;
-    }
-  // set user_dir_t for normalize context if directories enabled and not empty
-  else if ( !w1->session->isChecked() &&
-          (  w4->selinuxLabel->text().isEmpty() ||
-            !w4->securityLevel->isChecked() ) )
-    {
-      if ( !w4->tempDir->text().isEmpty() && w4->mountDirs->isChecked() &&
-           !set_User_Dir_Label(w4->tempDir->text()) )
-        return;
-      if ( !w4->homeDir->text().isEmpty() && w4->mountDirs->isChecked() &&
-           !set_User_Dir_Label(w4->homeDir->text()) )
-        return;
-    };
-  if ( !w4->tempDir->text().isEmpty() && !exist_Directory(w4->tempDir) ) return;
-  if ( !w4->homeDir->text().isEmpty() && !exist_Directory(w4->homeDir) ) return;
+  };
+  // check Session parameters
+  if ( w1->session->isChecked() ) {
+      if ( w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
+         w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty() ) {
+          QMessageBox::information(this, QString("Info"),
+              QString("You must to specify\na Security Level,\nHOME and TEMP directories."));
+          return;
+      };
+  };
+  // set specified SELinux context for directories
+  if ( w4->securityLevel->isChecked() && !w4->selinuxLabel->text().isEmpty() ) {
+      if ( !w4->tempDir->text().isEmpty() && !set_SpecifiedLabel(w4->tempDir->text()) ) return;
+      if ( !w4->homeDir->text().isEmpty() && !set_SpecifiedLabel(w4->homeDir->text()) ) return;
+  };
+
+  // check unique Job name & Settings Node
+  QStringList groups = settings.childGroups();
   if ( name.isEmpty() ) QMessageBox::information(this, QString("Info"), QString("JobName is empty."));
-  else if ( groups.contains(name) && !newbe && name==previousName )
-    {
+  else if ( groups.contains(name) && !newbe && name==previousName ) {
       saveParameters();
       close();
-    }
-  else if ( groups.contains(name) && newbe )
-    {
+  } else if ( groups.contains(name) && newbe ) {
       QMessageBox::information(this, QString("Info"), QString("Same JobName is exist."));
-    }
-  else if ( groups.contains(name) && !newbe && name!=previousName )
-    {
+  } else if ( groups.contains(name) && !newbe && name!=previousName ) {
       QMessageBox::information(this, QString("Info"), QString("Same JobName is exist."));
-    }
-  else if ( !groups.contains(name) && newbe )
-    {
+  } else if ( !groups.contains(name) && newbe ) {
       saveParameters();
       close();
-    }
-  else if ( !groups.contains(name) && !newbe )
-    {
+  } else if ( !groups.contains(name) && !newbe ) {
       settings.remove(previousName);
       QFile f;
       f.setFileName(includesFileName(previousName));
       f.remove();
-      //qDebug()<<previousName<<"included deleted";
       saveParameters();
       close();
-    };
+  };
 }
 void SettingsDialog::cancelJob()
 {
   //qDebug()<<"cancel"<<name<< newbe;
-  if ( newbe )
-    {
+  if ( newbe ) {
       settings.remove(name);
       emit creatingJobCancelled();
-    };
+  };
   close();
 }
 void SettingsDialog::initParameters()
@@ -284,12 +250,9 @@ void SettingsDialog::saveParameters()
   settings.setValue("TempDir", QVariant(w4->tempDir->text()));
   settings.setValue("HomeDir", QVariant(w4->homeDir->text()));
   settings.endGroup();
-  item->setText(name);
-  QString tT = item->toolTip();
-  tT.append("\n-- EDITED --");
-  item->setToolTip(tT);
-  if ( item->data(Qt::UserRole).toMap().value("isRunning").toBool() )
-    QMessageBox::information(this, "Info", "New settings apply\nat next job start.");
+  own_index->setName(name);
+  if ( own_index->getData().value("isRunning").toBool() )
+      QMessageBox::information(this, "Info", "New settings apply\nat next job start.");
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *ev)
@@ -305,21 +268,17 @@ void SettingsDialog::windowSetsEnable(int i)
   Qt::CheckState _state = (i) ? Qt::Checked : Qt::Unchecked;
   w2->setEnabled(_state==Qt::Checked);
   int current_policy = w1->sandboxType->currentIndex();
-  if ( _state==Qt::Checked )
-    {
-      if ( current_policy < 2 )
-        {
+  if ( _state==Qt::Checked ) {
+      if ( current_policy < 2 ) {
           w1->sandboxType->setCurrentIndex(2);
-        };
-    }
-  else
-    {
+      };
+  } else {
       int c;
       settings.beginGroup(name);
       c = w1->sandboxType->findText( settings.value("SType", QVariant()).toString() );
       settings.endGroup();
       w1->sandboxType->setCurrentIndex(c);
-    };
+  };
 }
 
 void SettingsDialog::set_Title_Name(QString s)
@@ -330,49 +289,38 @@ void SettingsDialog::set_Title_Name(QString s)
 void SettingsDialog::timerEvent(QTimerEvent *event)
  {
    int _timerId = event->timerId();
-   if ( _timerId && timerId==_timerId )
-     {
+   if ( _timerId && timerId==_timerId ) {
        QString runApp;
        QStringList cmd;
        QStringList commandString;
        commandString = w1->termCommand->text().split(" ");
        commandString.removeAll("");
 
-       if ( !w1->runInTerm->isChecked() )
-         {
+       if ( !w1->runInTerm->isChecked() ) {
            runApp = QString("/usr/bin/sandbox");
            cmd = _commandBuild();
-         }
-       else
-         {
+       } else {
            QStringList _cmd = _commandBuild();
            _cmd.prepend("/usr/bin/sandbox");
-           if ( !w1->customTerminal->isChecked() )
-             {
+           if ( !w1->customTerminal->isChecked() ) {
                cmd.append(_cmd.join(" "));
                runApp = QString("/usr/bin/xdg-terminal");
-             }
-           else
-             {
+           } else {
                cmd = _cmd;
-               while ( commandString.count() > 1 )
-                 {
+               while ( commandString.count() > 1 ) {
                    cmd.prepend( commandString.takeLast() );
-                 };
-               if ( !commandString.isEmpty() && !commandString.first().isEmpty() )
-                 {
+               };
+               if ( !commandString.isEmpty() && !commandString.first().isEmpty() ) {
                    runApp = commandString.first();
-                 }
-               else
-                 {
+               } else {
                    cmd.prepend("-e");
                    runApp = QString("xterm");
-                 };
-             };
-         };
+               };
+           };
+       };
        //qDebug()<<runApp<<cmd.join(" ")<<name;
        fullCommandWdg->setText(QString("%1 %2").arg(runApp).arg(cmd.join(" ")));
-     };
+   };
  }
 
 QStringList SettingsDialog::_commandBuild()
@@ -397,13 +345,12 @@ QStringList SettingsDialog::_commandBuild()
     commandLine->appendTempDir( str );
   str = w3->get_FileName();
   if ( w3->enabled->isChecked() && !str.isEmpty() ) commandLine->appendIncludes( str );
-  if ( w1->guiApp->isChecked() )
-    {
+  if ( w1->guiApp->isChecked() ) {
       str = w2->WM->text();
       if ( !str.isEmpty() ) commandLine->appendWM( str );
       if ( w2->windowWidth->value() && w2->windowHeight->value() )
           commandLine->appendWindowSize( w2->windowWidth->value(), w2->windowHeight->value() );
-    };
+  };
   str = w1->sandboxType->currentText();
   if ( !str.isEmpty() ) commandLine->appendSandboxType( str );
   str = w1->command->text();
@@ -416,14 +363,14 @@ QStringList SettingsDialog::_commandBuild()
 void SettingsDialog::sessionStateChanged(bool b)
 {
   w4->sessionUsed = b;
+  w1->command->setEnabled(!b);
   if (b) w4->setSELinuxLabelState(b);
-  else
-    {
+  else {
       settings.beginGroup(name);
       w4->securityLevel->setChecked( settings.value("SLevel", QVariant()).toBool() );
       w4->mountDirs->setChecked( settings.value("Mount", QVariant()).toBool() );
       settings.endGroup();
-    };
+  };
 }
 
 bool SettingsDialog::make_Directory(QString s, QString Dir)
@@ -432,43 +379,35 @@ bool SettingsDialog::make_Directory(QString s, QString Dir)
   QDir d;
   QString q = QString(" not specified.\nCreate temporary directory?");
   QString p = QString("cleaning not completed.\nTo continue anyway?");
-  if ( s.isEmpty() )
-    {
+  if ( s.isEmpty() ) {
       int answer = QMessageBox::question(this, "Settings", QString("%1 %2").arg(Dir).arg(q),
                    QMessageBox::Yes, QMessageBox::No);
-      if ( answer == QMessageBox::Yes )
-        {
+      if ( answer == QMessageBox::Yes ) {
           QString suff;
           QString user = QString("HOME");
           QStringList env = QProcess::systemEnvironment();
           QList<QString>::const_iterator i;
-          for ( i=env.constBegin(); i<env.constEnd(); i++ )
-            {
+          for ( i=env.constBegin(); i<env.constEnd(); i++ ) {
               QString item = *i;
-              if ( (item).startsWith("USER=") )
-                {
+              if ( (item).startsWith("USER=") ) {
                   user = item.split("=")[1];
                   break;
-                };
-            };
+              };
+          };
           suff = ( Dir == "TempDir" ) ? "tmp" : user;
           dirPath = QString("/tmp/.sandbox-%1-XXXXXX").arg(suff);
-        }
-      else return false;
-    }
-  else dirPath = s;
+      } else return false;
+  } else dirPath = s;
 
-  if ( !clean_Directory(dirPath) )
-    {
+  if ( !clean_Directory(dirPath) ) {
       int answer = QMessageBox::question(this, "Clean Directory",
                    QString("\"%1\" %2").arg(dirPath).arg(p), QMessageBox::Yes, QMessageBox::No);
       if ( answer == QMessageBox::No ) return false;
-    };
-  if ( !d.mkpath(dirPath) )
-    {
+  };
+  if ( !d.mkpath(dirPath) ) {
       QMessageBox::information(this, QString("Info"), QString("Path\n\"%1\"\nis failed.").arg(dirPath));
       return false;
-    }
+  }
   else if ( !set_SpecifiedLabel(dirPath) ) return false;
   QLineEdit *obj = ( Dir == "TempDir" ) ? w4->tempDir : w4->homeDir;
   obj->setText(dirPath);
@@ -495,84 +434,66 @@ bool SettingsDialog::set_SpecifiedLabel(QString s)
   QString SELabel = w4->selinuxLabel->text();
   QStringList args = QStringList()<<"-R"<<"-t"<<"sandbox_file_t"<<"-l"<< SELabel<< s;
   int exitCode = QProcess::execute(QString("chcon"), args);
-  if ( exitCode != 0 )
-    {
+  if ( exitCode != 0 ) {
       QMessageBox::information(this, QString("Info"),
-        QString("\"%1\"\n%2\n%3").arg(s).arg("can`t marked by label:\n").arg(SELabel));
+        QString("\"%1\"\n%2\n%3\nTry do it manually.").arg(s).arg("can`t marked by label:\n").arg(SELabel));
       return false;
-    };
-  return true;
-}
-
-bool SettingsDialog::set_User_Dir_Label(QString s)
-{
-  /*
-   * chcon -R -t user_home_t -l s0: /home/Flash/Example_HOME
-   */
-  QStringList args = QStringList()<<"-R"<<"-t"<<"user_home_t"<< "-l"<< "s0"<< s;
-  int exitCode = QProcess::execute(QString("chcon"), args);
-  if ( exitCode != 0 )
-    {
-      QMessageBox::information(NULL, QString("Info"),
-        QString("\"%1\"\n%2").arg(s).arg("can`t marked by label: s0"));
-      return false;
-    };
+  };
   return true;
 }
 
 bool SettingsDialog::clean_Directory(QString dir)
 {
-  bool result = true;
-  QDir d;
-  QStringList redundant = QStringList()<<"."<<"..";
-  d.setPath(dir);
-  if ( d.exists() )
-    {
-      QList<QFileInfo> entry = d.entryInfoList();
-      if ( !entry.isEmpty() )
-        {
-          bool _result = true;
-          QList<QFileInfo>::const_iterator i;
-          for ( i=entry.constBegin(); i<entry.constEnd(); i++ )
-            {
-              QFileInfo item = *i;
-              item.makeAbsolute();
-              if ( item.isDir() )
-                {
-                  QString path;
-                  QString fileName;
-                  fileName = item.fileName();
-                  path.append(item.dir().path());
-                  //qDebug()<<path;
-                  if ( !redundant.contains( fileName ) )
-                    {
-                      path.append(QDir::separator());
-                      path.append(fileName);
+    // Shred temporary files created in $HOME and /tmp, before deleting.
+    QDir::Filters flags = QDir::AllEntries|QDir::NoDotAndDotDot|QDir::Hidden|QDir::System|QDir::AllDirs;
+    bool result = true;
+    QDir d;
+    d.setPath(dir);
+    if ( d.exists() ) {
+        QList<QFileInfo> entry = d.entryInfoList(flags);
+        if ( !entry.isEmpty() ) {
+            bool _result = true;
+            QList<QFileInfo>::const_iterator i;
+            for ( i=entry.constBegin(); i<entry.constEnd(); i++ ) {
+                QFileInfo item = *i;
+                QString path = item.canonicalFilePath();
+                bool ret = true;
+                if ( path==d.absoluteFilePath(dir) ) continue;
+                if ( item.isDir() ) {
+                    ret = clean_Directory(path);
+                    d.rmdir(path);
+                } else {
+                    qint64 pos = 0;
+                    QFile f;
+                    f.setFileName(path);
+                    f.open(QIODevice::ReadWrite);
+                    qint64 fSize = f.size();
+                    while ( pos<fSize ) {
+                        f.seek(pos);
+                        f.putChar('0');
+                        pos++;
                     };
-                  if ( !dir.contains( path ) ) _result = _result && clean_Directory(path) && d.rmdir(path);
-                }
-              else if ( item.isFile() )
-                {
-                  _result = _result && QFile::remove(item.canonicalFilePath());
-                  //qDebug()<<item.canonicalFilePath();
+                    f.close();
+                    f.remove();
                 };
+                _result = _result && ret;
             };
-          result = result && _result;
+            result = result && _result;
         };
-    };
-  return result;
+        result = result && d.rmdir(dir);
+    } else result = false;
+    return result;
 }
 
 bool SettingsDialog::exist_Directory(QLineEdit *obj)
 {
-  QDir d;
-  QString dir = obj->text();
-  d.setPath(dir);
-  if ( !d.exists() )
-    {
-      QMessageBox::information(this, QString("Info"), QString("Directory\n\"%1\"\n is not exist.").arg(dir));
-      obj->clear();
-      return false;
+    QDir d;
+    QString dir = obj->text();
+    d.setPath(dir);
+    if ( !d.exists() ) {
+        QMessageBox::information(this, QString("Info"), QString("Directory\n\"%1\"\n is not exist.").arg(dir));
+        obj->clear();
+        return false;
     };
-  return true;
+    return true;
 }
