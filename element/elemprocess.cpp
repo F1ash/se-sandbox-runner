@@ -200,12 +200,17 @@ void ElemProcess::runJob()
 }
 void ElemProcess::killJob()
 {
+  proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
+  own_index->setData(proc_Status);
+  QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+  own_model->setData(_idx, "Killing", Qt::EditRole);
   if (timerId) {
       killTimer(timerId);
       timerId = 0;
   };
   appendChildren();
   this->kill();
+  this->waitForFinished();
   //qDebug()<<children;
   QList<QString>::const_iterator i;
   for (i = children.constBegin(); i != children.constEnd(); ++i) {
@@ -223,6 +228,20 @@ void ElemProcess::killJob()
       shredder->homeDir = homeDir;
       shredder->start();
   } else emit processState(STOPPED);
+}
+void ElemProcess::undockJob()
+{
+  proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
+  own_index->setData(proc_Status);
+  QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+  own_model->setData(_idx, "Undocking", Qt::EditRole);
+  if (timerId) {
+      killTimer(timerId);
+      timerId = 0;
+  };
+  this->kill();
+  this->waitForFinished();
+  emit processState(STOPPED);
 }
 void ElemProcess::setProcessState(bool status)
 {

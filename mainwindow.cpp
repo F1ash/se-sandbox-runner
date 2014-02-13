@@ -16,8 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
   initTrayIcon();
   initJobWidget();
   initToolBar();
-  wait_thread = new Wait(this);
-  connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
 }
 MainWindow::~MainWindow()
 {
@@ -34,10 +32,12 @@ MainWindow::~MainWindow()
   disconnect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   disconnect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
   disconnect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
-  disconnect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
 
-  delete wait_thread;
-  wait_thread = 0;
+  if ( wait_thread!=NULL ) {
+      disconnect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+      delete wait_thread;
+      wait_thread = 0;
+  };
 
   delete trayIcon;
   trayIcon = 0;
@@ -57,27 +57,27 @@ void MainWindow::closeEvent(QCloseEvent *ev)
   //
   settings.sync();
   if ( !this->isVisible() ) changeVisibility();
-  if ( runningJobsExist() && !wait_thread->isRunning() && !wait_thread->isFinished() )
-    {
+  if ( runningJobsExist() && wait_thread==NULL ) {
       QString q;
       q.append("Running Jobs are exist.\nKill it at exit?");
       int answer = QMessageBox::question(this, "Action", q, QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
-      if ( answer != QMessageBox::No )
-        {
-          if ( answer == QMessageBox::Yes )
-            {
-              jobWidget->setEnabled(false);
-              toolBar->setEnabled(false);
-              wait_thread->setWdgReference(jobWidget);
-              wait_thread->start();
-            };
+      if ( answer == QMessageBox::Cancel ) {
           ev->ignore();
           return;
-        };
-    };
-  if ( !wait_thread->isRunning() || wait_thread->isFinished() )
-    ev->accept();
-  else ev->ignore();
+      };
+      jobWidget->setEnabled(false);
+      toolBar->setEnabled(false);
+      wait_thread = new Wait(this);
+      connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+      wait_thread->setWdgReference(jobWidget);
+      wait_thread->setMode( answer == QMessageBox::Yes );
+      wait_thread->start();
+      ev->ignore();
+  } else if ( !runningJobsExist() && (wait_thread==NULL || wait_thread->isFinished()) ) {
+      ev->accept();
+  } else {
+      ev->ignore();
+  };
 }
 void MainWindow::closeEvent()
 {
@@ -136,6 +136,7 @@ void MainWindow::initToolBar()
   connect(toolBar->_editAction, SIGNAL(triggered()), this, SLOT(editCurrentJobItem()));
   connect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
   connect(toolBar->_runAction, SIGNAL(triggered()), this, SLOT(runCurrentJob()));
+  connect(toolBar->_undockAction, SIGNAL(triggered()), this, SLOT(undockCurrentJob()));
   connect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
   connect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
   connect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
@@ -170,6 +171,13 @@ void MainWindow::runCurrentJob()
     QModelIndex _item = jobWidget->currentIndex();
     if (_item.isValid()) {
         jobWidget->runJob(_item);
+    };
+}
+void MainWindow::undockCurrentJob()
+{
+    QModelIndex _item = jobWidget->currentIndex();
+    if (_item.isValid()) {
+        jobWidget->undockJob(_item);
     };
 }
 void MainWindow::stopCurrentJob()

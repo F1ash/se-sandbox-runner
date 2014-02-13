@@ -3,7 +3,7 @@
 Wait::Wait(QObject *parent = 0) :
     QThread(parent)
 {
-
+    to_kill = true;
 }
 Wait::~Wait()
 {
@@ -20,7 +20,8 @@ void Wait::run()
             if ( map.value("availability").toBool() && !map.value("isRunning").toBool() ) {
                 to_Delete.append(idx->getName());
             } else if ( map.value("availability").toBool() && map.value("isRunning").toBool() ) {
-                wdg->jobProcess->value(idx->getName())->killJob();
+                if ( to_kill ) wdg->jobProcess->value(idx->getName())->killJob();
+                else wdg->jobProcess->value(idx->getName())->undockJob();
             };
         };
         JobItemIndex *idx;
@@ -40,9 +41,13 @@ void Wait::run()
         };
         msleep(500);
     };
-  msleep(1000);
+    msleep(1000);
 }
 void Wait::setWdgReference(JobList *w)
 {
   wdg = w;
+}
+void Wait::setMode(bool mode)
+{
+    to_kill = mode;
 }

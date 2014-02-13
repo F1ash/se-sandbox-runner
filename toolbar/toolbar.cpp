@@ -23,6 +23,8 @@ ToolBar::~ToolBar()
   _editAction = 0;
   delete _runAction;
   _runAction = 0;
+  delete _undockAction;
+  _undockAction = 0;
   delete _stopAction;
   _stopAction = 0;
   delete _stopAllAction;
@@ -46,6 +48,8 @@ void ToolBar::initActions()
   _deleteAction->setIcon ( QIcon::fromTheme("clean") );
   _runAction = new QAction(QString("Run selected Job"), this);
   _runAction->setIcon ( QIcon::fromTheme("run") );
+  _undockAction = new QAction(QString("Undock selected Job"), this);
+  _undockAction->setIcon ( QIcon::fromTheme("undock") );
   _stopAction = new QAction(QString("Kill selected Job"), this);
   _stopAction->setIcon ( QIcon::fromTheme("stop") );
   _stopAllAction = new QAction(QString("Kill all Job"), this);
@@ -67,6 +71,7 @@ void ToolBar::initActions()
   itemControlMenu->addAction(_deleteAction);
   itemControlMenu->addSeparator();
   itemControlMenu->addAction(_runAction);
+  itemControlMenu->addAction(_undockAction);
   itemControlMenu->addAction(_stopAction);
   itemControlMenu->addAction(_stopAllAction);
   itemControlAction->setMenu(itemControlMenu);

@@ -19,17 +19,17 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QSettings settings;
-    JobList   *jobWidget;
+    QSettings   settings;
+    JobList    *jobWidget;
 
 signals:
 
 public slots:
 
 private :
-    TrayIcon *trayIcon;
-    ToolBar  *toolBar;
-    Wait     *wait_thread;
+    TrayIcon   *trayIcon;
+    ToolBar    *toolBar;
+    Wait       *wait_thread = NULL;
 
 private slots:
     void closeEvent(QCloseEvent*);
@@ -44,6 +44,7 @@ private slots:
     void deleteCurrentJobItem();
     void removeJobItem(QString&);
     void runCurrentJob();
+    void undockCurrentJob();
     void stopCurrentJob();
     void stopJob(int);
     void stopAllJob();

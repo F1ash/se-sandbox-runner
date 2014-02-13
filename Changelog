@@ -36,3 +36,7 @@ v.1.6.8 :
 reimplemented JobList;
 reimplemented shredding;
 some improvements;
+
+v.1.6.10 :
+added undock action;
+some improvements;

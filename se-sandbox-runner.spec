@@ -1,7 +1,7 @@
 %global cmake_build_dir build-cmake
 
 Name:           se-sandbox-runner
-Version:        1.6.8
+Version:        1.6.10
 Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
@@ -11,9 +11,11 @@ URL:            https://github.com/F1ash/%{name}
 
 Requires:       xdg-utils
 Requires:       policycoreutils-sandbox
+%if (0%{?fedora} >= 20)
 Requires:       selinux-policy-sandbox
+%endif
 # for compatibility with the current version
-Requires:       sandbox-runner-data >= 0.2.2
+Requires:       sandbox-runner-data >= 0.3.3
 BuildRequires:  qt4-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -47,6 +49,14 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Thu Feb 13 2014 Fl@sh <kaperang07@gmail.com> - 1.6.10-1
+- changed the selinux-policy-sandbox version in R;
+- version updated;
+
+* Sat Feb  8 2014 Fl@sh <kaperang07@gmail.com> - 1.6.8-2
+- added a condition to the selinux-policy-sandbox requirement;
+- release updated;
+
 * Fri Feb  7 2014 Fl@sh <kaperang07@gmail.com> - 1.6.8-1
 - added selinux-policy-sandbox to R;
 - version updated;

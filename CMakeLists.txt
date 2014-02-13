@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.3)
 
 set (PROJECT_NAME se-sandbox-runner)
-set (PROJECT_VERSION 1.6.8)
+set (PROJECT_VERSION 1.6.10)
 set (HEADERS 
   mainwindow.h
   tray/traywidget.h

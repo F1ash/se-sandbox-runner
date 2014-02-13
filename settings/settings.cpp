@@ -1,5 +1,4 @@
 #include "settings/settings.h"
-#define MAX_LEN 1048576
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
@@ -456,6 +455,7 @@ bool SettingsDialog::clean_Directory(QString dir)
             QList<QFileInfo>::const_iterator i;
             for ( i=entry.constBegin(); i<entry.constEnd(); i++ ) {
                 QFileInfo item = *i;
+                if ( !item.exists() ) continue;
                 QString path = item.canonicalFilePath();
                 bool ret = true;
                 if ( path==d.absoluteFilePath(dir) ) continue;
@@ -463,18 +463,20 @@ bool SettingsDialog::clean_Directory(QString dir)
                     ret = clean_Directory(path);
                     d.rmdir(path);
                 } else {
-                    qint64 pos = 0;
                     QFile f;
                     f.setFileName(path);
-                    f.open(QIODevice::ReadWrite);
-                    qint64 fSize = f.size();
-                    while ( pos<fSize ) {
-                        f.seek(pos);
-                        f.putChar('0');
-                        pos++;
+                    if ( f.exists() ) {
+                        qint64 pos = 0;
+                        f.open(QIODevice::ReadWrite);
+                        qint64 fSize = f.size();
+                        while ( pos<fSize ) {
+                            f.seek(pos);
+                            f.putChar('0');
+                            pos++;
+                        };
+                        f.close();
+                        ret = f.remove();
                     };
-                    f.close();
-                    f.remove();
                 };
                 _result = _result && ret;
             };

@@ -10,8 +10,9 @@ public:
     JobMenu(QWidget *parent = 0);
     ~JobMenu();
 
-    QAction *edit;
-    QAction *act;
+    QAction  *edit;
+    QAction  *undock;
+    QAction  *act;
 
 signals:
 

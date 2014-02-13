@@ -14,10 +14,12 @@ public:
 signals:
 
 private:
-    JobList *wdg;
+    JobList  *wdg;
+    bool      to_kill;
 
 public slots:
     void setWdgReference(JobList*);
+    void setMode(bool);
 
 private slots:
     void run();

@@ -18,6 +18,7 @@ public:
   QAction      *_editAction;
   QAction      *_deleteAction;
   QAction      *_runAction;
+  QAction      *_undockAction;
   QAction      *_stopAction;
   QAction      *_stopAllAction;
   QAction      *_exitAction;

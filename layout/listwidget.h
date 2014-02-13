@@ -33,6 +33,7 @@ public slots:
     void addJobItem(const QString&);
     void deleteCurrentJobItem();
     void runJob(QModelIndex&);
+    void undockJob(QModelIndex&);
     void stopJob(QModelIndex&);
 
 private :
@@ -43,6 +44,7 @@ private slots:
     void jobItemClicked(const QPoint&);
     void createJobProcess(QModelIndex&);
     void jobItemDoubleClicked(const QModelIndex&);
+    void jobItemUndockAction();
     void jobItemKillAction();
     void jobItemRunAction();
     void checkJob(QModelIndex&, bool);

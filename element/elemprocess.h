@@ -33,6 +33,7 @@ public slots:
     void setItemReference(JobItemModel*, JobItemIndex*);
     void runJob();
     void killJob();
+    void undockJob();
 
 signals:
     void processState(bool);
