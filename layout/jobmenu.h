@@ -5,7 +5,7 @@
 
 class JobMenu : public QMenu
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     JobMenu(QWidget *parent = 0);
     ~JobMenu();

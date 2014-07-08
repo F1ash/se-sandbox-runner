@@ -20,41 +20,41 @@ class CommonSet : public QWidget
 public:
     CommonSet(QWidget *parent=0);
     ~CommonSet();
-    QCheckBox     *autoRun;
-    QCheckBox     *cgroups;
-    QLineEdit     *nameEdit;
-    QCheckBox     *guiApp;
-    QCheckBox     *runInTerm;
-    QCheckBox     *shred;
-    QCheckBox     *capabilities;
-    QComboBox     *sandboxType;
-    QRadioButton  *execute;
-    QRadioButton  *session;
-    QLineEdit     *command;
-    QSpinBox      *checkTimeout;
-    QRadioButton  *defaultTerminal;
-    QRadioButton  *customTerminal;
-    QLineEdit     *termCommand;
+    QCheckBox       *autoRun;
+    QCheckBox       *cgroups;
+    QLineEdit       *nameEdit;
+    QCheckBox       *guiApp;
+    QCheckBox       *runInTerm;
+    QCheckBox       *shred;
+    QCheckBox       *capabilities;
+    QComboBox       *sandboxType;
+    QRadioButton    *execute;
+    QRadioButton    *session;
+    QLineEdit       *command;
+    QSpinBox        *checkTimeout;
+    QRadioButton    *defaultTerminal;
+    QRadioButton    *customTerminal;
+    QLineEdit       *termCommand;
 
 signals:
     void sessionUsed(bool);
 
 private:
-    QGridLayout  *gridLayout;
-    QLabel       *typeLabel;
-    QLabel       *timeoutLabel;
-    QPushButton  *selectFile;
-    QWidget      *commonWdg;
-    QVBoxLayout  *commonCmdLayout;
-    QLabel       *runInTermLabel;
-    QWidget      *cmdWidget;
-    QHBoxLayout  *cmdLayout;
-    QWidget      *termChoiseWidget;
-    QVBoxLayout  *termChoiseLayout;
+    QGridLayout     *gridLayout;
+    QLabel          *typeLabel;
+    QLabel          *timeoutLabel;
+    QPushButton     *selectFile;
+    QWidget         *commonWdg;
+    QVBoxLayout     *commonCmdLayout;
+    QLabel          *runInTermLabel;
+    QWidget         *cmdWidget;
+    QHBoxLayout     *cmdLayout;
+    QWidget         *termChoiseWidget;
+    QVBoxLayout     *termChoiseLayout;
 
 public slots:
-    QString       get_Job_Name() const;
-    void          set_Job_Name(QString&);
+    QString     get_Job_Name() const;
+    void        set_Job_Name(QString&);
 
 private slots:
     void initTypeBox();

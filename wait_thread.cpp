@@ -7,7 +7,6 @@ Wait::Wait(QObject *parent = 0) :
 }
 Wait::~Wait()
 {
-
 }
 void Wait::run()
 {
@@ -45,7 +44,7 @@ void Wait::run()
 }
 void Wait::setWdgReference(JobList *w)
 {
-  wdg = w;
+    wdg = w;
 }
 void Wait::setMode(bool mode)
 {

@@ -12,37 +12,37 @@
 
 class DirectorySet : public QWidget
 {
-  Q_OBJECT;
+    Q_OBJECT
 public:
     DirectorySet(QWidget *parent=0);
     ~DirectorySet();
-    QCheckBox *mountDirs;
-    QCheckBox *guiApp;
-    QCheckBox *securityLevel;
-    QLineEdit *selinuxLabel;
-    QLineEdit *tempDir;
-    QLineEdit *homeDir;
-    bool       sessionUsed;
+    QCheckBox   *mountDirs;
+    QCheckBox   *guiApp;
+    QCheckBox   *securityLevel;
+    QLineEdit   *selinuxLabel;
+    QLineEdit   *tempDir;
+    QLineEdit   *homeDir;
+    bool         sessionUsed;
 
 signals:
     void guiStateChanged(bool);
 
 private:
-    QWidget     *tempDirWdg;
-    QWidget     *homeDirWdg;
-    QLabel      *tempLabel;
-    QLabel      *homeLabel;
-    QGridLayout *commonLayout;
-    QHBoxLayout *tempWdgLayout;
-    QHBoxLayout *homeWdgLayout;
-    QPushButton *getTempDir;
-    QPushButton *getHomeDir;
+    QWidget         *tempDirWdg;
+    QWidget         *homeDirWdg;
+    QLabel          *tempLabel;
+    QLabel          *homeLabel;
+    QGridLayout     *commonLayout;
+    QHBoxLayout     *tempWdgLayout;
+    QHBoxLayout     *homeWdgLayout;
+    QPushButton     *getTempDir;
+    QPushButton     *getHomeDir;
 
 public slots:
-    QString get_TempDir() const;
-    QString get_HomeDir() const;
-    QString get_Mount() const;
-    void    setGuiCheckState(int);
+    QString     get_TempDir() const;
+    QString     get_HomeDir() const;
+    QString     get_Mount() const;
+    void        setGuiCheckState(int);
 
 private slots:
     void initTempDirWidget();

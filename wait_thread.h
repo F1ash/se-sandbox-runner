@@ -6,7 +6,7 @@
 
 class Wait : public QThread
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     Wait(QObject *parent);
     ~Wait();

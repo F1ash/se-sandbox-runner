@@ -1,7 +1,7 @@
 %global cmake_build_dir build-cmake
 
 Name:           se-sandbox-runner
-Version:        1.6.10
+Version:        1.6.12
 Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
@@ -49,6 +49,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Tue Jul  8 2014 Fl@sh <kaperang07@gmail.com> - 1.6.12-1
+- version updated;
+
 * Thu Feb 13 2014 Fl@sh <kaperang07@gmail.com> - 1.6.10-1
 - changed the selinux-policy-sandbox version in R;
 - version updated;

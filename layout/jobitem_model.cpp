@@ -37,74 +37,73 @@ int JobItemModel::columnCount(const QModelIndex &parent) const
 }
 QVariant JobItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-  if ( orientation == Qt::Horizontal ) {
-    if ( role == Qt::DisplayRole ) {
-      switch (section) {
-      case 0:
-        return QString("Name");
-        break;
-      case 1:
-        return QString("State");
-        break;
-      case 2:
-        return QString("PID");
-        break;
-      default:
-        break;
-      }
-    } else if ( role==Qt::TextAlignmentRole ) {
-        return Qt::AlignCenter;
+    if ( orientation == Qt::Horizontal ) {
+        if ( role == Qt::DisplayRole ) {
+            switch (section) {
+            case 0:
+                return QString("Name");
+                break;
+            case 1:
+                return QString("State");
+                break;
+            case 2:
+                return QString("PID");
+                break;
+            default:
+                break;
+            }
+        } else if ( role==Qt::TextAlignmentRole ) {
+            return Qt::AlignCenter;
+        };
     };
-  };
-  return QAbstractTableModel::headerData( section, orientation, role );
+    return QAbstractTableModel::headerData( section, orientation, role );
 }
 QVariant JobItemModel::data(const QModelIndex &index, int role) const
 {
     QVariant res;
     if ( role==Qt::DisplayRole ) {
         switch (index.column()) {
-        case 0:
-            res = jobItemDataList.at(index.row())->getName();
-            break;
-        case 1:
-            res = jobItemDataList.at(index.row())->getState();
-            break;
-        case 2:
-            res = jobItemDataList.at(index.row())->getPID();
-            break;
-        default:
-            break;
+            case 0:
+                res = jobItemDataList.at(index.row())->getName();
+                break;
+            case 1:
+                res = jobItemDataList.at(index.row())->getState();
+                break;
+            case 2:
+                res = jobItemDataList.at(index.row())->getPID();
+                break;
+            default:
+                break;
         };
     };
     if ( role==Qt::DecorationRole ) {
         switch (index.column()) {
-        case 0:
-            if ( jobItemDataList.at(index.row())->getState().toLower()=="running" ) {
-                res = activeIcon;
-            } else res = no_activeIcon;
-            break;
-        default:
-            break;
+            case 0:
+                if ( jobItemDataList.at(index.row())->getState().toLower()=="running" ) {
+                    res = activeIcon;
+                } else res = no_activeIcon;
+                break;
+            default:
+                break;
         }
     };
     if ( role==Qt::ToolTipRole ) {
-        QString s;
-        QString a;
+        QString s, a;
         switch (index.column()) {
-        case 0:
-            s.append(QString("Name: %1").arg(jobItemDataList.at(index.row())->getName()));
-            a = ( jobItemDataList.at(index.row())->getData().value("availability").toBool() )? "available":"busy";
-            s.append(QString("\nState: %1").arg(a));
-            res = s;
-            break;
-        case 1:
-            res = QString("State: %1").arg(jobItemDataList.at(index.row())->getState());
-            break;
-        case 2:
-            res = QString("PID: %1").arg(jobItemDataList.at(index.row())->getPID());
-            break;
-        default:
-            break;
+            case 0:
+                s.append(QString("Name: %1").arg(jobItemDataList.at(index.row())->getName()));
+                a = ( jobItemDataList.at(index.row())->getData().value("availability").toBool() )? "available":"busy";
+                s.append(QString("\nState: %1").arg(a));
+                res = s;
+                break;
+            case 1:
+                res = QString("State: %1").arg(jobItemDataList.at(index.row())->getState());
+                break;
+            case 2:
+                res = QString("PID: %1").arg(jobItemDataList.at(index.row())->getPID());
+                break;
+            default:
+                break;
         }
     };
     if ( role==Qt::TextAlignmentRole ) {

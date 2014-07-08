@@ -17,41 +17,43 @@
 #include "layout/jobitem_model.h"
 #include <QDebug>
 
+#define TMP_FILE QString("TEMPORARY_FILE")
+
 class SettingsDialog : public QDialog
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     SettingsDialog(QWidget *parent=0);
     ~SettingsDialog();
-    QSettings    settings;
-    QTabWidget  *tabWidget;
+    QSettings           settings;
+    QTabWidget         *tabWidget;
 
 signals:
     void creatingJobCancelled();
 
 private:
-    JobItemIndex     *own_index;
+    JobItemIndex       *own_index;
 
-    QVBoxLayout      *commonLayout;
-    QHBoxLayout      *buttonsLayout;
-    QWidget          *buttons;
-    QListWidgetItem  *item;
-    QString           name;
-    QPushButton      *ok;
-    QPushButton      *cancel;
-    CommonSet        *w1;
-    WindowSet        *w2;
-    IncludeSet       *w3;
-    DirectorySet     *w4;
-    bool              newbe;
-    QString           previousName;
-    QTextEdit        *fullCommandWdg;
-    int               timerId;
-    String           *commandLine;
+    QVBoxLayout        *commonLayout;
+    QHBoxLayout        *buttonsLayout;
+    QWidget            *buttons;
+    QListWidgetItem    *item;
+    QString             name;
+    QPushButton        *ok;
+    QPushButton        *cancel;
+    CommonSet          *w1;
+    WindowSet          *w2;
+    IncludeSet         *w3;
+    DirectorySet       *w4;
+    bool                newbe;
+    QString             previousName;
+    QTextEdit          *fullCommandWdg;
+    int                 timerId;
+    String             *commandLine;
 
 public slots:
-    void         setJobItem(JobItemIndex*);
-    static bool  clean_Directory(QString);
+    void                setJobItem(JobItemIndex*);
+    static bool         clean_Directory(QString);
 
 private slots:
     void initTabWidget();

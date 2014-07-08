@@ -40,3 +40,8 @@ some improvements;
 v.1.6.10 :
 added undock action;
 some improvements;
+
+v.1.6.12 :
+fixed building a list of included path;
+fixed setting a working directories
+& their SELinux labels;

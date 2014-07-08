@@ -12,27 +12,27 @@
 
 class IncludeSet : public QWidget
 {
-  Q_OBJECT;
+    Q_OBJECT
 public:
     IncludeSet(QWidget *parent=0);
     ~IncludeSet();
-    QString   fileName;
-    QCheckBox *enabled;
+    QString          fileName;
+    QCheckBox       *enabled;
 
 signals:
 
 private:
-    QGridLayout *commonLayout;
-    QListWidget *fileList;
-    QPushButton *addFile;
-    QPushButton *addDir;
-    QPushButton *delPath;
+    QGridLayout     *commonLayout;
+    QListWidget     *fileList;
+    QPushButton     *addFile;
+    QPushButton     *addDir;
+    QPushButton     *delPath;
 
 public slots:
-    void set_FileName(const QString);
-    QStringList get_Included_Path() const;
-    const QString get_FileName();
-    void setIncludesList(QString);
+    void            set_FileName(const QString);
+    QStringList     get_Included_Path() const;
+    const QString   get_FileName();
+    void            setIncludesList(QString);
 
 private slots:
     void enableFileList(bool);

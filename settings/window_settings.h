@@ -10,28 +10,27 @@
 
 class WindowSet : public QWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
     WindowSet(QWidget *parent);
     ~WindowSet();
-    QSpinBox     *DPI;
-    QLineEdit    *WM;
-    QSpinBox     *windowWidth;
-    QSpinBox     *windowHeight;
+    QSpinBox        *DPI;
+    QLineEdit       *WM;
+    QSpinBox        *windowWidth;
+    QSpinBox        *windowHeight;
 
 signals:
 
 private:
-    QGridLayout  *commonLayout;
-    QLabel       *dpiLabel;
-    QLabel       *wmLabel;
-    QLabel       *sizeTitle;
+    QGridLayout     *commonLayout;
+    QLabel          *dpiLabel;
+    QLabel          *wmLabel;
+    QLabel          *sizeTitle;
 
 public slots:
 
 private slots:
     void initSizeWidgets();
-
 };
 
 #endif //WINDOW_SETTINGS_H

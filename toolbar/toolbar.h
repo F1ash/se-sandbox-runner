@@ -8,33 +8,33 @@
 
 class ToolBar : public QToolBar
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  ToolBar(QWidget *parent);
-  ~ToolBar();
+    ToolBar(QWidget *parent);
+    ~ToolBar();
 
-  QAction      *_hideAction;
-  QAction      *_createAction;
-  QAction      *_editAction;
-  QAction      *_deleteAction;
-  QAction      *_runAction;
-  QAction      *_undockAction;
-  QAction      *_stopAction;
-  QAction      *_stopAllAction;
-  QAction      *_exitAction;
+    QAction    *_hideAction;
+    QAction    *_createAction;
+    QAction    *_editAction;
+    QAction    *_deleteAction;
+    QAction    *_runAction;
+    QAction    *_undockAction;
+    QAction    *_stopAction;
+    QAction    *_stopAllAction;
+    QAction    *_exitAction;
 
 signals:
 
 private:
-  QMenu        *itemControlMenu;
-  QAction      *itemControlAction;
+    QMenu      *itemControlMenu;
+    QAction    *itemControlAction;
 
 private slots:
-  void initActions();
-  void showHoveredMenu();
+    void initActions();
+    void showHoveredMenu();
 
 public slots:
-  Qt::ToolBarArea get_ToolBarArea(int) const;
+    Qt::ToolBarArea get_ToolBarArea(int) const;
 };
 
 #endif //TOOLBAR_H

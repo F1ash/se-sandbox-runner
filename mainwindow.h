@@ -14,7 +14,7 @@
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -27,9 +27,9 @@ signals:
 public slots:
 
 private :
-    TrayIcon   *trayIcon;
+    TrayIcon     *trayIcon;
     ToolBar    *toolBar;
-    Wait       *wait_thread = NULL;
+    Wait     *wait_thread = NULL;
 
 private slots:
     void closeEvent(QCloseEvent*);

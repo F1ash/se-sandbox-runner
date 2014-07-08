@@ -75,22 +75,19 @@ void JobList::jobItemClicked(const QPoint &pos)
     if ( !proc_Status.value("availability", NOT_AVAILABLE).toBool() ) return;
     bool to_run = TO_RUN;
     JobMenu *jobMenu = new JobMenu(this);
-    if ( proc_Status.value("isRunning", STOPPED).toBool() )
-      {
+    if ( proc_Status.value("isRunning", STOPPED).toBool() ) {
         jobMenu->act->setText("Kill Job");
         jobMenu->act->setIcon(QIcon::fromTheme("stop"));
         connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
         jobMenu->undock->setEnabled(true);
         to_run = TO_STOP;
-      }
-    else
-      {
+    } else {
         jobMenu->act->setText("Run Job");
         jobMenu->act->setIcon(QIcon::fromTheme("run"));
         connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
         jobMenu->undock->setEnabled(false);
         to_run = TO_RUN;
-      };
+    };
     idx->setData(proc_Status);
     connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
     connect(jobMenu->undock, SIGNAL(triggered()), this, SLOT(jobItemUndockAction()));
@@ -104,40 +101,42 @@ void JobList::jobItemClicked(const QPoint &pos)
 }
 void JobList::createJobProcess(QModelIndex &_item)
 {
-  JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
-  QString key = idx->getName();
-  ElemProcess *proc = new ElemProcess(this);
-  proc->setItemReference(jobItemModel, idx);
-  jobProcess->insert(key, proc);
-  //qDebug()<<key<<" create Job process";
-  clearSelection();
+    JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+    QString key = idx->getName();
+    ElemProcess *proc = new ElemProcess(this);
+    proc->setItemReference(jobItemModel, idx);
+    jobProcess->insert(key, proc);
+    connect(jobProcess->value(key), SIGNAL(procMsg(QString,QString)),
+            this, SLOT(showMessage(QString,QString)));
+    //qDebug()<<key<<" create Job process";
+    clearSelection();
 }
 void JobList::jobItemDoubleClicked(const QModelIndex &_item)
 {
-  JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
-  QString _name = idx->getName();
-  DATA proc_Status;
-  proc_Status = idx->getData();
-  QString key = proc_Status.value(QString("initName")).toString();
-  ElemProcess *proc;
-  proc = jobProcess->value(key);
-  if ( key != _name ) {
-      proc_Status.insert(QString("initName"), QVariant(_name));
-      jobProcess->insert(_name, proc);
-      jobProcess->remove(key);
-      proc->setItemReference(jobItemModel, idx);
-  };
-  //qDebug()<<key<<" Job doubleClicked"<<proc;
-  bool proc_state;
-  proc_state = proc_Status.value(QString("isRunning"), STOPPED).toBool();
-  if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() ) {
-      showMessage("Info", "Job is busy.");
-  }
-  else if ( !proc_state && proc->state()==QProcess::NotRunning )
-      proc->runJob();
-  else if ( proc_state && proc->state()==QProcess::Running )
-      proc->killJob();
-  clearSelection();
+    JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
+    QString _name = idx->getName();
+    DATA proc_Status;
+    proc_Status = idx->getData();
+    QString key = proc_Status.value(QString("initName")).toString();
+    ElemProcess *proc;
+    proc = jobProcess->value(key);
+    if ( key != _name ) {
+        proc_Status.insert(QString("initName"), QVariant(_name));
+        jobProcess->insert(_name, proc);
+        jobProcess->remove(key);
+        proc->setItemReference(jobItemModel, idx);
+    };
+    //qDebug()<<key<<" Job doubleClicked"<<proc;
+    bool proc_state;
+    proc_state = proc_Status.value(QString("isRunning"), STOPPED).toBool();
+    if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() ) {
+        showMessage("Info", "Job is busy.");
+    } else if ( !proc_state && proc->state()==QProcess::NotRunning ) {
+        proc->runJob();
+    } else if ( proc_state && proc->state()==QProcess::Running ) {
+        proc->killJob();
+    };
+    clearSelection();
 }
 void JobList::jobItemUndockAction()
 {
@@ -178,9 +177,9 @@ void JobList::undockJob(QModelIndex &_item)
     proc_state = proc_Status.value(QString("isRunning"), STOPPED).toBool();
     if ( !proc_Status.value(QString("availability"), NOT_AVAILABLE).toBool() ) {
         showMessage("Info", "Job is busy.");
-    }
-    else if ( proc_state && proc->state()==QProcess::Running )
+    } else if ( proc_state && proc->state()==QProcess::Running ) {
         proc->undockJob();
+    };
     clearSelection();
 }
 void JobList::stopJob(QModelIndex &_item)
@@ -228,6 +227,8 @@ void JobList::deleteCurrentJobItem()
         if ( proc && proc->state()==QProcess::Running ) {
             proc->killJob();
         };
+        disconnect(proc, SIGNAL(procMsg(QString,QString)),
+                   this, SLOT(showMessage(QString,QString)));
         jobProcess->remove(job);
         jobItemModel->removeRow(_item.row());
         emit removeJob(job);
@@ -235,9 +236,9 @@ void JobList::deleteCurrentJobItem()
 }
 void JobList::deleteCancelledCreation()
 {
-  deleteCurrentJobItem();
+    deleteCurrentJobItem();
 }
 void JobList::showMessage(QString title, QString msg)
 {
-  QMessageBox::information(this, title, msg);
+    QMessageBox::information(this, title, msg);
 }

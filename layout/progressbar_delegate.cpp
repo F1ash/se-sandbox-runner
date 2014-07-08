@@ -25,8 +25,9 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         progressBarOption.text = State;
         progressBarOption.textVisible = true;
 
-        QApplication::style()->drawControl(QStyle::CE_ProgressBar,
-                                           &progressBarOption, painter);
+        QApplication::style()->drawControl(
+                    QStyle::CE_ProgressBar,
+                    &progressBarOption, painter);
     } else
         QStyledItemDelegate::paint(painter, option, index);
 }

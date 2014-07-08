@@ -5,7 +5,7 @@
 
 class String : public QObject
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
     String(QObject *parent);
     ~String();

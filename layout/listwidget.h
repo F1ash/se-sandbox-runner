@@ -21,8 +21,8 @@ public:
     JobList(QWidget *parent);
     ~JobList();
 
-    QMap<QString, ElemProcess*>  *jobProcess;
-    JobItemModel                 *jobItemModel;
+    QMap<QString, ElemProcess*>     *jobProcess;
+    JobItemModel                    *jobItemModel;
 
 signals:
     void clickedItem(QString);
