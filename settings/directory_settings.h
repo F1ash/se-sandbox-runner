@@ -1,14 +1,14 @@
 #ifndef DIRECTORY_SETTINGS_H
 #define DIRECTORY_SETTINGS_H
 
-#include <QFileDialog>
-#include <QLineEdit>
-#include <QCheckBox>
-#include <QGridLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QMessageBox>
+#include <QtGui/QFileDialog>
+#include <QtGui/QLineEdit>
+#include <QtGui/QCheckBox>
+#include <QtGui/QGridLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QPushButton>
+#include <QtGui/QMessageBox>
 
 class DirectorySet : public QWidget
 {

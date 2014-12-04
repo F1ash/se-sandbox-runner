@@ -1,7 +1,7 @@
 #ifndef SHRED_THREAD_H
 #define SHRED_THREAD_H
 
-#include <QThread>
+#include <QtCore/QThread>
 #include "settings/settings.h"
 
 class ShredThread : public QThread

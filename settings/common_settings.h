@@ -1,16 +1,16 @@
 #ifndef COMMON_SETTINGS_H
 #define COMMON_SETTINGS_H
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QLineEdit>
-#include <QRadioButton>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFileDialog>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QLabel>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
+#include <QtGui/QLineEdit>
+#include <QtGui/QRadioButton>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QGridLayout>
+#include <QtGui/QFileDialog>
+#include <QtGui/QPushButton>
+#include <QtGui/QSpinBox>
+#include <QtGui/QLabel>
 
 #define TIMEOUT 10
 

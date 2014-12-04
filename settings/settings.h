@@ -1,21 +1,21 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QDialog>
-#include <QTabWidget>
-#include <QPushButton>
-#include <QListWidgetItem>
-#include <QTextEdit>
-#include <QSettings>
-#include <QCloseEvent>
-#include <QProcess>
+#include <QtGui/QDialog>
+#include <QtGui/QTabWidget>
+#include <QtGui/QPushButton>
+#include <QtGui/QListWidgetItem>
+#include <QtGui/QTextEdit>
+#include <QtCore/QSettings>
+#include <QtGui/QCloseEvent>
+#include <QtCore/QProcess>
 #include "common_settings.h"
 #include "window_settings.h"
 #include "include_settings.h"
 #include "directory_settings.h"
 #include "element/string_list.h"
 #include "layout/jobitem_model.h"
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #define TMP_FILE QString("TEMPORARY_FILE")
 

@@ -1,15 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QSettings>
-#include <QCloseEvent>
-#include <QMainWindow>
-#include <QStringList>
+#include <QtGui/QMainWindow>
+#include <QtCore/QSettings>
+#include <QtGui/QCloseEvent>
+#include <QtCore/QStringList>
 #include "tray/traywidget.h"
 #include "layout/listwidget.h"
 #include "toolbar/toolbar.h"
 #include "wait_thread.h"
-#include <QDebug>
+#include <QtCore/QDebug>
 
 class MainWindow : public QMainWindow
 {
@@ -27,9 +27,9 @@ signals:
 public slots:
 
 private :
-    TrayIcon     *trayIcon;
+    TrayIcon   *trayIcon;
     ToolBar    *toolBar;
-    Wait     *wait_thread = NULL;
+    Wait       *wait_thread = NULL;
 
 private slots:
     void closeEvent(QCloseEvent*);
