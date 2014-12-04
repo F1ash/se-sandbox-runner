@@ -1,10 +1,10 @@
 #ifndef WINDOW_SETTINGS_H
 #define WINDOW_SETTINGS_H
 
-#include <QLabel>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QGridLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QSpinBox>
+#include <QtGui/QGridLayout>
 
 /* [ -d DPI ] [ -W windowmanager ] [ -w windowsize ] */
 

@@ -1,14 +1,14 @@
 #ifndef INCLUDE_SETTINGS_H
 #define INCLUDE_SETTINGS_H
 
-#include <QPushButton>
-#include <QCheckBox>
-#include <QListWidget>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QMessageBox>
-#include <QFile>
-#include <QDebug>
+#include <QtGui/QPushButton>
+#include <QtGui/QCheckBox>
+#include <QtGui/QListWidget>
+#include <QtGui/QFileDialog>
+#include <QtGui/QGridLayout>
+#include <QtGui/QMessageBox>
+#include <QtCore/QFile>
+#include <QtCore/QDebug>
 
 class IncludeSet : public QWidget
 {

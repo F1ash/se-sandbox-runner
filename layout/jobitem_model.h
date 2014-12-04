@@ -1,11 +1,11 @@
 #ifndef JOBITEM_MODEL_H
 #define JOBITEM_MODEL_H
 
-#include <QAbstractTableModel>
-#include <QIcon>
-#include <QList>
+#include <QtCore/QAbstractTableModel>
+#include <QtGui/QIcon>
+#include <QtCore/QList>
 #include "job_item_index.h"
-#include <QDebug>
+#include <QtCore/QDebug>
 
 class JobItemModel : public QAbstractTableModel
 {
