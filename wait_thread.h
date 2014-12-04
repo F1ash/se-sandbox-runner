@@ -1,7 +1,7 @@
 #ifndef WAIT_THREAD_H
 #define WAIT_THREAD_H
 
-#include <QtCore/QThread>
+#include <QThread>
 #include "layout/listwidget.h"
 
 class Wait : public QThread

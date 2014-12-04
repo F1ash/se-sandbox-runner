@@ -1,7 +1,7 @@
 #ifndef JOBMENU_H
 #define JOBMENU_H
 
-#include <QtGui/QMenu>
+#include <QMenu>
 
 class JobMenu : public QMenu
 {

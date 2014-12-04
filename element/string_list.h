@@ -1,7 +1,7 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <QtCore/QStringList>
+#include <QStringList>
 
 class String : public QObject
 {

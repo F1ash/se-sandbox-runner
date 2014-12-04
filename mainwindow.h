@@ -1,15 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
-#include <QtCore/QSettings>
-#include <QtGui/QCloseEvent>
-#include <QtCore/QStringList>
+#include <QMainWindow>
+#include <QSettings>
+#include <QCloseEvent>
+#include <QStringList>
 #include "tray/traywidget.h"
 #include "layout/listwidget.h"
 #include "toolbar/toolbar.h"
 #include "wait_thread.h"
-#include <QtCore/QDebug>
+#include <QDebug>
 
 class MainWindow : public QMainWindow
 {

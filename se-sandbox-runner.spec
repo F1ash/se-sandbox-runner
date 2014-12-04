@@ -87,18 +87,10 @@ popd
 %check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
-%if %with qt4
-%files qt4
+%files
 %doc README.md COPYING Changelog
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%endif
-%if %with qt5
-%files qt5
-%doc README.md COPYING Changelog
-%{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
-%endif
 
 %changelog
 * Wed Dec  3 2014 Fl@sh <kaperang07@gmail.com> - 1.6.12-2

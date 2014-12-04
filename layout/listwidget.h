@@ -1,14 +1,14 @@
 #ifndef LISTWIDGET_H
 #define LISTWIDGET_H
 
-#include <QtGui/QTreeView>
-#include <QtGui/QMessageBox>
+#include <QTreeView>
+#include <QMessageBox>
 #include "jobmenu.h"
 #include "jobitem_model.h"
 #include "progressbar_delegate.h"
 #include "settings/settings.h"
 #include "element/elemprocess.h"
-#include <QtCore/QDebug>
+#include <QDebug>
 
 #define TO_RUN  true
 #define TO_STOP false

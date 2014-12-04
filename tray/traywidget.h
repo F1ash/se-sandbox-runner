@@ -1,8 +1,8 @@
 #ifndef TRAY_WIDGET_H
 #define TRAY_WIDGET_H
 
-#include <QtGui/QSystemTrayIcon>
-#include <QtGui/QMenu>
+#include <QSystemTrayIcon>
+#include <QMenu>
 
 class TrayIcon : public QSystemTrayIcon
 {

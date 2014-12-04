@@ -1,10 +1,10 @@
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
 
-#include <QtGui/QToolBar>
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtCore/QDebug>
+#include <QToolBar>
+#include <QAction>
+#include <QMenu>
+#include <QDebug>
 
 class ToolBar : public QToolBar
 {

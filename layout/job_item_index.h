@@ -1,10 +1,10 @@
 #ifndef JOB_ITEM_INDEX_H
 #define JOB_ITEM_INDEX_H
 
-#include <QtCore/QObject>
-#include <QtCore/QMap>
-#include <QtCore/QString>
-#include <QtCore/QVariant>
+#include <QObject>
+#include <QMap>
+#include <QString>
+#include <QVariant>
 
 typedef QMap<QString, QVariant> DATA;
 

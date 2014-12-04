@@ -1,17 +1,17 @@
 #ifndef ELEMPROCESS_H
 #define ELEMPROCESS_H
 
-#include <QtCore/QStringList>
-#include <QtCore/QSettings>
-#include <QtCore/QProcess>
-#include <QtCore/QDir>
-#include <QtCore/QTimer>
-#include <QtCore/QTimerEvent>
+#include <QStringList>
+#include <QSettings>
+#include <QProcess>
+#include <QDir>
+#include <QTimer>
+#include <QTimerEvent>
 #include "signal.h"
 #include "string_list.h"
 #include "shred_thread.h"
 #include "layout/jobitem_model.h"
-#include <QtCore/QDebug>
+#include <QDebug>
 
 #define RUNNING         true
 #define STOPPED         false

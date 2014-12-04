@@ -1,8 +1,8 @@
 #ifndef PROGRESSBAR_DELEGATE_H
 #define PROGRESSBAR_DELEGATE_H
 
-#include <QtGui/QStyledItemDelegate>
-#include <QtGui/QApplication>
+#include <QStyledItemDelegate>
+#include <QApplication>
 
 class ProgressBarDelegate : public QStyledItemDelegate
 {
