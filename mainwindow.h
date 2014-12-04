@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMainWindow>
 #include <QSettings>
 #include <QCloseEvent>
-#include <QMainWindow>
 #include <QStringList>
 #include "tray/traywidget.h"
 #include "layout/listwidget.h"
@@ -27,9 +27,9 @@ signals:
 public slots:
 
 private :
-    TrayIcon     *trayIcon;
+    TrayIcon   *trayIcon;
     ToolBar    *toolBar;
-    Wait     *wait_thread = NULL;
+    Wait       *wait_thread = NULL;
 
 private slots:
     void closeEvent(QCloseEvent*);
