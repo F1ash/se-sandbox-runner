@@ -17,9 +17,11 @@ endif ( NOT BUILD_QT_VERSION )
 if ( BUILD_QT_VERSION STREQUAL 4 )
     set (QT4_BUILD 1)
     set (QT5_BUILD 0)
+    set (QT_SUFF qt4)
 else ( BUILD_QT_VERSION STREQUAL 4 )
     set (QT4_BUILD 0)
     set (QT5_BUILD 1)
+    set (QT_SUFF qt5)
 endif ( BUILD_QT_VERSION STREQUAL 4 )
 
 message (STATUS "Build with QT version: ${BUILD_QT_VERSION}")
@@ -27,7 +29,7 @@ message (STATUS "QT4 build: ${QT4_BUILD}")
 message (STATUS "QT5 build: ${QT5_BUILD}")
 ##
 
-set (PROJECT_NAME se-sandbox-runner)
+set (PROJECT_NAME se-sandbox-runner-${QT_SUFF})
 set (PROJECT_VERSION 1.6.12)
 set (HEADERS 
   mainwindow.h
@@ -70,7 +72,7 @@ set (SOURCES_DIRS . tray toolbar layout element settings)
 
 project (${PROJECT_NAME})
 include_directories (${CMAKE_CURRENT_BINARY_DIR} ${SOURCES_DIRS})
-set (DESKTOP_FILE ${PROJECT_NAME}.desktop)
+set (DESKTOP_FILE se-sandbox-runner.desktop)
 
 ##
 if ( QT4_BUILD )
@@ -83,5 +85,8 @@ endif( QT4_BUILD )
 add_executable (${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MOC_SOURCES})
 target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 
+configure_file ( ${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} )
+install ( FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE}
+    DESTINATION ${SHARE_INSTALL_PREFIX}/applications
+    RENAME ${PROJECT_NAME}.desktop )
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
-install (FILES ${DESKTOP_FILE} DESTINATION share/applications)

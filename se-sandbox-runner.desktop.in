@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=SELinux Sandbox Runner
+Name=Qt@BUILD_QT_VERSION@ SELinux Sandbox Runner
 GenericName=Run cmd under an SELinux sandbox
 Type=Application
 Categories=Development;System;Qt;
 Icon=/usr/share/sandbox-runner-data/icons/256x256/apps/applications-safety-selinux.png
-Exec=se-sandbox-runner
+Exec=se-sandbox-runner-@QT_SUFF@
 Terminal=false
 StartupNotify=true

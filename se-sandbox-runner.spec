@@ -5,7 +5,7 @@
 
 Name:           se-sandbox-runner
 Version:        1.6.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
 License:        GPLv2+
@@ -36,8 +36,6 @@ Job settings are saved in the application's configuration.
 
 %package        qt4
 Summary:        Qt4 wrapper for SELinux Sandbox
-# it has the same binaries with se-sandbox-runner-qt5
-Conflicts:      se-sandbox-runner-qt5
 
 %description    qt4
 Qt4 wrapper for SELinux Sandbox.
@@ -46,8 +44,6 @@ Job settings are saved in the application's configuration.
 
 %package        qt5
 Summary:        Qt5 wrapper for SELinux Sandbox
-# it has the same binaries with se-sandbox-runner-qt4
-Conflicts:      se-sandbox-runner-qt4
 
 %description    qt5
 Qt5 wrapper for SELinux Sandbox.
@@ -86,15 +82,28 @@ popd
 %endif
 
 %check
-desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
+%if %with qt4
+desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt4.desktop
+%endif
+%if %with qt5
+desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
+%endif
 
-%files
+%if %with qt4
+%files qt4
 %doc README.md COPYING Changelog
-%{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%{_bindir}/%{name}-qt4
+%{_datadir}/applications/%{name}-qt4.desktop
+%endif
+%if %with qt5
+%files qt5
+%doc README.md COPYING Changelog
+%{_bindir}/%{name}-qt5
+%{_datadir}/applications/%{name}-qt5.desktop
+%endif
 
 %changelog
-* Wed Dec  3 2014 Fl@sh <kaperang07@gmail.com> - 1.6.12-3
-- changed for both qt4 and qt5 building;
+* Sat Dec 13 2014 Fl@sh <kaperang07@gmail.com> - 1.6.12-4
+- fixed for both qt4 and qt5 building;
 - release updated;
 - spec %%changelog cleared;
