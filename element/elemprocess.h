@@ -70,6 +70,7 @@ private slots:
     void timerEvent(QTimerEvent*);
     void sendMessage();
     void shreddingFinished();
+    void setShredState(uint);
 };
 
 #endif //ELEMPROCESS_H

@@ -8,14 +8,15 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 {
     if (index.column() == 1) {
         int progress = 0;
-        QString State;
         bool ok = false;
-        index.data().toInt(&ok);
-        if ( ok ) {
-            progress = index.data().toInt();
-            State = QString::number(progress) + "%";
-        } else
-            State = index.data().toString();
+        QStringList _data = index.data().toString().split("|");
+        QString State = _data.first();
+        if ( _data.count()>1 ) {
+            _data.at(1).toInt(&ok);
+            if ( ok ) {
+                progress = _data.at(1).toInt();
+            }
+        };
 
         QStyleOptionProgressBar progressBarOption;
         progressBarOption.rect = option.rect;

@@ -14,8 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     QIcon::setThemeName("icons");
     setWindowIcon(QIcon::fromTheme("applications-safety-selinux"));
     initTrayIcon();
-    initJobWidget();
     initToolBar();
+    initJobWidget();
 }
 MainWindow::~MainWindow()
 {
@@ -41,26 +41,32 @@ MainWindow::~MainWindow()
 
     delete trayIcon;
     trayIcon = 0;
-    delete jobWidget;
-    jobWidget = 0;
     delete toolBar;
     toolBar = 0;
+    delete jobWidget;
+    jobWidget = 0;
 }
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
     settings.setValue("Geometry", saveGeometry());
     settings.setValue("ToolBarArea", toolBarArea(toolBar));
-     // save JobListColumns
-     settings.setValue("column0", jobWidget->columnWidth(0));
-     settings.setValue("column1", jobWidget->columnWidth(1));
+    // save JobListColumns
+    settings.setValue("column0", jobWidget->columnWidth(0));
+    settings.setValue("column1", jobWidget->columnWidth(1));
     settings.setValue("column2", jobWidget->columnWidth(2));
-     //
-     settings.sync();
-     if ( !this->isVisible() ) changeVisibility();
+    //
+    settings.sync();
+    if ( !this->isVisible() ) changeVisibility();
     if ( runningJobsExist() && wait_thread==NULL ) {
         QString q;
         q.append("Running Jobs are exist.\nKill it at exit?");
-        int answer = QMessageBox::question(this, "Action", q, QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+        int answer = QMessageBox::question(
+                    this,
+                    "Action",
+                    q,
+                    QMessageBox::Yes,
+                    QMessageBox::No,
+                    QMessageBox::Cancel);
         if ( answer == QMessageBox::Cancel ) {
             ev->ignore();
             return;

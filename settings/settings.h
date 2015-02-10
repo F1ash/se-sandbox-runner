@@ -15,6 +15,7 @@
 #include "directory_settings.h"
 #include "element/string_list.h"
 #include "layout/jobitem_model.h"
+#include "element/shred_thread.h"
 #include <QDebug>
 
 #define TMP_FILE QString("TEMPORARY_FILE")
@@ -53,7 +54,8 @@ private:
 
 public slots:
     void                setJobItem(JobItemIndex*);
-    static bool         clean_Directory(QString);
+    static bool         clean_Directory(
+            QString, void* opaque = NULL, void *p = NULL);
 
 private slots:
     void initTabWidget();

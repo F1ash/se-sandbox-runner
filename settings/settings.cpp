@@ -430,9 +430,11 @@ bool SettingsDialog::set_SpecifiedLabel(QString dirPath)
     return true;
 }
 
-bool SettingsDialog::clean_Directory(QString dir)
+bool SettingsDialog::clean_Directory(QString dir, void *opaque, void *p)
 {
     if ( dir==TMP_FILE ) return true;
+    ShredThread *shredder = static_cast<ShredThread*>(opaque);
+    PERCENT *P = static_cast<PERCENT*>(p);
     // Shred temporary files created in $HOME and /tmp, before deleting.
     QDir::Filters flags =
             QDir::AllEntries |
@@ -458,24 +460,41 @@ bool SettingsDialog::clean_Directory(QString dir)
                 if ( !item.exists() ) continue;
                 QString path = item.canonicalFilePath();
                 bool ret = true;
-                if ( path==d.absoluteFilePath(dir) ) continue;
+                if ( path==d.absoluteFilePath(dir)
+                     || item.isSymLink() ) continue;
+                //qDebug()<<path<<item.size();
                 if ( item.isDir() ) {
-                    ret = clean_Directory(path);
+                    ret = clean_Directory(path, opaque, p);
                     d.rmdir(path);
                 } else {
                     QFile f;
                     f.setFileName(path);
                     if ( f.exists() ) {
                         qint64 pos = 0;
+                        qint64 collector = 0;
+                        uint   add_percent = P->curr_percent;
                         f.open(QIODevice::ReadWrite);
                         qint64 fSize = f.size();
                         while ( pos<fSize ) {
                             f.seek(pos);
                             f.putChar('\0');
                             pos++;
+                            collector++;
+                            if ( NULL!=shredder && P!=NULL ) {
+                                if ( collector>P->one_percent ) {
+                                    collector = 0;
+                                    ++add_percent;
+                                    emit shredder->stateChanged(add_percent);
+                                };
+                            };
                         };
                         f.close();
                         ret = f.remove();
+                        if ( NULL!=shredder && P!=NULL && ret) {
+                            P->current += fSize;
+                            emit shredder->stateChanged(P->percent());
+                            //qDebug()<<path<<P->current;
+                        };
                     };
                 };
                 _result = _result && ret;

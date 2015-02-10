@@ -14,12 +14,14 @@ ElemProcess::ElemProcess(QObject *parent) :
     _diff = 0;
     shredder = new ShredThread(this);
     connect(shredder, SIGNAL(finished()), this, SLOT(shreddingFinished()));
+    connect(shredder, SIGNAL(stateChanged(uint)), this, SLOT(setShredState(uint)));
 }
 ElemProcess::~ElemProcess()
 {
     disconnect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
     disconnect(this, SIGNAL(readyRead()), this, SLOT(sendMessage()));
     disconnect(shredder, SIGNAL(finished()), this, SLOT(shreddingFinished()));
+    disconnect(shredder, SIGNAL(stateChanged(uint)), this, SLOT(setShredState(uint)));
 
     delete commandLine;
     commandLine = 0;
@@ -244,11 +246,10 @@ void ElemProcess::killJob()
         };
     };
     if ( shred ) {
-        QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
-        own_model->setData(_idx, "Shredding", Qt::EditRole);
         shredder->tempDir = tempDir;
         shredder->homeDir = homeDir;
         shredder->start();
+        own_model->setData(_idx, "Shredding|0", Qt::EditRole);
     } else emit processState(STOPPED);
 }
 void ElemProcess::undockJob()
@@ -311,7 +312,9 @@ void ElemProcess::timerEvent(QTimerEvent *event)
         if ( checkTimeout - _diff + 1 ) {
             percent = int ((float(_diff)/checkTimeout)*100.0);
             QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
-            own_model->setData(_idx, QString::number(percent), Qt::EditRole);
+            QString _state("Start|");
+            _state.append(QString::number(percent));
+            own_model->setData(_idx, _state, Qt::EditRole);
             _diff++;
         } else {
             killTimer(waitTimerId);
@@ -334,4 +337,12 @@ void ElemProcess::sendMessage()
 void ElemProcess::shreddingFinished()
 {
     emit processState(STOPPED);
+}
+void ElemProcess::setShredState(uint percent)
+{
+    QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+    QString _state("Shredding|");
+    _state.append(QString::number(percent));
+    //qDebug()<<_state;
+    own_model->setData(_idx, _state, Qt::EditRole);
 }

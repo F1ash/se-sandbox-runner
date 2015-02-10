@@ -4,8 +4,8 @@
 %bcond_without qt5
 
 Name:           se-sandbox-runner
-Version:        1.6.12
-Release:        4%{?dist}
+Version:        1.6.13
+Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
 License:        GPLv2+
@@ -103,6 +103,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %endif
 
 %changelog
+* Tue Feb 10 2015 Fl@sh <kaperang07@gmail.com> - 1.6.13-1
+- version updated;
+
 * Sat Dec 13 2014 Fl@sh <kaperang07@gmail.com> - 1.6.12-4
 - fixed for both qt4 and qt5 building;
 - release updated;

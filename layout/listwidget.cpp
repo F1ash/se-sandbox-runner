@@ -15,14 +15,18 @@ JobList::JobList(QWidget *parent = 0)
   progressBarDlg = new ProgressBarDelegate();
   this->setItemDelegate(progressBarDlg);
   jobProcess = new QMap<QString, ElemProcess*>();
-  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
-  connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
+          this, SLOT(jobItemClicked(const QPoint &)));
+  connect(this, SIGNAL(doubleClicked(const QModelIndex&)),
+          this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
 
 }
 JobList::~JobList()
 {
-    disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(jobItemClicked(const QPoint &)));
-    disconnect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
+    disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
+               this, SLOT(jobItemClicked(const QPoint &)));
+    disconnect(this, SIGNAL(doubleClicked(const QModelIndex&)),
+               this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
     delete progressBarDlg;
     progressBarDlg = 0;
     delete jobItemModel;

@@ -92,7 +92,8 @@ QVariant JobItemModel::data(const QModelIndex &index, int role) const
         switch (index.column()) {
             case 0:
                 s.append(QString("Name: %1").arg(jobItemDataList.at(index.row())->getName()));
-                a = ( jobItemDataList.at(index.row())->getData().value("availability").toBool() )? "available":"busy";
+                a = ( jobItemDataList.at(index.row())->getData()
+                      .value("availability").toBool() )? "available":"busy";
                 s.append(QString("\nState: %1").arg(a));
                 res = s;
                 break;
@@ -121,7 +122,7 @@ QVariant JobItemModel::data(const QModelIndex &index, int role) const
 bool JobItemModel::setData( const QModelIndex &index, const QVariant &value, int role = Qt::EditRole )
 {
     if ( !index.isValid() ) {
-        qDebug()<<"index not valid";
+        //qDebug()<<"index not valid";
         return false;
     };
 
