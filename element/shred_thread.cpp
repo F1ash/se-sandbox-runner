@@ -4,6 +4,8 @@ ShredThread::ShredThread(QObject *parent) :
     QThread(parent)
 {
 }
+
+/* public slots */
 void ShredThread::run()
 {
     PERCENT *p = new PERCENT();
@@ -15,6 +17,12 @@ void ShredThread::run()
     p->clear();
     msleep(1333);
 }
+void ShredThread::shredStateChanged(uint i)
+{
+    emit stateChanged(i);
+}
+
+/* private slots */
 qint64 ShredThread::getDirSize(QString &dir)
 {
     uint _size;

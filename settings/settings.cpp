@@ -484,7 +484,7 @@ bool SettingsDialog::clean_Directory(QString dir, void *opaque, void *p)
                                 if ( collector>P->one_percent ) {
                                     collector = 0;
                                     ++add_percent;
-                                    emit shredder->stateChanged(add_percent);
+                                    shredder->shredStateChanged(add_percent);
                                 };
                             };
                         };
@@ -492,7 +492,7 @@ bool SettingsDialog::clean_Directory(QString dir, void *opaque, void *p)
                         ret = f.remove();
                         if ( NULL!=shredder && P!=NULL && ret) {
                             P->current += fSize;
-                            emit shredder->stateChanged(P->percent());
+                            shredder->shredStateChanged(P->percent());
                             //qDebug()<<path<<P->current;
                         };
                     };

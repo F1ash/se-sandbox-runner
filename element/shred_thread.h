@@ -42,6 +42,7 @@ signals:
 
 public slots:
     void run();
+    void shredStateChanged(uint);
 
 private slots:
     qint64 getDirSize(QString&);
