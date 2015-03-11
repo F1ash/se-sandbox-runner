@@ -25,7 +25,7 @@ void ShredThread::shredStateChanged(uint i)
 /* private slots */
 qint64 ShredThread::getDirSize(QString &dir)
 {
-    uint _size;
+    uint _size = 0;
     QDir::Filters flags =
             QDir::AllEntries |
             QDir::NoDotAndDotDot |
