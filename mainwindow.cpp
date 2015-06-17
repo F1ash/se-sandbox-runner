@@ -80,6 +80,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     wait_thread->start();
     ev->ignore();
     } else if ( !runningJobsExist() && (wait_thread==NULL || wait_thread->isFinished()) ) {
+        trayIcon->hide();
         ev->accept();
     } else {
         ev->ignore();
