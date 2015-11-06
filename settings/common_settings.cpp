@@ -44,66 +44,7 @@ CommonSet::CommonSet(QWidget *parent) :
 
     setLayout(gridLayout);
 }
-CommonSet::~CommonSet()
-{
-    disconnect(sandboxType, SIGNAL(currentIndexChanged(QString)), this, SLOT(setTypeToolTip(QString)));
-    disconnect(execute, SIGNAL(toggled(bool)), this, SLOT(enableCommand(bool)));
-    disconnect(session, SIGNAL(toggled(bool)), this, SLOT(enableSLevel(bool)));
-    disconnect(selectFile, SIGNAL(clicked()), this, SLOT(setCommandPath()));
-    disconnect(runInTerm, SIGNAL(toggled(bool)), this, SLOT(showTerminalChioseWdg(bool)));
-    disconnect(customTerminal, SIGNAL(toggled(bool)), termCommand, SLOT(setVisible(bool)));
 
-    delete guiApp;
-    guiApp = 0;
-    delete shred;
-    shred = 0;
-    delete autoRun;
-    autoRun = 0;
-    delete capabilities;
-    capabilities = 0;
-    delete cgroups;
-    cgroups = 0;
-    delete nameEdit;
-    nameEdit = 0;
-    delete sandboxType;
-    sandboxType = 0;
-    delete typeLabel;
-    typeLabel = 0;
-    delete execute;
-    execute = 0;
-    delete session;
-    session = 0;
-    delete selectFile;
-    selectFile = 0;
-    delete command;
-    command = 0;
-    delete checkTimeout;
-    checkTimeout = 0;
-    delete timeoutLabel;
-    timeoutLabel = 0;
-    delete cmdLayout;
-    cmdLayout = 0;
-    delete cmdWidget;
-    cmdWidget = 0;
-    delete runInTermLabel;
-    runInTermLabel = 0;
-    delete defaultTerminal;
-    defaultTerminal = 0;
-    delete customTerminal;
-    customTerminal = 0;
-    delete termCommand;
-    termCommand = 0;
-    delete termChoiseLayout;
-    termChoiseLayout = 0;
-    delete termChoiseWidget;
-    termChoiseWidget = 0;
-    delete commonCmdLayout;
-    commonCmdLayout = 0;
-    delete commonWdg;
-    commonWdg = 0;
-    delete gridLayout;
-    gridLayout = 0;
-}
 void CommonSet::initTypeBox()
 {
     typeLabel = new QLabel("Sandbox Type", this);

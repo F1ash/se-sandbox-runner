@@ -20,41 +20,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     commandLine = new String(this);
     timerId = startTimer(1000);
 }
-SettingsDialog::~SettingsDialog()
-{
-    disconnect(w1->guiApp, SIGNAL(stateChanged(int)),this, SLOT(windowSetsEnable(int)));
-    disconnect(w1->guiApp, SIGNAL(stateChanged(int)),w4, SLOT(setGuiCheckState(int)));
-    disconnect(w1->nameEdit, SIGNAL(textChanged(QString)), this, SLOT(set_Title_Name(QString)));
-    disconnect(w4, SIGNAL(guiStateChanged(bool)), w1->guiApp, SLOT(setChecked(bool)));
-    disconnect(ok, SIGNAL(clicked()), this, SLOT(saveJob()));
-    disconnect(cancel, SIGNAL(clicked()), this, SLOT(cancelJob()));
-    disconnect(w1, SIGNAL(sessionUsed(bool)), this, SLOT(sessionStateChanged(bool)));
 
-    delete ok;
-    ok = 0;
-    delete cancel;
-    cancel = 0;
-    delete w1;
-    w1 = 0;
-    delete w2;
-    w2 = 0;
-    delete w3;
-    w3 = 0;
-    delete w4;
-    w4 = 0;
-    delete tabWidget;
-    tabWidget = 0;
-    delete fullCommandWdg;
-    fullCommandWdg = 0;
-    delete buttonsLayout;
-    buttonsLayout = 0;
-    delete buttons;
-    buttons = 0;
-    delete commonLayout;
-    commonLayout = 0;
-    delete commandLine;
-    commandLine = 0;
-}
 void SettingsDialog::initTabWidget()
 {
     /*

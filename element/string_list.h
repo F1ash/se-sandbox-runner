@@ -1,14 +1,14 @@
 #ifndef STRING_H
 #define STRING_H
 
+#include <QObject>
 #include <QStringList>
 
 class String : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-    String(QObject *parent);
-    ~String();
+    explicit String(QObject *parent);
 
 private:
     QStringList list;

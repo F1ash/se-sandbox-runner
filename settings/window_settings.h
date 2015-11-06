@@ -10,10 +10,9 @@
 
 class WindowSet : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-    WindowSet(QWidget *parent);
-    ~WindowSet();
+    explicit WindowSet(QWidget *parent);
     QSpinBox        *DPI;
     QLineEdit       *WM;
     QSpinBox        *windowWidth;
@@ -30,7 +29,7 @@ private:
 public slots:
 
 private slots:
-    void initSizeWidgets();
+    void             initSizeWidgets();
 };
 
 #endif //WINDOW_SETTINGS_H

@@ -3,11 +3,9 @@
 String::String(QObject *parent=0) :
     QObject(parent)
 {
-    list = QStringList();
+    list.clear();
 }
-String::~String()
-{
-}
+
 void String::clear()
 {
     list.clear();

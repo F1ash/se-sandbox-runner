@@ -24,8 +24,7 @@ class SettingsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SettingsDialog(QWidget *parent=0);
-    ~SettingsDialog();
+    explicit SettingsDialog(QWidget *parent=0);
     QSettings           settings;
     QTabWidget         *tabWidget;
 

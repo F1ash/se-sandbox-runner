@@ -14,8 +14,7 @@ class IncludeSet : public QWidget
 {
     Q_OBJECT
 public:
-    IncludeSet(QWidget *parent=0);
-    ~IncludeSet();
+    explicit IncludeSet(QWidget *parent=0);
     QString          fileName;
     QCheckBox       *enabled;
 

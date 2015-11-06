@@ -5,9 +5,7 @@ Wait::Wait(QObject *parent = 0) :
 {
     to_kill = true;
 }
-Wait::~Wait()
-{
-}
+
 void Wait::run()
 {
     while (wdg->jobItemModel->jobItemDataList.count()) {

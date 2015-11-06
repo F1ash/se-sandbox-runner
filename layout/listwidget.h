@@ -18,8 +18,7 @@ class JobList : public QTreeView
     Q_OBJECT
 
 public:
-    JobList(QWidget *parent);
-    ~JobList();
+    explicit JobList(QWidget *parent);
 
     QMap<QString, ElemProcess*>     *jobProcess;
     JobItemModel                    *jobItemModel;

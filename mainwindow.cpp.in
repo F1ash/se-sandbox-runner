@@ -17,35 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     initToolBar();
     initJobWidget();
 }
-MainWindow::~MainWindow()
-{
-    disconnect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
-               SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
-    disconnect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
-    disconnect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
-    disconnect(jobWidget, SIGNAL(removeJob(QString&)), this, SLOT(removeJobItem(QString&)));
-    disconnect(toolBar->_hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
-    disconnect(toolBar->_createAction, SIGNAL(triggered()), this, SLOT(createNewJobItem()));
-    disconnect(toolBar->_editAction, SIGNAL(triggered()), this, SLOT(editCurrentJobItem()));
-    disconnect(toolBar->_deleteAction, SIGNAL(triggered()), this, SLOT(deleteCurrentJobItem()));
-    disconnect(toolBar->_runAction, SIGNAL(triggered()), this, SLOT(runCurrentJob()));
-    disconnect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
-    disconnect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
-    disconnect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
 
-    if ( wait_thread!=NULL ) {
-        disconnect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
-        delete wait_thread;
-        wait_thread = 0;
-    };
-
-    delete trayIcon;
-    trayIcon = 0;
-    delete toolBar;
-    toolBar = 0;
-    delete jobWidget;
-    jobWidget = 0;
-}
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
     settings.setValue("Geometry", saveGeometry());
@@ -71,14 +43,14 @@ void MainWindow::closeEvent(QCloseEvent *ev)
             ev->ignore();
             return;
         };
-    jobWidget->setEnabled(false);
-    toolBar->setEnabled(false);
-    wait_thread = new Wait(this);
-    connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
-    wait_thread->setWdgReference(jobWidget);
-    wait_thread->setMode( answer == QMessageBox::Yes );
-    wait_thread->start();
-    ev->ignore();
+        jobWidget->setEnabled(false);
+        toolBar->setEnabled(false);
+        wait_thread = new Wait(this);
+        connect(wait_thread, SIGNAL(finished()), this, SLOT(closeEvent()));
+        wait_thread->setWdgReference(jobWidget);
+        wait_thread->setMode( answer == QMessageBox::Yes );
+        wait_thread->start();
+        ev->ignore();
     } else if ( !runningJobsExist() && (wait_thread==NULL || wait_thread->isFinished()) ) {
         trayIcon->hide();
         ev->accept();
@@ -93,8 +65,8 @@ void MainWindow::closeEvent()
 void MainWindow::initTrayIcon()
 {
     trayIcon = new TrayIcon(this);
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, \
-    SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     connect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
     connect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
 }
@@ -143,6 +115,7 @@ void MainWindow::initToolBar()
     connect(toolBar->_stopAction, SIGNAL(triggered()), this, SLOT(stopCurrentJob()));
     connect(toolBar->_stopAllAction, SIGNAL(triggered()), this, SLOT(stopAllJob()));
     connect(toolBar->_exitAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
+    connect(toolBar->_infoAction, SIGNAL(triggered()), this, SLOT(showAbout()));
     int area_int = settings.value("ToolBarArea", 4).toInt();
     this->addToolBar(toolBar->get_ToolBarArea(area_int), toolBar);
 }
@@ -215,4 +188,16 @@ bool MainWindow::runningJobsExist()
         };
     };
     return result;
+}
+void MainWindow::showAbout()
+{
+    QString text("\n\
+Version: @PROJECT_VERSION@\n\
+Wrapper for SELinux Sandbox. \
+This application runs and controls the configured jobs, running in a sandbox. \
+Job settings are saved in the application's configuration.");
+    QMessageBox::about(
+                this,
+                "About SELinux Sandbox Runner",
+                text);
 }

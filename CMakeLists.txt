@@ -30,7 +30,8 @@ message (STATUS "QT5 build: ${QT5_BUILD}")
 ##
 
 set (PROJECT_NAME se-sandbox-runner-${QT_SUFF})
-set (PROJECT_VERSION 1.6.12)
+set (PROJECT_VERSION 1.6.14)
+configure_file ( mainwindow.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/mainwindow.cpp )
 set (HEADERS 
   mainwindow.h
   tray/traywidget.h
@@ -51,7 +52,7 @@ set (HEADERS
   wait_thread.h)
 set (SOURCES 
   main.cpp
-  mainwindow.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/mainwindow.cpp
   tray/traywidget.cpp
   toolbar/toolbar.cpp
   layout/listwidget.cpp

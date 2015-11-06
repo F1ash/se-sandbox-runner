@@ -8,8 +8,7 @@ class TrayIcon : public QSystemTrayIcon
 {
     Q_OBJECT
 public :
-    TrayIcon(QWidget *parent);
-    ~TrayIcon();
+    explicit TrayIcon(QWidget *parent);
 
     QAction     *hideAction;
     QAction     *closeAction;

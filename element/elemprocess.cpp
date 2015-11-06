@@ -16,21 +16,7 @@ ElemProcess::ElemProcess(QObject *parent) :
     connect(shredder, SIGNAL(finished()), this, SLOT(shreddingFinished()));
     connect(shredder, SIGNAL(stateChanged(uint)), this, SLOT(setShredState(uint)));
 }
-ElemProcess::~ElemProcess()
-{
-    disconnect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
-    disconnect(this, SIGNAL(readyRead()), this, SLOT(sendMessage()));
-    disconnect(shredder, SIGNAL(finished()), this, SLOT(shreddingFinished()));
-    disconnect(shredder, SIGNAL(stateChanged(uint)), this, SLOT(setShredState(uint)));
 
-    delete commandLine;
-    commandLine = 0;
-    if ( shredder->isRunning() ) {
-        shredder->terminate();
-    };
-    delete shredder;
-    shredder = 0;
-}
 void ElemProcess::setItemReference(JobItemModel *model, JobItemIndex *idx)
 {
     own_model = model;

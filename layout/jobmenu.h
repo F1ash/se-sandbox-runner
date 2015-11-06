@@ -7,8 +7,7 @@ class JobMenu : public QMenu
 {
     Q_OBJECT
 public:
-    JobMenu(QWidget *parent = 0);
-    ~JobMenu();
+    explicit JobMenu(QWidget *parent = 0);
 
     QAction  *edit;
     QAction  *undock;

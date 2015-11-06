@@ -16,8 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = 0);
 
     QSettings   settings;
     JobList    *jobWidget;
@@ -49,6 +48,7 @@ private slots:
     void stopJob(int);
     void stopAllJob();
     bool runningJobsExist();
+    void showAbout();
 
 };
 

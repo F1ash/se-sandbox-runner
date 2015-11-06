@@ -18,13 +18,4 @@ TrayIcon::TrayIcon(QWidget *parent = 0)
     setContextMenu(trayIconMenu);
     show();
 }
-TrayIcon::~TrayIcon()
-{
-    trayIconMenu->clear();
-    delete trayIconMenu;
-    trayIconMenu = 0;
-    delete hideAction;
-    hideAction = 0;
-    delete closeAction;
-    closeAction = 0;
-}
+

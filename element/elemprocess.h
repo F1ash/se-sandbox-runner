@@ -27,8 +27,7 @@ class ElemProcess : public QProcess
 {
     Q_OBJECT
 public:
-    ElemProcess(QObject *parent = 0);
-    ~ElemProcess();
+    explicit ElemProcess(QObject *parent = 0);
 
 public slots:
     void setItemReference(JobItemModel*, JobItemIndex*);

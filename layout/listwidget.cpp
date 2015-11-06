@@ -21,20 +21,7 @@ JobList::JobList(QWidget *parent = 0)
           this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
 
 }
-JobList::~JobList()
-{
-    disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
-               this, SLOT(jobItemClicked(const QPoint &)));
-    disconnect(this, SIGNAL(doubleClicked(const QModelIndex&)),
-               this, SLOT(jobItemDoubleClicked(const QModelIndex&)));
-    delete progressBarDlg;
-    progressBarDlg = 0;
-    delete jobItemModel;
-    jobItemModel = 0;
-    jobProcess->clear();
-    delete jobProcess;
-    jobProcess = 0;
-}
+
 void JobList::addJobItem(const QString &s)
 {
     int count = jobItemModel->rowCount();

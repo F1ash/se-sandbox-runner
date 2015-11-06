@@ -34,46 +34,7 @@ temporary files for $HOME and /tmp, \nsecondary Xserver");
     connect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
     connect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
 }
-DirectorySet::~DirectorySet()
-{
-    disconnect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
-    disconnect(mountDirs, SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
-    disconnect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
-    disconnect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
-    disconnect(getTempDir, SIGNAL(clicked()), this, SLOT(setTempDir()));
-    disconnect(getHomeDir, SIGNAL(clicked()), this, SLOT(setHomeDir()));
 
-    delete mountDirs;
-    mountDirs = 0;
-    delete guiApp;
-    guiApp = 0;
-    delete securityLevel;
-    securityLevel = 0;
-    delete selinuxLabel;
-    selinuxLabel = 0;
-    delete tempLabel;
-    tempLabel = 0;
-    delete homeLabel;
-    homeLabel = 0;
-    delete tempDir;
-    tempDir = 0;
-    delete homeDir;
-    homeDir = 0;
-    delete getTempDir;
-    getTempDir = 0;
-    delete getHomeDir;
-    getHomeDir = 0;
-    delete tempWdgLayout;
-    tempWdgLayout = 0;
-    delete homeWdgLayout;
-    homeWdgLayout = 0;
-    delete tempDirWdg;
-    tempDirWdg = 0;
-    delete homeDirWdg;
-    homeDirWdg = 0;
-    delete commonLayout;
-    commonLayout = 0;
-}
 void DirectorySet::initTempDirWidget()
 {
     tempLabel = new QLabel("Temporary Directory", this);

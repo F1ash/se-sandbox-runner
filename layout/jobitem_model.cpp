@@ -6,10 +6,7 @@ JobItemModel::JobItemModel(QObject *parent) :
     activeIcon = QIcon::fromTheme("run");
     no_activeIcon = QIcon::fromTheme("job");
 }
-JobItemModel::~JobItemModel()
-{
-    jobItemDataList.clear();
-}
+
 Qt::ItemFlags JobItemModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);

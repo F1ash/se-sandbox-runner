@@ -8,8 +8,7 @@ class Wait : public QThread
 {
     Q_OBJECT
 public:
-    Wait(QObject *parent);
-    ~Wait();
+    explicit Wait(QObject *parent);
 
 signals:
 

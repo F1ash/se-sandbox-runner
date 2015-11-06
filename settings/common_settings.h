@@ -16,10 +16,9 @@
 
 class CommonSet : public QWidget
 {
-  Q_OBJECT;
+    Q_OBJECT
 public:
-    CommonSet(QWidget *parent=0);
-    ~CommonSet();
+    explicit CommonSet(QWidget *parent=0);
     QCheckBox       *autoRun;
     QCheckBox       *cgroups;
     QLineEdit       *nameEdit;

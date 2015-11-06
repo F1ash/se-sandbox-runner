@@ -33,25 +33,7 @@ WindowSet::WindowSet(QWidget *parent=0) :
     setLayout(commonLayout);
     setEnabled(false);
 }
-WindowSet::~WindowSet()
-{
-    delete DPI;
-    DPI = 0;
-    delete WM;
-    WM = 0;
-    delete dpiLabel;
-    dpiLabel = 0;
-    delete wmLabel;
-    wmLabel = 0;
-    delete sizeTitle;
-    sizeTitle = 0;
-    delete windowWidth;
-    windowWidth = 0;
-    delete windowHeight;
-    windowHeight = 0;
-    delete commonLayout;
-    commonLayout = 0;
-}
+
 void WindowSet::initSizeWidgets()
 {
     sizeTitle = new QLabel("Window Size", this);

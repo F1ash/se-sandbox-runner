@@ -8,34 +8,7 @@ ToolBar::ToolBar (QWidget *parent = 0) : QToolBar(parent)
 
     initActions();
 }
-ToolBar::~ToolBar()
-{
-    disconnect(_hideAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
-    disconnect(itemControlAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
-    disconnect(_exitAction, SIGNAL(hovered()), this, SLOT(showHoveredMenu()));
-    delete _hideAction;
-    _hideAction = 0;
-    delete _createAction;
-    _createAction = 0;
-    delete _deleteAction;
-    _deleteAction = 0;
-    delete _editAction;
-    _editAction = 0;
-    delete _runAction;
-    _runAction = 0;
-    delete _undockAction;
-    _undockAction = 0;
-    delete _stopAction;
-    _stopAction = 0;
-    delete _stopAllAction;
-    _stopAllAction = 0;
-    delete _exitAction;
-    _exitAction = 0;
-    delete itemControlMenu;
-    itemControlMenu = 0;
-    delete itemControlAction;
-    itemControlAction = 0;
-}
+
 void ToolBar::initActions()
 {
     _hideAction = new QAction(QString("Hide to tray"), this);
@@ -56,6 +29,8 @@ void ToolBar::initActions()
     _stopAllAction->setIcon ( QIcon::fromTheme("stop-all") );
     _exitAction = new QAction(QString("Exit"), this);
     _exitAction->setIcon ( QIcon::fromTheme("exit") );
+    _infoAction = new QAction(QString("About"), this);
+    _infoAction->setIcon( QIcon::fromTheme("dialog-information") );
 
     itemControlMenu = new QMenu(this);
 
@@ -81,6 +56,8 @@ void ToolBar::initActions()
     addAction( itemControlAction );
     addSeparator();
     addAction(_exitAction);
+    addSeparator();
+    addAction(_infoAction);
 }
 void ToolBar::showHoveredMenu()
 {

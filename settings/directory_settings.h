@@ -14,8 +14,7 @@ class DirectorySet : public QWidget
 {
     Q_OBJECT
 public:
-    DirectorySet(QWidget *parent=0);
-    ~DirectorySet();
+    explicit DirectorySet(QWidget *parent=0);
     QCheckBox   *mountDirs;
     QCheckBox   *guiApp;
     QCheckBox   *securityLevel;

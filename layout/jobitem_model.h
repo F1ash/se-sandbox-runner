@@ -12,7 +12,6 @@ class JobItemModel : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit JobItemModel(QObject *parent = 0);
-    ~JobItemModel();
     QList<JobItemIndex *>  jobItemDataList;
 
     Qt::ItemFlags flags(const QModelIndex &index) const;

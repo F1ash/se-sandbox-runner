@@ -38,26 +38,7 @@ can be used together only once --\nwhen the home directory is empty");
 
     setLayout(commonLayout);
 }
-IncludeSet::~IncludeSet()
-{
-    disconnect(enabled, SIGNAL(toggled(bool)), this, SLOT(enableFileList(bool)));
-    disconnect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
-    disconnect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));
-    disconnect(delPath, SIGNAL(clicked()), this, SLOT(delPathFromList()));
 
-    delete addFile;
-    addFile = 0;
-    delete addDir;
-    addDir = 0;
-    delete delPath;
-    delPath = 0;
-    delete fileList;
-    fileList = 0;
-    delete enabled;
-    enabled = 0;
-    delete commonLayout;
-    commonLayout = 0;
-}
 void IncludeSet::set_FileName(const QString s)
 {
     fileName = s;
