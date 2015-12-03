@@ -97,8 +97,8 @@ void JobList::createJobProcess(QModelIndex &_item)
     ElemProcess *proc = new ElemProcess(this);
     proc->setItemReference(jobItemModel, idx);
     jobProcess->insert(key, proc);
-    connect(jobProcess->value(key), SIGNAL(procMsg(QString,QString)),
-            this, SLOT(showMessage(QString,QString)));
+    connect(jobProcess->value(key), SIGNAL(procMsg(QString&)),
+            this, SIGNAL(sendMsg(QString&)));
     //qDebug()<<key<<" create Job process";
     clearSelection();
 }
@@ -218,8 +218,8 @@ void JobList::deleteCurrentJobItem()
         if ( proc && proc->state()==QProcess::Running ) {
             proc->killJob();
         };
-        disconnect(proc, SIGNAL(procMsg(QString,QString)),
-                   this, SLOT(showMessage(QString,QString)));
+        disconnect(proc, SIGNAL(procMsg(QString&)),
+                   this, SIGNAL(sendMsg(QString&)));
         jobProcess->remove(job);
         jobItemModel->removeRow(_item.row());
         emit removeJob(job);

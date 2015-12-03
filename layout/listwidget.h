@@ -26,6 +26,7 @@ public:
 signals:
     void clickedItem(QString);
     void removeJob(QString&);
+    void sendMsg(QString&);
 
 public slots:
     void editItemAction();

@@ -318,7 +318,11 @@ void ElemProcess::sendMessage()
     if ( !_data.isEmpty() )_data.append("\n");
     _data.append(readAllStandardError());
     QString msg = QTextStream(&_data).readAll();
-    emit procMsg(name, msg);
+    if ( msg.isEmpty() ) return;
+    QString time = QTime::currentTime().toString();
+    QString currMsg = QString("<b>%1 In %2:</b><br><font color='red'><b>ERROR</b></font>: %3")
+            .arg(time).arg(name).arg(msg);
+    emit procMsg(currMsg);
 }
 void ElemProcess::shreddingFinished()
 {

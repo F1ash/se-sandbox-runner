@@ -9,6 +9,7 @@
 #include "layout/listwidget.h"
 #include "toolbar/toolbar.h"
 #include "wait_thread.h"
+#include "log/log_widget.h"
 #include <QDebug>
 
 class MainWindow : public QMainWindow
@@ -20,6 +21,7 @@ public:
 
     QSettings   settings;
     JobList    *jobWidget;
+    LogWidget    *logWdg;
 
 signals:
 
@@ -34,6 +36,7 @@ private slots:
     void closeEvent(QCloseEvent*);
     void closeEvent();
     void changeVisibility();
+    void changeLogVisibility();
     void initTrayIcon();
     void trayIconActivated(QSystemTrayIcon::ActivationReason);
     void initJobWidget();

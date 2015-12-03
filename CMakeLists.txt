@@ -49,6 +49,7 @@ set (HEADERS
   settings/window_settings.h
   settings/include_settings.h
   settings/directory_settings.h
+  log/log_widget.h
   wait_thread.h)
 set (SOURCES 
   main.cpp
@@ -68,6 +69,7 @@ set (SOURCES
   settings/window_settings.cpp
   settings/include_settings.cpp
   settings/directory_settings.cpp
+  log/log_widget.cpp
   wait_thread.cpp)
 set (SOURCES_DIRS . tray toolbar layout element settings)
 

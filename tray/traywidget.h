@@ -11,6 +11,7 @@ public :
     explicit TrayIcon(QWidget *parent);
 
     QAction     *hideAction;
+    QAction     *hideLogAction;
     QAction     *closeAction;
 
 private :

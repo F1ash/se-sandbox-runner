@@ -13,9 +13,14 @@ MainWindow::MainWindow(QWidget *parent)
     QIcon::setThemeSearchPaths(searchThemePath);
     QIcon::setThemeName("icons");
     setWindowIcon(QIcon::fromTheme("applications-safety-selinux"));
+    logWdg = new LogWidget(this);
+    logWdg->hide();
     initTrayIcon();
     initToolBar();
     initJobWidget();
+    changeLogVisibility();
+    connect(jobWidget, SIGNAL(sendMsg(QString&)),
+            logWdg, SLOT(appendMsgToLog(QString&)));
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)
@@ -67,8 +72,12 @@ void MainWindow::initTrayIcon()
     trayIcon = new TrayIcon(this);
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
-    connect(trayIcon->hideAction, SIGNAL(triggered()), this, SLOT(changeVisibility()));
-    connect(trayIcon->closeAction, SIGNAL(triggered()), this, SLOT(closeEvent()));
+    connect(trayIcon->hideAction, SIGNAL(triggered()),
+            this, SLOT(changeVisibility()));
+    connect(trayIcon->hideLogAction, SIGNAL(triggered()),
+            this, SLOT(changeLogVisibility()));
+    connect(trayIcon->closeAction, SIGNAL(triggered()),
+            this, SLOT(closeEvent()));
 }
 void MainWindow::changeVisibility()
 {
@@ -80,6 +89,18 @@ void MainWindow::changeVisibility()
         this->show();
         trayIcon->hideAction->setText ( QString("Down") );
         trayIcon->hideAction->setIcon ( QIcon::fromTheme("down") );
+    };
+}
+void MainWindow::changeLogVisibility()
+{
+    if (logWdg->isVisible()) {
+        logWdg->hide();
+        trayIcon->hideLogAction->setText ( QString("Log Up") );
+        trayIcon->hideLogAction->setIcon ( QIcon::fromTheme("up") );
+    } else {
+        logWdg->show();
+        trayIcon->hideLogAction->setText ( QString("Log Down") );
+        trayIcon->hideLogAction->setIcon ( QIcon::fromTheme("down") );
     };
 }
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason r)
@@ -98,10 +119,12 @@ void MainWindow::initJobWidget()
     QList<QString>::const_iterator i;
     for (i=groups.constBegin(); i!=groups.constEnd(); ++i) {
         QString s = (*i);
-        jobWidget->addJobItem(s);
+        if ( !s.contains("LogWidget") )
+            jobWidget->addJobItem(s);
     };
     setCentralWidget(jobWidget);
-    connect(jobWidget, SIGNAL(removeJob(QString&)), this, SLOT(removeJobItem(QString&)));
+    connect(jobWidget, SIGNAL(removeJob(QString&)),
+            this, SLOT(removeJobItem(QString&)));
 }
 void MainWindow::initToolBar()
 {

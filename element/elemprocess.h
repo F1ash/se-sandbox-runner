@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QProcess>
 #include <QDir>
+#include <QTime>
 #include <QTimer>
 #include <QTimerEvent>
 #include "signal.h"
@@ -37,11 +38,11 @@ public slots:
 
 signals:
     void processState(bool);
-    void procMsg(QString, QString);
+    void procMsg(QString&);
 
 private:
-    JobItemModel  *own_model;
-    JobItemIndex  *own_index;
+    JobItemModel   *own_model;
+    JobItemIndex   *own_index;
 
     QStringList     children;
     QString         PID;
