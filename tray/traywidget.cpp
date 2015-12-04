@@ -1,9 +1,13 @@
 #include "traywidget.h"
 
-TrayIcon::TrayIcon(QWidget *parent = 0)
+TrayIcon::TrayIcon(QWidget *parent)
     : QSystemTrayIcon(parent)
 {
-    setIcon(QIcon::fromTheme("applications-safety-selinux"));
+    _mark = false;
+    timerId = 0;
+    appIcon = QIcon::fromTheme("applications-safety-selinux");
+    warningIcon = QIcon::fromTheme("dialog-warning");
+    setIcon(appIcon);
     hideAction = new QAction(QString("Down"), this);
     hideAction->setIcon ( QIcon::fromTheme("down"));
     hideLogAction = new QAction(QString("Log Down"), this);
@@ -23,3 +27,24 @@ TrayIcon::TrayIcon(QWidget *parent = 0)
     show();
 }
 
+void TrayIcon::changeWarningState(bool state)
+{
+    if ( state ) {
+        if ( timerId==0 ) timerId = startTimer(1000);
+    } else {
+        if ( timerId>0 ) {
+            killTimer(timerId);
+            timerId = 0;
+        };
+        setIcon(appIcon);
+    };
+}
+
+void TrayIcon::timerEvent(QTimerEvent *ev)
+{
+    if ( timerId==ev->timerId() ) {
+        QIcon icon = (_mark)? appIcon : warningIcon;
+        setIcon(icon);
+        _mark=!_mark;
+    };
+}

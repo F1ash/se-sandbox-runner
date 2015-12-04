@@ -19,8 +19,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
 
-    QSettings   settings;
-    JobList    *jobWidget;
+    QSettings     settings;
+    JobList      *jobWidget;
     LogWidget    *logWdg;
 
 signals:
@@ -28,9 +28,9 @@ signals:
 public slots:
 
 private :
-    TrayIcon   *trayIcon;
-    ToolBar    *toolBar;
-    Wait       *wait_thread = NULL;
+    TrayIcon     *trayIcon;
+    ToolBar      *toolBar;
+    Wait         *wait_thread = NULL;
 
 private slots:
     void closeEvent(QCloseEvent*);

@@ -76,7 +76,9 @@ set (SOURCES_DIRS . tray toolbar layout element settings)
 project (${PROJECT_NAME})
 include_directories (${CMAKE_CURRENT_BINARY_DIR} ${SOURCES_DIRS})
 set (DESKTOP_FILE se-sandbox-runner.desktop)
-
+set(RCC_SRC
+    se_sandbox_runner.qrc
+)
 ##
 if ( QT4_BUILD )
   include ("CMakeQt4.txt")
@@ -85,7 +87,7 @@ else ( QT4_BUILD )
 endif( QT4_BUILD )
 ##
 
-add_executable (${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MOC_SOURCES})
+add_executable (${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MOC_SOURCES} ${RCC})
 target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 
 configure_file ( ${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} )

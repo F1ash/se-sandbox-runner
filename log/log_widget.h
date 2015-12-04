@@ -32,7 +32,6 @@ private:
     bool              lastProbe;
     int               timerId, currLogSize;
     QSettings         settings;
-    QSize             _size;
     QVBoxLayout      *baseLayout;
     QLabel           *currentTime;
     QSpinBox         *logSize;

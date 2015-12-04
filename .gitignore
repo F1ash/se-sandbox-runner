@@ -1,4 +1,4 @@
 build/*
 CMakeLists.txt.user
 make-source-archive
-
+qrc_icons_gen.py

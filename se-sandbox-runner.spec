@@ -17,8 +17,6 @@ Requires:       policycoreutils-sandbox
 %if (0%{?fedora} >= 20)
 Requires:       selinux-policy-sandbox
 %endif
-# for compatibility with the current version
-Requires:       sandbox-runner-data >= 0.3.3
 Conflicts:      se-sandbox-runner
 %if %with qt4
 BuildRequires:  qt4-devel

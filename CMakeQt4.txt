@@ -2,5 +2,6 @@
 find_package (Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include (${QT_USE_FILE})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
+qt4_add_resources(RCC ${RCC_SRC})
 set (BUILD_PROJECT_LIBRARIES ${QT_LIBRARIES})
 set (QT4_BUILD 1)

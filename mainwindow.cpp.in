@@ -7,13 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
     setWindowTitle("SELinux Sandbox Runner");
     setMinimumSize(100, 100);
-    QStringList searchThemePath;
-    searchThemePath.append(QIcon::themeSearchPaths());
-    searchThemePath.insert(0, "/usr/share/sandbox-runner-data/");
-    QIcon::setThemeSearchPaths(searchThemePath);
-    QIcon::setThemeName("icons");
+    QIcon::setThemeName("Sandbox");
     setWindowIcon(QIcon::fromTheme("applications-safety-selinux"));
-    logWdg = new LogWidget(this);
+    logWdg = new LogWidget();
     logWdg->hide();
     initTrayIcon();
     initToolBar();
@@ -21,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     changeLogVisibility();
     connect(jobWidget, SIGNAL(sendMsg(QString&)),
             logWdg, SLOT(appendMsgToLog(QString&)));
+    connect(logWdg, SIGNAL(overflow(bool)),
+            trayIcon, SLOT(changeWarningState(bool)));
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)
@@ -57,6 +55,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
         wait_thread->start();
         ev->ignore();
     } else if ( !runningJobsExist() && (wait_thread==NULL || wait_thread->isFinished()) ) {
+        logWdg->hide();
         trayIcon->hide();
         ev->accept();
     } else {

@@ -3,6 +3,8 @@
 LogWidget::LogWidget(QWidget *parent) :
     QMainWindow(parent)
 {
+    setWindowTitle("SE SandboxRunner Log");
+    setWindowIcon(QIcon::fromTheme("applications-safety-selinux"));
     settings.beginGroup("LogWidget");
     bool autoSave = settings.value("AutoSave", false).toBool();
     currLogSize = settings.value("LogSize", 1).toInt();
@@ -14,7 +16,7 @@ LogWidget::LogWidget(QWidget *parent) :
                 QSizePolicy(
                     QSizePolicy::MinimumExpanding,
                     QSizePolicy::MinimumExpanding));
-    int _size = this->fontInfo().pixelSize();
+    //int _size = this->fontInfo().pixelSize();
     currentTime = new QLabel(this);
     logSize = new QSpinBox(this);
     logSize->setToolTip("Size of Log (MB)");
@@ -25,7 +27,7 @@ LogWidget::LogWidget(QWidget *parent) :
     autoSaveLog->setToolTip("AutoSave");
     saveLog = new QPushButton(QIcon::fromTheme("document-save"), "", this);
     saveLog->setToolTip("Save Log to File");
-    saveLog->setMaximumSize(QSize(_size, _size));
+    //saveLog->setMaximumSize(QSize(_size, _size));
     titleLayout = new QHBoxLayout();
     titleLayout->addWidget(currentTime, 0, Qt::AlignRight);
     titleLayout->addStretch(-1);
