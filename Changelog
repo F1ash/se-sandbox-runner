@@ -52,3 +52,6 @@ implemented the shredding process state;
 v.1.6.14 :
 fixed the exit from system tray;
 some fixes and improvements;
+
+v.1.7.14 :
+added Logging;

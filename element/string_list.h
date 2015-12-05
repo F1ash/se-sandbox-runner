@@ -6,14 +6,8 @@
 
 class String : public QObject
 {
-    Q_OBJECT
 public:
     explicit String(QObject *parent);
-
-private:
-    QStringList list;
-
-public slots:
     void clear();
     QStringList getList() const;
     void appendCapabilities();
@@ -31,6 +25,9 @@ public slots:
     void appendSandboxType(QString&);
     void appendCommand(QString&);
     void appendSession();
+
+private:
+    QStringList list;
 
 };
 

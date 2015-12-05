@@ -4,15 +4,16 @@
 %bcond_without qt5
 
 Name:           se-sandbox-runner
-Version:        1.6.14
+Version:        1.7.14
 Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System
 License:        GPLv2+
-Source0:        https://github.com/F1ash/%{name}/archive/%{version}.tar.gz 
+Source0:        https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
 URL:            https://github.com/F1ash/%{name}
 
 Requires:       xdg-utils
+Requires:       hicolor-icon-theme
 Requires:       policycoreutils-sandbox
 %if (0%{?fedora} >= 20)
 Requires:       selinux-policy-sandbox
@@ -93,6 +94,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %license COPYING
 %{_bindir}/%{name}-qt4
 %{_datadir}/applications/%{name}-qt4.desktop
+%{_datadir}/icons/hicolor/256x256/apps/applications-safety-selinux.png
 %endif
 %if %with qt5
 %files qt5
@@ -100,9 +102,16 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %license COPYING
 %{_bindir}/%{name}-qt5
 %{_datadir}/applications/%{name}-qt5.desktop
+%{_datadir}/icons/hicolor/256x256/apps/applications-safety-selinux.png
 %endif
 
 %changelog
+* Sat Dec  5 2015 Fl@sh <kaperang07@gmail.com> - 1.7.14-1
+- added hicolor-icon-theme R;
+- removed sandbox-runner-data R;
+- added app icon to %%files;
+- version updated;
+
 * Fri Nov  6 2015 Fl@sh <kaperang07@gmail.com> - 1.6.14-1
 - added %%license field to %%files;
 - version updated;

@@ -95,3 +95,5 @@ install ( FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE}
     DESTINATION ${SHARE_INSTALL_PREFIX}/applications
     RENAME ${PROJECT_NAME}.desktop )
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install ( FILES icons/256x256/apps/applications-safety-selinux.png
+    DESTINATION ${SHARE_INSTALL_PREFIX}/icons/hicolor/256x256/apps )
