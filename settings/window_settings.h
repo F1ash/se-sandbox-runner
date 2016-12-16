@@ -12,7 +12,7 @@ class WindowSet : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WindowSet(QWidget *parent);
+    explicit WindowSet(QWidget *parent = 0);
     QSpinBox        *DPI;
     QLineEdit       *WM;
     QSpinBox        *windowWidth;

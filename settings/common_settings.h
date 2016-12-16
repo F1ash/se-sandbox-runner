@@ -18,7 +18,7 @@ class CommonSet : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CommonSet(QWidget *parent=0);
+    explicit CommonSet(QWidget *parent = 0);
     QCheckBox       *autoRun;
     QCheckBox       *cgroups;
     QLineEdit       *nameEdit;
@@ -26,6 +26,7 @@ public:
     QCheckBox       *runInTerm;
     QCheckBox       *shred;
     QCheckBox       *capabilities;
+    QCheckBox       *copy_paste;
     QComboBox       *sandboxType;
     QRadioButton    *execute;
     QRadioButton    *session;
@@ -36,7 +37,7 @@ public:
     QLineEdit       *termCommand;
 
 signals:
-    void sessionUsed(bool);
+    void             sessionUsed(bool);
 
 private:
     QGridLayout     *gridLayout;
@@ -52,20 +53,20 @@ private:
     QVBoxLayout     *termChoiseLayout;
 
 public slots:
-    QString     get_Job_Name() const;
-    void        set_Job_Name(QString&);
+    QString          get_Job_Name() const;
+    void             set_Job_Name(QString&);
 
 private slots:
-    void initTypeBox();
-    void setTypeToolTip(QString);
-    void initRadioButtons();
-    void initTimeoutWidget();
-    void initTermChoiseWdg();
-    void enableCommand(bool);
-    void enableSLevel(bool);
-    void initCmdWidget();
-    void setCommandPath();
-    void showTerminalChioseWdg(bool);
+    void             initTypeBox();
+    void             setTypeToolTip(QString);
+    void             initRadioButtons();
+    void             initTimeoutWidget();
+    void             initTermChoiseWdg();
+    void             enableCommand(bool);
+    void             enableSLevel(bool);
+    void             initCmdWidget();
+    void             setCommandPath();
+    void             showTerminalChioseWdg(bool);
 };
 
 #endif //COMMON_SETTINGS_H

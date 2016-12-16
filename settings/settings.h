@@ -24,12 +24,12 @@ class SettingsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit SettingsDialog(QWidget *parent=0);
+    explicit SettingsDialog(QWidget *parent = 0);
     QSettings           settings;
     QTabWidget         *tabWidget;
 
 signals:
-    void creatingJobCancelled();
+    void                creatingJobCancelled();
 
 private:
     JobItemIndex       *own_index;
@@ -57,23 +57,23 @@ public slots:
             QString, void* opaque = NULL, void *p = NULL);
 
 private slots:
-    void initTabWidget();
-    void initButtons();
-    QString includesFileName(QString) const;
-    void initParameters();
-    void saveJob();
-    void cancelJob();
-    void saveParameters();
-    void closeEvent(QCloseEvent*);
-    void windowSetsEnable(int);
-    void set_Title_Name(QString);
-    void timerEvent(QTimerEvent*);
-    QStringList _commandBuild();
-    void sessionStateChanged(bool);
-    bool make_Directory(QString, QString);
-    bool make_SpecifiedDirectories();
-    bool set_SpecifiedLabel(QString);
-    bool exist_Directory(QLineEdit*);
+    void                initTabWidget();
+    void                initButtons();
+    QString             includesFileName(QString) const;
+    void                initParameters();
+    void                saveJob();
+    void                cancelJob();
+    void                saveParameters();
+    void                closeEvent(QCloseEvent*);
+    void                windowSetsEnable(int);
+    void                set_Title_Name(QString);
+    void                timerEvent(QTimerEvent*);
+    QStringList         _commandBuild();
+    void                sessionStateChanged(bool);
+    bool                make_Directory(QString, QString);
+    bool                make_SpecifiedDirectories();
+    bool                set_SpecifiedLabel(QString);
+    bool                exist_Directory(QLineEdit*);
 };
 
 #endif

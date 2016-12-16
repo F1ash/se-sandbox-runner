@@ -1,6 +1,6 @@
 #include "layout/listwidget.h"
 
-JobList::JobList(QWidget *parent = 0)
+JobList::JobList(QWidget *parent)
     : QTreeView(parent)
 {
   this->setContextMenuPolicy ( Qt::CustomContextMenu );
@@ -69,25 +69,33 @@ void JobList::jobItemClicked(const QPoint &pos)
     if ( proc_Status.value("isRunning", STOPPED).toBool() ) {
         jobMenu->act->setText("Kill Job");
         jobMenu->act->setIcon(QIcon::fromTheme("stop"));
-        connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
+        connect(jobMenu->act, SIGNAL(triggered()),
+                this, SLOT(jobItemKillAction()));
         jobMenu->undock->setEnabled(true);
         to_run = TO_STOP;
     } else {
         jobMenu->act->setText("Run Job");
         jobMenu->act->setIcon(QIcon::fromTheme("run"));
-        connect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
+        connect(jobMenu->act, SIGNAL(triggered()),
+                this, SLOT(jobItemRunAction()));
         jobMenu->undock->setEnabled(false);
         to_run = TO_RUN;
     };
     idx->setData(proc_Status);
-    connect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
-    connect(jobMenu->undock, SIGNAL(triggered()), this, SLOT(jobItemUndockAction()));
+    connect(jobMenu->edit, SIGNAL(triggered()),
+            this, SLOT(editItemAction()));
+    connect(jobMenu->undock, SIGNAL(triggered()),
+            this, SLOT(jobItemUndockAction()));
     jobMenu->move(mapToGlobal(pos));
     jobMenu->exec();
-    if (to_run) disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemRunAction()));
-    else disconnect(jobMenu->act, SIGNAL(triggered()), this, SLOT(jobItemKillAction()));
-    disconnect(jobMenu->edit, SIGNAL(triggered()), this, SLOT(editItemAction()));
-    disconnect(jobMenu->undock, SIGNAL(triggered()), this, SLOT(jobItemUndockAction()));
+    if (to_run) disconnect(jobMenu->act, SIGNAL(triggered()),
+                           this, SLOT(jobItemRunAction()));
+    else disconnect(jobMenu->act, SIGNAL(triggered()),
+                    this, SLOT(jobItemKillAction()));
+    disconnect(jobMenu->edit, SIGNAL(triggered()),
+               this, SLOT(editItemAction()));
+    disconnect(jobMenu->undock, SIGNAL(triggered()),
+               this, SLOT(jobItemUndockAction()));
     jobMenu->deleteLater();
 }
 void JobList::createJobProcess(QModelIndex &_item)
@@ -181,7 +189,8 @@ void JobList::checkJob(QModelIndex &_item, bool to_run = TO_RUN)
 {
     bool proc_state;
     JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
-    proc_state = idx->getData().value(QString("isRunning"), STOPPED).toBool();
+    proc_state = idx->getData()
+            .value("isRunning", STOPPED).toBool();
     if ( (to_run && !proc_state) || (!to_run && proc_state) )
         jobItemDoubleClicked(_item);
 }
@@ -195,9 +204,11 @@ void JobList::editItemAction()
     JobItemIndex *idx = jobItemModel->jobItemDataList.at(_item.row());
     sDialog = new SettingsDialog(this->parentWidget());
     sDialog->setJobItem(idx);
-    connect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
+    connect(sDialog, SIGNAL(creatingJobCancelled()),
+            this, SLOT(deleteCancelledCreation()));
     sDialog->exec();
-    disconnect(sDialog, SIGNAL(creatingJobCancelled()), this, SLOT(deleteCancelledCreation()));
+    disconnect(sDialog, SIGNAL(creatingJobCancelled()),
+               this, SLOT(deleteCancelledCreation()));
     sDialog->deleteLater();
 }
 void JobList::deleteCurrentJobItem()
@@ -209,7 +220,8 @@ void JobList::deleteCurrentJobItem()
         ElemProcess *proc;
         proc = jobProcess->value(job);
         bool proc_state;
-        proc_state = idx->getData().value(QString("availability"), AVAILABLE).toBool();
+        proc_state = idx->getData()
+                .value("availability", AVAILABLE).toBool();
         if ( !proc_state ) {
             showMessage("Info", "Job is busy.");
             clearSelection();

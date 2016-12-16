@@ -38,14 +38,14 @@ public:
     QString  homeDir;
 
 signals:
-    void stateChanged(uint);
+    void     stateChanged(uint);
 
 public slots:
-    void run();
-    void shredStateChanged(uint);
+    void     run();
+    void     shredStateChanged(uint);
 
 private slots:
-    qint64 getDirSize(QString&);
+    qint64   getDirSize(QString&);
 };
 
 #endif // SHRED_THREAD_H

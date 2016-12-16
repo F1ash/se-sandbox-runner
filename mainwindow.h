@@ -19,39 +19,39 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
 
-    QSettings     settings;
-    JobList      *jobWidget;
-    LogWidget    *logWdg;
+    QSettings    settings;
+    JobList     *jobWidget;
+    LogWidget   *logWdg;
 
 signals:
 
 public slots:
 
 private :
-    TrayIcon     *trayIcon;
-    ToolBar      *toolBar;
-    Wait         *wait_thread = NULL;
+    TrayIcon    *trayIcon;
+    ToolBar     *toolBar;
+    Wait        *wait_thread = NULL;
 
 private slots:
-    void closeEvent(QCloseEvent*);
-    void closeEvent();
-    void changeVisibility();
-    void changeLogVisibility();
-    void initTrayIcon();
-    void trayIconActivated(QSystemTrayIcon::ActivationReason);
-    void initJobWidget();
-    void initToolBar();
-    void editCurrentJobItem();
-    void createNewJobItem();
-    void deleteCurrentJobItem();
-    void removeJobItem(QString&);
-    void runCurrentJob();
-    void undockCurrentJob();
-    void stopCurrentJob();
-    void stopJob(int);
-    void stopAllJob();
-    bool runningJobsExist();
-    void showAbout();
+    void         closeEvent(QCloseEvent*);
+    void         closeEvent();
+    void         changeVisibility();
+    void         changeLogVisibility();
+    void         initTrayIcon();
+    void         trayIconActivated(QSystemTrayIcon::ActivationReason);
+    void         initJobWidget();
+    void         initToolBar();
+    void         editCurrentJobItem();
+    void         createNewJobItem();
+    void         deleteCurrentJobItem();
+    void         removeJobItem(QString&);
+    void         runCurrentJob();
+    void         undockCurrentJob();
+    void         stopCurrentJob();
+    void         stopJob(int);
+    void         stopAllJob();
+    bool         runningJobsExist();
+    void         showAbout();
 
 };
 

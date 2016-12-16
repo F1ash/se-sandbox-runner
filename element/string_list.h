@@ -7,24 +7,24 @@
 class String : public QObject
 {
 public:
-    explicit String(QObject *parent);
-    void clear();
+    explicit String(QObject *parent = 0);
+    void        clear();
     QStringList getList() const;
-    void appendCapabilities();
-    void appendCGroups();
-    void appendShred();
-    void appendDPI(int);
-    void appendSecurityLevel(QString&);
-    void appendWM(QString&);
-    void appendWindowSize(int, int);
-    void appendIncludes(QString&);
-    void appendMountDirs();
-    void appendGuiApp();
-    void appendHomeDir(QString&);
-    void appendTempDir(QString&);
-    void appendSandboxType(QString&);
-    void appendCommand(QString&);
-    void appendSession();
+    void        appendCapabilities();
+    void        appendCGroups();
+    void        appendShred();
+    void        appendDPI(int);
+    void        appendSecurityLevel(QString&);
+    void        appendWM(QString&);
+    void        appendWindowSize(int, int);
+    void        appendIncludes(QString&);
+    void        appendMountDirs();
+    void        appendGuiApp();
+    void        appendHomeDir(QString&);
+    void        appendTempDir(QString&);
+    void        appendSandboxType(QString&);
+    void        appendCommand(QString&);
+    void        appendSession();
 
 private:
     QStringList list;

@@ -14,7 +14,7 @@ class IncludeSet : public QWidget
 {
     Q_OBJECT
 public:
-    explicit IncludeSet(QWidget *parent=0);
+    explicit IncludeSet(QWidget *parent = 0);
     QString          fileName;
     QCheckBox       *enabled;
 
@@ -28,18 +28,18 @@ private:
     QPushButton     *delPath;
 
 public slots:
-    void            set_FileName(const QString);
-    QStringList     get_Included_Path() const;
-    const QString   get_FileName();
-    void            setIncludesList(QString);
+    void             set_FileName(const QString);
+    QStringList      get_Included_Path() const;
+    const QString    get_FileName();
+    void             setIncludesList(QString);
 
 private slots:
-    void enableFileList(bool);
-    void addFilesToList();
-    void addDirToList();
-    void delPathFromList();
-    void delItem(QListWidgetItem*);
-    void removeDuplicates();
+    void             enableFileList(bool);
+    void             addFilesToList();
+    void             addDirToList();
+    void             delPathFromList();
+    void             delItem(QListWidgetItem*);
+    void             removeDuplicates();
 };
 
 #endif //INCLUDE_SETTINGS_H

@@ -12,6 +12,8 @@ License:        GPLv2+
 Source0:        https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
 URL:            https://github.com/F1ash/%{name}
 
+Requires:       coreutils
+Requires:       xsel
 Requires:       xdg-utils
 Requires:       hicolor-icon-theme
 Requires:       policycoreutils-sandbox

@@ -11,7 +11,7 @@ IncludeSet::IncludeSet(QWidget *parent) :
     fileName = QString();
     enabled = new QCheckBox("Enable Included Files", this);
     enabled->setChecked(false);
-    enabled->setToolTip("Note: A permanent home directory and included files\
+    enabled->setToolTip("Note: A permanent home directory and included files\n\
 can be used together only once --\nwhen the home directory is empty");
     fileList = new QListWidget(this);
     fileList->setEnabled(false);
@@ -25,10 +25,14 @@ can be used together only once --\nwhen the home directory is empty");
     delPath = new QPushButton(QIcon::fromTheme("archive-remove"),"", this);
     delPath->setEnabled(false);
     delPath->setToolTip("Delete path from list");
-    connect(enabled, SIGNAL(toggled(bool)), this, SLOT(enableFileList(bool)));
-    connect(addFile, SIGNAL(clicked()), this, SLOT(addFilesToList()));
-    connect(addDir, SIGNAL(clicked()), this, SLOT(addDirToList()));
-    connect(delPath, SIGNAL(clicked()), this, SLOT(delPathFromList()));
+    connect(enabled, SIGNAL(toggled(bool)),
+            this, SLOT(enableFileList(bool)));
+    connect(addFile, SIGNAL(clicked()),
+            this, SLOT(addFilesToList()));
+    connect(addDir, SIGNAL(clicked()),
+            this, SLOT(addDirToList()));
+    connect(delPath, SIGNAL(clicked()),
+            this, SLOT(delPathFromList()));
 
     commonLayout->addWidget(enabled, 0, 0, 1, 4);
     commonLayout->addWidget(fileList, 2, 0, 5, 4);
@@ -52,15 +56,22 @@ void IncludeSet::enableFileList(bool b)
 }
 void IncludeSet::addFilesToList()
 {
-    QStringList sL = QFileDialog::getOpenFileNames(this, "Include files", "~");
+    QStringList sL = QFileDialog::getOpenFileNames(
+                this,
+                "Include files",
+                "~");
     fileList->addItems(sL);
     removeDuplicates();
 }
 void IncludeSet::addDirToList()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, "Include directory", "~");
+    QString dir = QFileDialog::getExistingDirectory(
+                this,
+                "Include directory",
+                "~");
     if ( !dir.isEmpty() ) {
-        if ( !dir.endsWith(QDir::separator()) ) dir.append(QDir::separator());
+        if ( !dir.endsWith(QDir::separator()) )
+            dir.append(QDir::separator());
         fileList->addItem(dir);
         removeDuplicates();
     };

@@ -29,10 +29,14 @@ temporary files for $HOME and /tmp, \nsecondary Xserver");
     commonLayout->addWidget(homeDirWdg, 7, 0, 8, 2);
 
     setLayout(commonLayout);
-    connect(guiApp,    SIGNAL(clicked(bool)), this, SLOT(gui_StateChanged(bool)));
-    connect(mountDirs, SIGNAL(toggled(bool)), this, SLOT(setWorkDirsState(bool)));
-    connect(securityLevel, SIGNAL(clicked()), this, SLOT(check_SecLevelState()));
-    connect(securityLevel, SIGNAL(toggled(bool)), this, SLOT(setSELinuxLabelState(bool)));
+    connect(guiApp,    SIGNAL(clicked(bool)),
+            this, SLOT(gui_StateChanged(bool)));
+    connect(mountDirs, SIGNAL(toggled(bool)),
+            this, SLOT(setWorkDirsState(bool)));
+    connect(securityLevel, SIGNAL(clicked()),
+            this, SLOT(check_SecLevelState()));
+    connect(securityLevel, SIGNAL(toggled(bool)),
+            this, SLOT(setSELinuxLabelState(bool)));
 }
 
 void DirectorySet::initTempDirWidget()
@@ -45,7 +49,8 @@ void DirectorySet::initTempDirWidget()
     getTempDir = new QPushButton(QIcon::fromTheme("edit-find"),"", this);
     tempWdgLayout->addWidget(tempDir);
     tempWdgLayout->addWidget(getTempDir);
-    connect(getTempDir, SIGNAL(clicked()), this, SLOT(setTempDir()));
+    connect(getTempDir, SIGNAL(clicked()),
+            this, SLOT(setTempDir()));
 
     tempDirWdg->setLayout(tempWdgLayout);
     tempDirWdg->setEnabled(false);
@@ -60,19 +65,26 @@ void DirectorySet::initHomeDirWidget()
     getHomeDir = new QPushButton(QIcon::fromTheme("edit-find"),"", this);
     homeWdgLayout->addWidget(homeDir);
     homeWdgLayout->addWidget(getHomeDir);
-    connect(getHomeDir, SIGNAL(clicked()), this, SLOT(setHomeDir()));
+    connect(getHomeDir, SIGNAL(clicked()),
+            this, SLOT(setHomeDir()));
 
     homeDirWdg->setLayout(homeWdgLayout);
     homeDirWdg->setEnabled(false);
 }
 void DirectorySet::setTempDir()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, "Get Temporary Directory", "~");
+    QString dir = QFileDialog::getExistingDirectory(
+                this,
+                "Get Temporary Directory",
+                "~");
     tempDir->setText(dir);
 }
 void DirectorySet::setHomeDir()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, "Get Home Directory", "~");
+    QString dir = QFileDialog::getExistingDirectory(
+                this,
+                "Get Home Directory",
+                "~");
     homeDir->setText(dir);
 }
 QString DirectorySet::get_HomeDir() const
@@ -95,8 +107,11 @@ void DirectorySet::setWorkDirsState(bool b)
         mountDirs->setCheckState(Qt::Checked);
         tempDirWdg->setEnabled(true);
         homeDirWdg->setEnabled(true);
-        QMessageBox::information(this, "Info",
-        "\"Mount\" can't be changed\nbecause \"Session\" key is enabled.");
+        QMessageBox::information(
+                    this,
+                    "Info",
+                    "\"Mount\" can't be changed\n\
+because \"Session\" key is enabled.");
     } // workDirs can to be used in case running graphic application
       else if ( !b && !guiApp->isChecked() ) {
         tempDirWdg->setEnabled(b);
@@ -137,6 +152,6 @@ void DirectorySet::check_SecLevelState()
         QMessageBox::information(
             this,
             "Info",
-            "\"Security Level\" can't be changed\
+            "\"Security Level\" can't be changed\n\
 because \"Session\" key is enabled.");
 }

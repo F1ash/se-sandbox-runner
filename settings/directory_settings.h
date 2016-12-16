@@ -14,17 +14,17 @@ class DirectorySet : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DirectorySet(QWidget *parent=0);
-    QCheckBox   *mountDirs;
-    QCheckBox   *guiApp;
-    QCheckBox   *securityLevel;
-    QLineEdit   *selinuxLabel;
-    QLineEdit   *tempDir;
-    QLineEdit   *homeDir;
-    bool         sessionUsed;
+    explicit DirectorySet(QWidget *parent = 0);
+    QCheckBox       *mountDirs;
+    QCheckBox       *guiApp;
+    QCheckBox       *securityLevel;
+    QLineEdit       *selinuxLabel;
+    QLineEdit       *tempDir;
+    QLineEdit       *homeDir;
+    bool             sessionUsed;
 
 signals:
-    void guiStateChanged(bool);
+    void             guiStateChanged(bool);
 
 private:
     QWidget         *tempDirWdg;
@@ -38,22 +38,22 @@ private:
     QPushButton     *getHomeDir;
 
 public slots:
-    QString     get_TempDir() const;
-    QString     get_HomeDir() const;
-    QString     get_Mount() const;
-    void        setGuiCheckState(int);
+    QString          get_TempDir() const;
+    QString          get_HomeDir() const;
+    QString          get_Mount() const;
+    void             setGuiCheckState(int);
 
 private slots:
-    void initTempDirWidget();
-    void initHomeDirWidget();
-    void setTempDir();
-    void setHomeDir();
-    void setWorkDirsState(bool);
-    void gui_StateChanged(bool);
-    void check_SecLevelState();
+    void             initTempDirWidget();
+    void             initHomeDirWidget();
+    void             setTempDir();
+    void             setHomeDir();
+    void             setWorkDirsState(bool);
+    void             gui_StateChanged(bool);
+    void             check_SecLevelState();
 
 public slots:
-    void setSELinuxLabelState(bool);
+    void             setSELinuxLabelState(bool);
 };
 
 #endif //DIRECTORY_SETTINGS_H

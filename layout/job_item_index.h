@@ -23,14 +23,14 @@ private:
     DATA     Data;
 
 public slots:
-    void setName(const QString&);
-    void setState(const QString&);
-    void setPID(const QString&);
-    void setData(const DATA&);
-    QString getName() const;
-    QString getState() const;
-    QString getPID() const;
-    DATA    getData() const;
+    void     setName(const QString&);
+    void     setState(const QString&);
+    void     setPID(const QString&);
+    void     setData(const DATA&);
+    QString  getName() const;
+    QString  getState() const;
+    QString  getPID() const;
+    DATA     getData() const;
 
 };
 

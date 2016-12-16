@@ -4,17 +4,23 @@ ElemProcess::ElemProcess(QObject *parent) :
     QProcess(parent)
 {
     setWorkingDirectory(QDir::homePath());
-    connect(this, SIGNAL(processState(bool)), this, SLOT(setProcessState(bool)));
-    connect(this, SIGNAL(readyRead()), this, SLOT(sendMessage()));
-    connect(this, SIGNAL(readyReadStandardError()), this, SLOT(sendMessage()));
-    connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(sendMessage()));
+    connect(this, SIGNAL(processState(bool)),
+            this, SLOT(setProcessState(bool)));
+    connect(this, SIGNAL(readyReadStandardError()),
+            this, SLOT(sendMessage()));
+    connect(this, SIGNAL(readyReadStandardOutput()),
+            this, SLOT(sendMessage()));
     timerId = 0;
     waitTimerId = 0;
     commandLine = new String(this);
     _diff = 0;
+    copy_paste = false;
+    copy_paste_PID = -1;
     shredder = new ShredThread(this);
-    connect(shredder, SIGNAL(finished()), this, SLOT(shreddingFinished()));
-    connect(shredder, SIGNAL(stateChanged(uint)), this, SLOT(setShredState(uint)));
+    connect(shredder, SIGNAL(finished()),
+            this, SLOT(shreddingFinished()));
+    connect(shredder, SIGNAL(stateChanged(uint)),
+            this, SLOT(setShredState(uint)));
 }
 
 void ElemProcess::setItemReference(JobItemModel *model, JobItemIndex *idx)
@@ -79,7 +85,8 @@ QStringList ElemProcess::getCommand()
     };
     if ( !sandboxType.isEmpty() ) commandLine->appendSandboxType(sandboxType);
     if ( session ) commandLine->appendSession();
-    else if ( execute ) commandLine->appendCommand(command);
+    else if ( execute )
+        commandLine->appendCommand(command);
     return commandLine->getList();
 }
 void ElemProcess::appendChildren()
@@ -124,6 +131,7 @@ void ElemProcess::runJob()
     bool runInTerm = settings.value("RunInTerm", QVariant()).toBool();
     bool customTerminal = settings.value("CustomTerm", QVariant()).toBool();
     shred = settings.value("Shred", QVariant()).toBool();
+    copy_paste = settings.value("CopyPaste", QVariant()).toBool();
     mountDirs = settings.value("Mount", QVariant()).toBool();
     QStringList commandString;
     QString _commandString = settings.value("TermCommand", QVariant()).toString();
@@ -147,30 +155,46 @@ void ElemProcess::runJob()
     };
     QStringList args;
     QDir d;
+    QString tmpDir( QDir::tempPath() );
+    QString sep( QDir::separator() );
     int exitCode;
     d.setPath(homeDir);
     if ( !homeDir.isEmpty() && homeDir!=TMP_FILE && !d.exists() ) {
         d.mkpath(homeDir);
     } else if ( homeDir.isEmpty() || homeDir==TMP_FILE ) {
-        homeDir = QString("/tmp/.sandbox_%1_%2").arg(user).arg(QString::number(qrand()));
+        homeDir = QString("%1%2.sandbox_%3_%4")
+                .arg(tmpDir)
+                .arg(sep)
+                .arg(user)
+                .arg(QString::number(qrand()));
         d.mkpath(homeDir);
     };
     args = QStringList()<<"-R"<<"-t"<<"sandbox_file_t"<<"-l"<< SELabel<< homeDir;
     exitCode = QProcess::execute(QString("chcon"), args);
     if ( exitCode!=0 )
-        QMessageBox::information(NULL, "INFO","Create Home Directory failed.");
+        QMessageBox::information(
+                    NULL,
+                    "INFO",
+                    "Create Home Directory failed.");
 
     d.setPath(tempDir);
     if ( !tempDir.isEmpty() && tempDir!=TMP_FILE && !d.exists() ) {
         d.mkpath(tempDir);
     } else if ( tempDir.isEmpty() || tempDir==TMP_FILE ) {
-        tempDir = QString("/tmp/.sandbox_%1_%2").arg("tmp").arg(QString::number(qrand()));
+        tempDir = QString("%1%2.sandbox_%3_%4")
+                .arg(tmpDir)
+                .arg(sep)
+                .arg("tmp")
+                .arg(QString::number(qrand()));
         d.mkpath(tempDir);
     };
     args = QStringList()<<"-R"<<"-t"<<"sandbox_file_t"<<"-l"<< SELabel<< tempDir;
     exitCode = QProcess::execute(QString("chcon"), args);
     if ( exitCode!=0 )
-        QMessageBox::information(NULL, "INFO","Create Temporary Directory failed.");
+        QMessageBox::information(
+                    NULL,
+                    "INFO",
+                    "Create Temporary Directory failed.");
 
     proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
     proc_Status.insert("isRunning", QVariant(RUNNING));
@@ -205,14 +229,17 @@ void ElemProcess::runJob()
     bool started = waitForStarted();
     PID = QString::number(pid());
     if ( started ) {
+        if ( copy_paste ) startCopyPaste();
         waitTimerId = startTimer(1000);
-    } else emit processState(STOPPED);
+    } else
+        emit processState(STOPPED);
 }
 void ElemProcess::killJob()
 {
     proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
     own_index->setData(proc_Status);
-    QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+    QModelIndex _idx = own_model->index(
+                own_model->jobItemDataList.indexOf( own_index ), 1 );
     own_model->setData(_idx, "Killing", Qt::EditRole);
     if (timerId) {
         killTimer(timerId);
@@ -231,18 +258,21 @@ void ElemProcess::killJob()
             ::kill(_pid, SIGQUIT);
         };
     };
+    if ( copy_paste ) stopCopyPaste();
     if ( shred ) {
         shredder->tempDir = tempDir;
         shredder->homeDir = homeDir;
         shredder->start();
         own_model->setData(_idx, "Shredding|0", Qt::EditRole);
-    } else emit processState(STOPPED);
+    } else
+        emit processState(STOPPED);
 }
 void ElemProcess::undockJob()
 {
     proc_Status.insert("availability", QVariant(NOT_AVAILABLE));
     own_index->setData(proc_Status);
-    QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+    QModelIndex _idx = own_model->index(
+                own_model->jobItemDataList.indexOf( own_index ), 1 );
     own_model->setData(_idx, "Undocking", Qt::EditRole);
     if (timerId) {
         killTimer(timerId);
@@ -250,6 +280,7 @@ void ElemProcess::undockJob()
     };
     this->kill();
     this->waitForFinished();
+    if ( copy_paste ) stopCopyPaste();
     emit processState(STOPPED);
 }
 void ElemProcess::setProcessState(bool status)
@@ -292,12 +323,15 @@ void ElemProcess::timerEvent(QTimerEvent *event)
     //qDebug() << "Timer ID:" << _timerId<< timerId;
     if ( _timerId && timerId==_timerId ) {
         pid = PID.toInt(&converted);
-        if ( !converted ) killJob();
-        else if ( ::kill(pid, SIGZERO)!=0 ) killJob();
+        if ( !converted )
+            killJob();
+        else if ( ::kill(pid, SIGZERO)!=0 )
+            killJob();
     } else if ( _timerId && waitTimerId==_timerId ) {
         if ( checkTimeout - _diff + 1 ) {
             percent = int ((float(_diff)/checkTimeout)*100.0);
-            QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+            QModelIndex _idx = own_model->index(
+                        own_model->jobItemDataList.indexOf( own_index ), 1 );
             QString _state("Start|");
             _state.append(QString::number(percent));
             own_model->setData(_idx, _state, Qt::EditRole);
@@ -320,7 +354,8 @@ void ElemProcess::sendMessage()
     QString msg = QTextStream(&_data).readAll();
     if ( msg.isEmpty() ) return;
     QString time = QTime::currentTime().toString();
-    QString currMsg = QString("<b>%1 In %2:</b><br><font color='red'><b>ERROR</b></font>: %3")
+    QString currMsg = QString(
+            "<b>%1 In %2:</b><br><font color='red'><b>ERROR</b></font>: %3")
             .arg(time).arg(name).arg(msg);
     emit procMsg(currMsg);
 }
@@ -330,9 +365,18 @@ void ElemProcess::shreddingFinished()
 }
 void ElemProcess::setShredState(uint percent)
 {
-    QModelIndex _idx = own_model->index( own_model->jobItemDataList.indexOf( own_index ), 1 );
+    QModelIndex _idx = own_model->index(
+                own_model->jobItemDataList.indexOf( own_index ), 1 );
     QString _state("Shredding|");
     _state.append(QString::number(percent));
     //qDebug()<<_state;
     own_model->setData(_idx, _state, Qt::EditRole);
+}
+void ElemProcess::startCopyPaste()
+{
+
+}
+void ElemProcess::stopCopyPaste()
+{
+
 }

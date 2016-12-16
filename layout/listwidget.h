@@ -18,38 +18,39 @@ class JobList : public QTreeView
     Q_OBJECT
 
 public:
-    explicit JobList(QWidget *parent);
+    explicit JobList(QWidget *parent = 0);
 
-    QMap<QString, ElemProcess*>     *jobProcess;
-    JobItemModel                    *jobItemModel;
+    QMap<QString, ElemProcess*>
+                        *jobProcess;
+    JobItemModel        *jobItemModel;
 
 signals:
-    void clickedItem(QString);
-    void removeJob(QString&);
-    void sendMsg(QString&);
+    void                 clickedItem(QString);
+    void                 removeJob(QString&);
+    void                 sendMsg(QString&);
 
 public slots:
-    void editItemAction();
-    void addJobItem(const QString&);
-    void deleteCurrentJobItem();
-    void runJob(QModelIndex&);
-    void undockJob(QModelIndex&);
-    void stopJob(QModelIndex&);
+    void                 editItemAction();
+    void                 addJobItem(const QString&);
+    void                 deleteCurrentJobItem();
+    void                 runJob(QModelIndex&);
+    void                 undockJob(QModelIndex&);
+    void                 stopJob(QModelIndex&);
 
 private :
-    SettingsDialog       *sDialog;
-    ProgressBarDelegate  *progressBarDlg;
+    SettingsDialog      *sDialog;
+    ProgressBarDelegate *progressBarDlg;
 
 private slots:
-    void jobItemClicked(const QPoint&);
-    void createJobProcess(QModelIndex&);
-    void jobItemDoubleClicked(const QModelIndex&);
-    void jobItemUndockAction();
-    void jobItemKillAction();
-    void jobItemRunAction();
-    void checkJob(QModelIndex&, bool);
-    void deleteCancelledCreation();
-    void showMessage(QString, QString);
+    void                 jobItemClicked(const QPoint&);
+    void                 createJobProcess(QModelIndex&);
+    void                 jobItemDoubleClicked(const QModelIndex&);
+    void                 jobItemUndockAction();
+    void                 jobItemKillAction();
+    void                 jobItemRunAction();
+    void                 checkJob(QModelIndex&, bool);
+    void                 deleteCancelledCreation();
+    void                 showMessage(QString, QString);
 
 };
 

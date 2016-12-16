@@ -9,20 +9,27 @@ CommonSet::CommonSet(QWidget *parent) :
     gridLayout = new QGridLayout();
     gridLayout->setAlignment(Qt::AlignRight);
     cgroups = new QCheckBox("CGroups", this);
-    cgroups->setToolTip("Use control groups to control this copy of sandbox. \nSpecify parameters in /etc/sysconfig/sandbox.");
+    cgroups->setToolTip("Use control groups to control this copy of sandbox.\n\
+Specify parameters in /etc/sysconfig/sandbox.");
     nameEdit = new QLineEdit(this);
     nameEdit->setPlaceholderText("Enter Job Name");
     autoRun = new QCheckBox("AutoRun", this);
     autoRun->setToolTip("Run Job at startup.");
     guiApp = new QCheckBox("GUI App", this);
-    guiApp->setToolTip("Create an X based Sandbox for gui apps, \ntemporary files for $HOME and /tmp, \nsecondary Xserver");
+    guiApp->setToolTip("Create an X based Sandbox for gui apps,\n\
+temporary files for $HOME and /tmp, \nsecondary Xserver");
     runInTerm = new QCheckBox("Run in terminal", this);
-    runInTerm->setToolTip("Run in terminal\n(The process can be not controlled by application).");
-    connect(runInTerm, SIGNAL(toggled(bool)), this, SLOT(showTerminalChioseWdg(bool)));
+    runInTerm->setToolTip("Run in terminal\n\
+(The process can be not controlled by application).");
+    connect(runInTerm, SIGNAL(toggled(bool)),
+            this, SLOT(showTerminalChioseWdg(bool)));
     shred = new QCheckBox("Shred", this);
-    shred->setToolTip("Shred temporary files created \nin $HOME and /tmp,\nbefore deleting.");
+    shred->setToolTip("Shred temporary files created \n\
+in $HOME and /tmp,\nbefore deleting.");
     capabilities = new QCheckBox("Capabilities", this);
     capabilities->setToolTip("Use capabilities \nwithin the sandbox.");
+    copy_paste = new QCheckBox("Copy/Paste", this);
+    copy_paste->setToolTip("Copy/Paste between clipboards");
     initTypeBox();
     initRadioButtons();
     initCmdWidget();
@@ -34,12 +41,13 @@ CommonSet::CommonSet(QWidget *parent) :
     gridLayout->addWidget(runInTerm, 2, 2);
     gridLayout->addWidget(shred, 3, 0);
     gridLayout->addWidget(capabilities, 3, 2);
-    gridLayout->addWidget(typeLabel, 4, 0);
-    gridLayout->addWidget(sandboxType, 5, 0);
-    gridLayout->addWidget(timeoutLabel, 4, 2);
-    gridLayout->addWidget(checkTimeout, 5, 2);
-    gridLayout->addWidget(execute, 6, 0);
-    gridLayout->addWidget(session, 6, 2);
+    gridLayout->addWidget(copy_paste, 4, 0);
+    gridLayout->addWidget(typeLabel, 5, 0);
+    gridLayout->addWidget(sandboxType, 6, 0);
+    gridLayout->addWidget(timeoutLabel, 5, 2);
+    gridLayout->addWidget(checkTimeout, 6, 2);
+    gridLayout->addWidget(execute, 7, 0);
+    gridLayout->addWidget(session, 7, 2);
     gridLayout->addWidget(commonWdg, 8, 0, 9, 5);
 
     setLayout(gridLayout);
@@ -56,7 +64,8 @@ void CommonSet::initTypeBox()
     sandboxType->addItem("Printer Ports", "sandbox_x_t");
     sandboxType->addItem("Ports required for Web","sandbox_web_t");
     sandboxType->addItem("All network ports", "sandbox_net_t");
-    connect(sandboxType, SIGNAL(currentIndexChanged(QString)), this, SLOT(setTypeToolTip(QString)));
+    connect(sandboxType, SIGNAL(currentIndexChanged(QString)),
+            this, SLOT(setTypeToolTip(QString)));
 }
 void CommonSet::setTypeToolTip(QString s)
 {
@@ -69,13 +78,17 @@ void CommonSet::initRadioButtons()
 {
     execute = new QRadioButton("Command", this);
     execute->setAutoExclusive(true);
-    execute->setToolTip("Run  the <Command> application \nwithin a tightly \nconfined SELinux domain.");
+    execute->setToolTip("Run the <Command> application \n\
+within a tightly \nconfined SELinux domain.");
     session = new QRadioButton("Session", this);
     session->setAutoExclusive(true);
-    session->setToolTip("Run a full desktop session, \nRequires level, \nand home and tmpdir.");
+    session->setToolTip("Run a full desktop session, \n\
+Requires level, \nand home and tmpdir.");
 
-    connect(execute, SIGNAL(toggled(bool)), this, SLOT(enableCommand(bool)));
-    connect(session, SIGNAL(toggled(bool)), this, SLOT(enableSLevel(bool)));
+    connect(execute, SIGNAL(toggled(bool)),
+            this, SLOT(enableCommand(bool)));
+    connect(session, SIGNAL(toggled(bool)),
+            this, SLOT(enableSLevel(bool)));
 }
 void CommonSet::initTimeoutWidget()
 {
@@ -105,7 +118,8 @@ void CommonSet::initTermChoiseWdg()
     termChoiseLayout->addWidget(termCommand);
     termChoiseWidget->setLayout(termChoiseLayout);
     termChoiseWidget->setVisible(false);
-    connect(customTerminal, SIGNAL(toggled(bool)), termCommand, SLOT(setVisible(bool)));
+    connect(customTerminal, SIGNAL(toggled(bool)),
+            termCommand, SLOT(setVisible(bool)));
 }
 void CommonSet::enableCommand(bool b)
 {
@@ -131,7 +145,8 @@ void CommonSet::initCmdWidget()
     cmdLayout->addWidget(command);
     cmdLayout->addWidget(selectFile);
     cmdWidget->setLayout(cmdLayout);
-    connect(selectFile, SIGNAL(clicked()), this, SLOT(setCommandPath()));
+    connect(selectFile, SIGNAL(clicked()),
+            this, SLOT(setCommandPath()));
 
     commonCmdLayout->addWidget(cmdWidget);
     initTermChoiseWdg();

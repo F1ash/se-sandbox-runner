@@ -1,6 +1,6 @@
 #include "string_list.h"
 
-String::String(QObject *parent=0) :
+String::String(QObject *parent) :
     QObject(parent)
 {
     list.clear();
@@ -39,11 +39,16 @@ void String::appendSandboxType(QString &s)
 {
     list.append("-t");
     QString t;
-    if    (s==QString("No Network Access")) t = QString("sandbox_min_t");
-    else if (s==QString("Printer Ports")) t = QString("sandbox_x_t");
-    else if (s==QString("Ports required for Web")) t = QString("sandbox_web_t");
-    else if (s==QString("All network ports")) t = QString("sandbox_net_t");
-    else if (s==QString("Default")) t = QString("sandbox_t");
+    if      (s==QString("No Network Access"))
+        t = QString("sandbox_min_t");
+    else if (s==QString("Printer Ports"))
+        t = QString("sandbox_x_t");
+    else if (s==QString("Ports required for Web"))
+        t = QString("sandbox_web_t");
+    else if (s==QString("All network ports"))
+        t = QString("sandbox_net_t");
+    else if (s==QString("Default"))
+        t = QString("sandbox_t");
     list.append(t);
 }
 void String::appendSession()

@@ -10,7 +10,7 @@ class ToolBar : public QToolBar
 {
     Q_OBJECT
 public:
-    explicit ToolBar(QWidget *parent);
+    explicit ToolBar(QWidget *parent = 0);
 
     QAction    *_hideAction;
     QAction    *_createAction;
@@ -30,11 +30,12 @@ private:
     QAction    *itemControlAction;
 
 private slots:
-    void initActions();
-    void showHoveredMenu();
+    void        initActions();
+    void        showHoveredMenu();
 
 public slots:
-    Qt::ToolBarArea get_ToolBarArea(int) const;
+    Qt::ToolBarArea
+                get_ToolBarArea(int) const;
 };
 
 #endif //TOOLBAR_H

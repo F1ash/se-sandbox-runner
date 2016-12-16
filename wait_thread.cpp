@@ -1,6 +1,6 @@
 #include "wait_thread.h"
 
-Wait::Wait(QObject *parent = 0) :
+Wait::Wait(QObject *parent) :
     QThread(parent)
 {
     to_kill = true;

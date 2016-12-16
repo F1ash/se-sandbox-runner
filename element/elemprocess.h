@@ -31,14 +31,14 @@ public:
     explicit ElemProcess(QObject *parent = 0);
 
 public slots:
-    void setItemReference(JobItemModel*, JobItemIndex*);
-    void runJob();
-    void killJob();
-    void undockJob();
+    void            setItemReference(JobItemModel*, JobItemIndex*);
+    void            runJob();
+    void            killJob();
+    void            undockJob();
 
 signals:
-    void processState(bool);
-    void procMsg(QString&);
+    void            processState(bool);
+    void            procMsg(QString&);
 
 private:
     JobItemModel   *own_model;
@@ -57,20 +57,25 @@ private:
     int             _diff;
     bool            shred;
     bool            mountDirs;
+    bool            copy_paste;
+    int             copy_paste_PID;
     QString         tempDir;
     QString         homeDir;
     QString         SELabel;
     ShredThread    *shredder;
 
+    void            startCopyPaste();
+    void            stopCopyPaste();
+
 private slots:
-    QStringList getCommand();
-    void appendChildren();
-    void readChildren();
-    void setProcessState(bool);
-    void timerEvent(QTimerEvent*);
-    void sendMessage();
-    void shreddingFinished();
-    void setShredState(uint);
+    QStringList     getCommand();
+    void            appendChildren();
+    void            readChildren();
+    void            setProcessState(bool);
+    void            timerEvent(QTimerEvent*);
+    void            sendMessage();
+    void            shreddingFinished();
+    void            setShredState(uint);
 };
 
 #endif //ELEMPROCESS_H

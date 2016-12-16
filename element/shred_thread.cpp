@@ -42,7 +42,8 @@ qint64 ShredThread::getDirSize(QString &dir)
             if ( !item.exists() ) continue;
             QString path = item.canonicalFilePath();
             if ( path==d.absoluteFilePath(dir)
-                 || item.isSymLink() ) continue;
+                 || item.isSymLink() )
+                continue;
             if ( item.isDir() ) {
                 _size += getDirSize(path);
             } else {

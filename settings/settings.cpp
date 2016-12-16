@@ -51,11 +51,16 @@ void SettingsDialog::initTabWidget()
     tabWidget->addTab(w2, i2, n2);
     tabWidget->addTab(w3, i3, n3);
     tabWidget->addTab(w4, i4, n4);
-    connect(w1->guiApp, SIGNAL(stateChanged(int)),this, SLOT(windowSetsEnable(int)));
-    connect(w1->guiApp, SIGNAL(stateChanged(int)),w4, SLOT(setGuiCheckState(int)));
-    connect(w1->nameEdit, SIGNAL(textChanged(QString)), this, SLOT(set_Title_Name(QString)));
-    connect(w4, SIGNAL(guiStateChanged(bool)), w1->guiApp, SLOT(setChecked(bool)));
-    connect(w1, SIGNAL(sessionUsed(bool)), this, SLOT(sessionStateChanged(bool)));
+    connect(w1->guiApp, SIGNAL(stateChanged(int)),
+            this, SLOT(windowSetsEnable(int)));
+    connect(w1->guiApp, SIGNAL(stateChanged(int)),
+            w4, SLOT(setGuiCheckState(int)));
+    connect(w1->nameEdit, SIGNAL(textChanged(QString)),
+            this, SLOT(set_Title_Name(QString)));
+    connect(w4, SIGNAL(guiStateChanged(bool)),
+            w1->guiApp, SLOT(setChecked(bool)));
+    connect(w1, SIGNAL(sessionUsed(bool)),
+            this, SLOT(sessionStateChanged(bool)));
 }
 void SettingsDialog::initButtons()
 {
@@ -66,8 +71,10 @@ void SettingsDialog::initButtons()
     buttonsLayout->addWidget(cancel);
     buttons = new QWidget(this);
     buttons->setLayout(buttonsLayout);
-    connect(ok, SIGNAL(clicked()), this, SLOT(saveJob()));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(cancelJob()));
+    connect(ok, SIGNAL(clicked()),
+            this, SLOT(saveJob()));
+    connect(cancel, SIGNAL(clicked()),
+            this, SLOT(cancelJob()));
 }
 QString SettingsDialog::includesFileName(QString s) const
 {
@@ -94,9 +101,9 @@ void SettingsDialog::saveJob()
     w3->set_FileName(includesFileName(name));
     if ( w4->mountDirs->isChecked() && w3->enabled->isChecked() ) {
         QString s;
-        s.append("Note: A permanent home directory and included files\
+        s.append("Note: A permanent home directory and included files \
 can be used together only once --\nwhen the home directory is empty.");
-        QMessageBox::information(this, QString("Info"), s);
+        QMessageBox::information(this, "Info", s);
     };
     // make specified directories
     if ( w4->mountDirs->isChecked() ) {
@@ -106,27 +113,32 @@ can be used together only once --\nwhen the home directory is empty.");
     if ( w1->session->isChecked() ) {
         if ( w4->selinuxLabel->text().isEmpty() || !w4->securityLevel->isChecked() ||
              w4->tempDir->text().isEmpty() || w4->homeDir->text().isEmpty() ) {
-            QMessageBox::information(this, QString("Info"),
-            QString("You must to specify\na Security Level,\nHOME and TEMP directories."));
+            QString s;
+            s.append("You must to specify\na Security Level,\n\
+HOME and TEMP directories.");
+            QMessageBox::information(this, "Info", s);
             return;
         };
     };
     // set specified SELinux context for directories
     if ( w4->securityLevel->isChecked() && !w4->selinuxLabel->text().isEmpty() ) {
-        if ( !w4->tempDir->text().isEmpty() && !set_SpecifiedLabel(w4->tempDir->text()) ) return;
-        if ( !w4->homeDir->text().isEmpty() && !set_SpecifiedLabel(w4->homeDir->text()) ) return;
+        if ( !w4->tempDir->text().isEmpty() && !set_SpecifiedLabel(w4->tempDir->text()) )
+            return;
+        if ( !w4->homeDir->text().isEmpty() && !set_SpecifiedLabel(w4->homeDir->text()) )
+            return;
     };
 
     // check unique Job name & Settings Node
     QStringList groups = settings.childGroups();
-    if ( name.isEmpty() ) QMessageBox::information(this, QString("Info"), QString("JobName is empty."));
+    if ( name.isEmpty() )
+        QMessageBox::information(this, "Info", "JobName is empty.");
     else if ( groups.contains(name) && !newbe && name==previousName ) {
         saveParameters();
         close();
     } else if ( groups.contains(name) && newbe ) {
-        QMessageBox::information(this, QString("Info"), QString("Same JobName is exist."));
+        QMessageBox::information(this, "Info", "Same JobName is exist.");
     } else if ( groups.contains(name) && !newbe && name!=previousName ) {
-        QMessageBox::information(this, QString("Info"), QString("Same JobName is exist."));
+        QMessageBox::information(this, "Info", "Same JobName is exist.");
     } else if ( !groups.contains(name) && newbe ) {
         saveParameters();
         close();
@@ -164,6 +176,7 @@ void SettingsDialog::initParameters()
     w1->termCommand->setText( settings.value("TermCommand", QVariant()).toString() );
     w1->capabilities->setChecked( settings.value("Capabilities", QVariant()).toBool() );
     w1->shred->setChecked( settings.value("Shred", QVariant()).toBool() );
+    w1->copy_paste->setChecked( settings.value("CopyPaste", QVariant()).toBool() );
     c = w1->sandboxType->findText( settings.value("SType", QVariant()).toString() );
     w1->sandboxType->setCurrentIndex(c);
     w1->command->setText( settings.value("Command", QVariant()).toString() );
@@ -196,6 +209,7 @@ void SettingsDialog::saveParameters()
     settings.setValue("TermCommand", QVariant(w1->termCommand->text()));
     settings.setValue("Capabilities", QVariant(w1->capabilities->isChecked()));
     settings.setValue("Shred", QVariant(w1->shred->isChecked()));
+    settings.setValue("CopyPaste", QVariant(w1->copy_paste->isChecked()));
     settings.setValue("SType", QVariant(w1->sandboxType->currentText()));
     settings.setValue("Execute", QVariant(w1->execute->isChecked()));
     settings.setValue("Session", QVariant(w1->session->isChecked()));
@@ -215,7 +229,10 @@ void SettingsDialog::saveParameters()
     settings.endGroup();
     own_index->setName(name);
     if ( own_index->getData().value("isRunning").toBool() )
-        QMessageBox::information(this, "Info", "New settings apply\nat next job start.");
+        QMessageBox::information(
+                    this,
+                    "Info",
+                    "New settings apply\nat next job start.");
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *ev)
@@ -342,22 +359,32 @@ bool SettingsDialog::make_Directory(QString _dirPath, QString Dir)
     QString q = QString(" not specified.\nCreate temporary directory?");
     QString p = QString("cleaning not completed.\nTo continue anyway?");
     if ( _dirPath.isEmpty() ) {
-        int answer = QMessageBox::question(this, "Settings", QString("%1 %2").arg(Dir).arg(q),
-            QMessageBox::Yes, QMessageBox::No);
+        int answer = QMessageBox::question(
+                    this,
+                    "Settings",
+                    QString("%1 %2").arg(Dir).arg(q),
+                    QMessageBox::Yes,
+                    QMessageBox::No);
         if ( answer == QMessageBox::Yes ) {
             dirPath = TMP_FILE;
         } else return false;
     } else dirPath = _dirPath;
 
     if ( !clean_Directory(dirPath) ) {
-        int answer = QMessageBox::question(this, "Clean Directory",
-            QString("\"%1\" %2").arg(dirPath).arg(p), QMessageBox::Yes, QMessageBox::No);
+        int answer = QMessageBox::question(
+                    this, "Clean Directory",
+                    QString("\"%1\" %2").arg(dirPath).arg(p),
+                    QMessageBox::Yes,
+                    QMessageBox::No);
             if ( answer == QMessageBox::No ) return false;
     };
     QLineEdit *obj = ( Dir == "TempDir" ) ? w4->tempDir : w4->homeDir;
     obj->setText(dirPath);
     if ( !exist_Directory(obj) ) {
-        QMessageBox::information(this, QString("Info"), QString("Path\n\"%1\"\nis failed.").arg(dirPath));
+        QMessageBox::information(
+                    this,
+                    "Info",
+                    QString("Path\n\"%1\"\nis failed.").arg(dirPath));
         return false;
     } else if ( !set_SpecifiedLabel(dirPath) ) return false;
     return true;
@@ -386,11 +413,13 @@ bool SettingsDialog::set_SpecifiedLabel(QString dirPath)
     QStringList args = QStringList()<<"-R"<<"-t"<<"sandbox_file_t"<<"-l"<< SELabel<< dirPath;
     int exitCode = QProcess::execute(QString("chcon"), args);
     if ( exitCode != 0 ) {
-        QMessageBox::information(this, QString("Info"),
-        QString("\"%1\"\n%2\n%3\nTry do it manually.")
-                .arg(dirPath)
-                .arg("can`t marked by label:\n")
-                .arg(SELabel));
+        QMessageBox::information(
+                    this,
+                    "Info",
+                    QString("\"%1\"\n%2\n%3\nTry do it manually.")
+                            .arg(dirPath)
+                            .arg("can`t marked by label:\n")
+                            .arg(SELabel));
         return false;
     };
     return true;
@@ -482,7 +511,7 @@ bool SettingsDialog::exist_Directory(QLineEdit *obj)
     if ( !d.exists() ) {
         QMessageBox::information(
                     this,
-                    QString("Info"),
+                    "Info",
                     QString("Directory\n\"%1\"\n is not exist.")
                             .arg(dir));
         obj->clear();

@@ -3,7 +3,7 @@
 /* [ -d DPI ] [ -W windowmanager ] [ -w windowsize ]
 for -X parameter ONLY */
 
-WindowSet::WindowSet(QWidget *parent=0) :
+WindowSet::WindowSet(QWidget *parent) :
     QWidget(parent)
 {
     setContentsMargins(1,1,1,1);
