@@ -149,7 +149,7 @@ void ElemProcess::runJob()
     for ( i=env.constBegin(); i<env.constEnd(); i++ ) {
         QString item = *i;
         if ( (item).startsWith("USER=") ) {
-            user = item.split("=")[1];
+            user = item.split("=").at(1);
             break;
         };
     };
@@ -374,9 +374,47 @@ void ElemProcess::setShredState(uint percent)
 }
 void ElemProcess::startCopyPaste()
 {
-
+    QTextStream s(stdout);
+    QFile f(QString("%1%2seremote").arg(homeDir).arg(QDir::separator()));
+    bool opened = f.open(QIODevice::ReadOnly);
+    if ( opened ) {
+        char buf[1024];
+        QString display_1, display_2;
+        while (0<f.readLine(buf, sizeof(buf))) {
+            QString line(buf);
+            if ( line.startsWith("DISPLAY") ) {
+                QStringList _data = line.split("=");
+                if ( _data.count()>1 ) {
+                    display_2 = _data.at(1).split(" ").at(0);
+                };
+                break;
+            };
+        };
+        f.close();
+        QStringList env = QProcess::systemEnvironment();
+        QList<QString>::const_iterator i;
+        for ( i=env.constBegin(); i<env.constEnd(); i++ ) {
+            QString item = *i;
+            if ( (item).startsWith("DISPLAY=") ) {
+                display_1 = item.split("=").at(1);
+                break;
+            };
+        };
+        s<< display_1 << " "<< display_2 << endl;
+        QStringList args;
+        args.append(display_1);
+        args.append(display_2);
+        copy_paste_proc.startDetached(
+                    "/usr/bin/xephyr-clipboard-share",
+                    args,
+                    "",
+                    &copy_paste_PID);
+    };
+    s<< opened << endl;
 }
 void ElemProcess::stopCopyPaste()
 {
-
+    if ( ::kill(copy_paste_PID, SIGZERO)==0 ) {
+        ::kill(copy_paste_PID, SIGQUIT);
+    };
 }
