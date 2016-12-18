@@ -15,7 +15,6 @@ ElemProcess::ElemProcess(QObject *parent) :
     commandLine = new String(this);
     _diff = 0;
     copy_paste = false;
-    copy_paste_PID = -1;
     shredder = new ShredThread(this);
     connect(shredder, SIGNAL(finished()),
             this, SLOT(shreddingFinished()));
@@ -374,7 +373,7 @@ void ElemProcess::setShredState(uint percent)
 }
 void ElemProcess::startCopyPaste()
 {
-    QTextStream s(stdout);
+    //QTextStream s(stdout);
     QFile f(QString("%1%2seremote").arg(homeDir).arg(QDir::separator()));
     bool opened = f.open(QIODevice::ReadOnly);
     if ( opened ) {
@@ -400,21 +399,17 @@ void ElemProcess::startCopyPaste()
                 break;
             };
         };
-        s<< display_1 << " "<< display_2 << endl;
+        //s<< display_1 << " "<< display_2 << endl;
         QStringList args;
         args.append(display_1);
         args.append(display_2);
-        copy_paste_proc.startDetached(
+        copy_paste_proc.start(
                     "/usr/bin/xephyr-clipboard-share",
-                    args,
-                    "",
-                    &copy_paste_PID);
+                    args);
     };
-    s<< opened << endl;
+    //s<< opened << endl;
 }
 void ElemProcess::stopCopyPaste()
 {
-    if ( ::kill(copy_paste_PID, SIGZERO)==0 ) {
-        ::kill(copy_paste_PID, SIGQUIT);
-    };
+    copy_paste_proc.kill();
 }

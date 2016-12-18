@@ -55,3 +55,7 @@ some fixes and improvements;
 
 v.1.7.14 :
 added Logging;
+
+v.1.8.14 :
+added Copy/Paste between user X-session
+    and sandboxed application;

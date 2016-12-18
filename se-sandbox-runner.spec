@@ -4,7 +4,7 @@
 %bcond_without qt5
 
 Name:           se-sandbox-runner
-Version:        1.7.14
+Version:        1.8.14
 Release:        1%{?dist}
 Summary:        Qt wrapper for SELinux Sandbox
 Group:          Applications/System

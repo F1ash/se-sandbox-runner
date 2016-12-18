@@ -30,7 +30,7 @@ message (STATUS "QT5 build: ${QT5_BUILD}")
 ##
 
 set (PROJECT_NAME se-sandbox-runner-${QT_SUFF})
-set (PROJECT_VERSION 1.6.14)
+set (PROJECT_VERSION 1.8.14)
 configure_file ( mainwindow.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/mainwindow.cpp )
 set (HEADERS 
   mainwindow.h

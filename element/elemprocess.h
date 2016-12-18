@@ -58,7 +58,6 @@ private:
     bool            shred;
     bool            mountDirs;
     bool            copy_paste;
-    qint64          copy_paste_PID;
     QProcess        copy_paste_proc;
     QString         tempDir;
     QString         homeDir;
