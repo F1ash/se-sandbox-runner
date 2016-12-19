@@ -95,6 +95,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %doc README.md Changelog
 %license COPYING
 %{_bindir}/%{name}-qt4
+%{_bindir}/xephyr-clipboard-share
 %{_datadir}/applications/%{name}-qt4.desktop
 %{_datadir}/icons/hicolor/256x256/apps/applications-safety-selinux.png
 %endif
@@ -103,11 +104,17 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %doc README.md Changelog
 %license COPYING
 %{_bindir}/%{name}-qt5
+%{_bindir}/xephyr-clipboard-share
 %{_datadir}/applications/%{name}-qt5.desktop
 %{_datadir}/icons/hicolor/256x256/apps/applications-safety-selinux.png
 %endif
 
 %changelog
+* Mon Dec 19 2016 Fl@sh <kaperang07@gmail.com> - 1.8.14-1
+- added xsel R;
+- added xephyr-clipboard-share to %%files;
+- version updated;
+
 * Sat Dec  5 2015 Fl@sh <kaperang07@gmail.com> - 1.7.14-1
 - added hicolor-icon-theme R;
 - removed sandbox-runner-data R;
