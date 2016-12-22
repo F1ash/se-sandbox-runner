@@ -44,6 +44,7 @@ set (HEADERS
   element/elemprocess.h
   element/string_list.h
   element/shred_thread.h
+  element/xsel.h
   settings/settings.h
   settings/common_settings.h
   settings/window_settings.h
@@ -64,6 +65,7 @@ set (SOURCES
   element/elemprocess.cpp
   element/string_list.cpp
   element/shred_thread.cpp
+  element/xsel.c
   settings/settings.cpp
   settings/common_settings.cpp
   settings/window_settings.cpp

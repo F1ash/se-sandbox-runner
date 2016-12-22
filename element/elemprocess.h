@@ -12,6 +12,9 @@
 #include "string_list.h"
 #include "shred_thread.h"
 #include "layout/jobitem_model.h"
+extern "C" {
+#include "xsel.h"
+}
 #include <QDebug>
 
 #define RUNNING         true

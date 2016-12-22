@@ -1,8 +1,18 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+find_package (X11 REQUIRED)
 find_package (Qt5Widgets REQUIRED)
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-set (BUILD_PROJECT_LIBRARIES ${Qt5Widgets_LIBRARIES})
+include_directories(
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${X11_INCLUDE_DIR}
+    )
+set (BUILD_PROJECT_LIBRARIES
+    ${Qt5Widgets_LIBRARIES}
+    ${X11_SM_LIB}
+    ${X11_Xt_LIB}
+    ${X11_Xext_LIB}
+    ${X11_LIBRARIES}
+    )
 add_definitions(${Qt5Widgets_DEFINITIONS})
 qt5_wrap_cpp (MOC_SOURCES ${HEADERS})
 qt5_add_resources(RCC ${RCC_SRC})

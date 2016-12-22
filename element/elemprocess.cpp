@@ -240,10 +240,11 @@ void ElemProcess::killJob()
     QModelIndex _idx = own_model->index(
                 own_model->jobItemDataList.indexOf( own_index ), 1 );
     own_model->setData(_idx, "Killing", Qt::EditRole);
-    if (timerId) {
+    if ( timerId ) {
         killTimer(timerId);
         timerId = 0;
     };
+    if ( copy_paste ) stopCopyPaste();
     appendChildren();
     this->kill();
     this->waitForFinished();
@@ -257,7 +258,6 @@ void ElemProcess::killJob()
             ::kill(_pid, SIGQUIT);
         };
     };
-    if ( copy_paste ) stopCopyPaste();
     if ( shred ) {
         shredder->tempDir = tempDir;
         shredder->homeDir = homeDir;
