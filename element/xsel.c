@@ -11,9 +11,10 @@
  * implied warranty.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+/*
+ * Remaked for application tasks.
+ */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,9 +33,8 @@
 
 #include "xsel.h"
 
-
 /* The name we were invoked as (argv[0]) */
-static char * progname;
+static char * progname = "se-sandbox-runner";
 
 /* Verbosity level for debugging */
 static int debug_level = DEBUG_LEVEL;
@@ -94,61 +94,6 @@ static struct itimerval timer;
 
 static int saved_argc;
 static char ** saved_argv;
-
-/*
- * usage ()
- *
- * print usage information.
- */
-static void
-usage (void)
-{
-  printf ("Usage: xsel [options]\n");
-  printf ("Manipulate the X selection.\n\n");
-  printf ("By default the current selection is output and not modified if both\n");
-  printf ("standard input and standard output are terminals (ttys).  Otherwise,\n");
-  printf ("the current selection is output if standard output is not a terminal\n");
-  printf ("(tty), and the selection is set from standard input if standard input\n");
-  printf ("is not a terminal (tty). If any input or output options are given then\n");
-  printf ("the program behaves only in the requested mode.\n\n");
-  printf ("If both input and output is required then the previous selection is\n");
-  printf ("output before being replaced by the contents of standard input.\n\n");
-  printf ("Input options\n");
-  printf ("  -a, --append          Append standard input to the selection\n");
-  printf ("  -f, --follow          Append to selection as standard input grows\n");
-  printf ("  -z, --zeroflush       Overwrites selection when zero ('\\0') is received\n");
-  printf ("  -i, --input           Read standard input into the selection\n\n");
-  printf ("Output options\n");
-  printf ("  -o, --output          Write the selection to standard output\n\n");
-  printf ("Action options\n");
-  printf ("  -c, --clear           Clear the selection\n");
-  printf ("  -d, --delete          Request that the selection be cleared and that\n");
-  printf ("                        the application owning it delete its contents\n\n");
-  printf ("Selection options\n");
-  printf ("  -p, --primary         Operate on the PRIMARY selection (default)\n");
-  printf ("  -s, --secondary       Operate on the SECONDARY selection\n");
-  printf ("  -b, --clipboard       Operate on the CLIPBOARD selection\n\n");
-  printf ("  -k, --keep            Do not modify the selections, but make the PRIMARY\n");
-  printf ("                        and SECONDARY selections persist even after the\n");
-  printf ("                        programs they were selected in exit.\n");
-  printf ("  -x, --exchange        Exchange the PRIMARY and SECONDARY selections\n\n");
-  printf ("X options\n");
-  printf ("  --display displayname\n");
-  printf ("                        Specify the connection to the X server\n");
-  printf ("  -t ms, --selectionTimeout ms\n");
-  printf ("                        Specify the timeout in milliseconds within which the\n");
-  printf ("                        selection must be retrieved. A value of 0 (zero)\n");
-  printf ("                        specifies no timeout (default)\n\n");
-  printf ("Miscellaneous options\n");
-  printf ("  -l, --logfile         Specify file to log errors to when detached.\n");
-  printf ("  -n, --nodetach        Do not detach from the controlling terminal. Without\n");
-  printf ("                        this option, xsel will fork to become a background\n");
-  printf ("                        process in input, exchange and keep modes.\n\n");
-  printf ("  -h, --help            Display this help and exit\n");
-  printf ("  -v, --verbose         Print informative messages\n");
-  printf ("  --version             Output version information and exit\n\n");
-  printf ("Please report bugs to <conrad@vergenet.net>.\n");
-}
 
 /*
  * exit_err (fmt)
@@ -1984,302 +1929,21 @@ expand_argv(int * argc, char **argv[])
 }
 
 /*
- * main (argc, argv)
- * =================
- *
- * Parse user options and set behaviour.
- *
- * By default the current selection is output and not modified if both
- * standard input and standard output are terminals (ttys). Otherwise,
- * the current selection is output if standard output is not a terminal
- * (tty), and the selection is set from standard input if standard input
- * is not a terminal (tty). If any input or output options are given then
- * the program behaves only in the requested mode.
- *
- * If both input and output is required then the previous selection is
- * output before being replaced by the contents of standard input.
+ * cp_to_sandboxed_session(unsigned char*, unsigned char*)
+ * Copy clipboard from user X session to sandboxed X session.
  */
-int
-main(int argc, char *argv[])
+void
+cp_to_sandboxed_session(unsigned char *dx, unsigned char *ds)
 {
-  Bool show_version = False;
-  Bool show_help = False;
-  Bool do_append = False, do_clear = False;
-  Bool do_keep = False, do_exchange = False;
-  Bool do_input = False, do_output = False;
-  Bool force_input = False, force_output = False;
-  Bool want_clipboard = False, do_delete = False;
-  Window root;
-  Atom selection = XA_PRIMARY, test_atom;
-  int black;
-  int i, s=0;
-  unsigned char * old_sel = NULL, * new_sel = NULL;
-  char * display_name = NULL;
-  long timeout_ms = 0L;
 
-  progname = argv[0];
+}
 
-  /* Specify default behaviour based on input and output file types */
-  if (isatty(0) && isatty(1)) {
-    /* Solo invocation; display the selection and exit */
-    do_input = False; do_output = True;
-  } else {
-    /* Use only what is not attached to the tty */
-    /* Gives expected behaviour with *basic* usage of "xsel < foo", "xsel > foo", etc. */
-    do_input = !isatty(0); do_output = !isatty(1);
-  }
-  /* NOTE:
-   * Checking stdin/stdout for being a tty is NOT reliable to tell what the user wants.
-   * This is because child processes inherit the file descriptors of their parents;
-   * an xsel called in a script that is e.g. daemonized (not attached to a tty), or called
-   * with a redirection or in a pipeline will have non-tty file descriptors on default.
-   * The redirection/piping issue also applies to "grouped" or "compound" commands
-   * in the shell (functions, subshells, curly-brace blocks, conditionals, loops, etc.).
-   * In all these cases, the user *must* set the mode of operation explicitly.
-   */
+/*
+ * cp_to_user_X_session(unsigned char*, unsigned char*)
+ * Copy clipboard from sandboxed X session to user X session.
+ */
+void
+cp_to_user_X_session(unsigned char *ds, unsigned char *dx)
+{
 
-#define OPT(s) (strcmp (argv[i], (s)) == 0)
-
-  /* Expand argv array before parsing to uncombine arguments. */
-  expand_argv(&argc, &argv);
-
-  /* Parse options; modify behaviour according to user-specified options */
-  for (i=1; i < argc; i++) {
-    if (OPT("--help") || OPT("-h")) {
-      show_help = True;
-    } else if (OPT("--version")) {
-      show_version = True;
-    } else if (OPT("--verbose") || OPT("-v")) {
-      debug_level++;
-    } else if (OPT("--append") || OPT("-a")) {
-      force_input = True;
-      do_output = False;
-      do_append = True;
-    } else if (OPT("--input") || OPT("-i")) {
-      force_input = True;
-      do_output = False;
-    } else if (OPT("--clear") || OPT("-c")) {
-      do_output = False;
-      do_clear = True;
-    } else if (OPT("--output") || OPT("-o")) {
-      do_input = False;
-      force_output = True;
-    } else if (OPT("--follow") || OPT("-f")) {
-      force_input = True;
-      do_output = False;
-      do_follow = True;
-    } else if (OPT("--zeroflush") || OPT("-z")) {
-      force_input = True;
-      do_output = False;
-      do_follow = True;
-      do_zeroflush = True;
-    } else if (OPT("--primary") || OPT("-p")) {
-      selection = XA_PRIMARY;
-    } else if (OPT("--secondary") || OPT("-s")) {
-      selection = XA_SECONDARY;
-    } else if (OPT("--clipboard") || OPT("-b")) {
-      want_clipboard = True;
-    } else if (OPT("--keep") || OPT("-k")) {
-      do_keep = True;
-    } else if (OPT("--exchange") || OPT("-x")) {
-      do_exchange = True;
-    } else if (OPT("--display")) {
-      i++; if (i >= argc) goto usage_err;
-      display_name = argv[i];
-    } else if (OPT("--selectionTimeout") || OPT("-t")) {
-      i++; if (i >= argc) goto usage_err;
-      timeout_ms = strtol(argv[i], (char **)NULL, 10);
-      if (timeout_ms < 0) timeout_ms = 0;
-    } else if (OPT("--nodetach") || OPT("-n")) {
-      no_daemon = True;
-    } else if (OPT("--delete") || OPT("-d")) {
-      do_output = False;
-      do_delete = True;
-    } else if (OPT("--logfile") || OPT("-l")) {
-      i++; if (i >= argc) goto usage_err;
-      _xs_strncpy (logfile, argv[i], MAXFNAME);
-    } else {
-      goto usage_err;
-    }
-  }
-
-  if (show_version) {
-    printf ("xsel version x.x.x by " AUTHOR "\n");
-  }
-
-  if (show_help) {
-    usage ();
-  }
-
-  if (show_version || show_help) {
-    exit (0);
-  }
-
-  if (fstat (0, &in_statbuf) == -1) {
-    exit_err ("fstat error on stdin");
-  }
-  if (fstat (1, &out_statbuf) == -1) {
-    exit_err ("fstat error on stdout");
-  }
-
-  if (S_ISDIR(in_statbuf.st_mode)) {
-    exit_err ("-: Is a directory\n");
-  }
-  if (S_ISDIR(out_statbuf.st_mode)) {
-    exit_err ("stdout: Is a directory\n");
-  }
-
-  timeout = timeout_ms * 1000;
-
-  display = XOpenDisplay (display_name);
-  if (display==NULL) {
-    exit_err ("Can't open display: %s\n", display_name);
-  }
-  root = XDefaultRootWindow (display);
-
-  /* Create an unmapped window for receiving events */
-  black = BlackPixel (display, DefaultScreen (display));
-  window = XCreateSimpleWindow (display, root, 0, 0, 1, 1, 0, black, black);
-
-  print_debug (D_INFO, "Window id: 0x%x (unmapped)", window);
-
-  /* Get a timestamp */
-  XSelectInput (display, window, PropertyChangeMask);
-  timestamp = get_timestamp ();
-
-  print_debug (D_OBSC, "Timestamp: %lu", timestamp);
-
-  /* Get the maximum incremental selection size in bytes */
-  /*max_req = MAX_SELECTION_INCR (display);*/
-  max_req = 4000;
-
-  print_debug (D_OBSC, "Maximum request size: %ld bytes", max_req);
-
-  /* Consistency check */
-  test_atom = XInternAtom (display, "PRIMARY", False);
-  if (test_atom != XA_PRIMARY)
-    print_debug (D_WARN, "XA_PRIMARY not named \"PRIMARY\"\n");
-  test_atom = XInternAtom (display, "SECONDARY", False);
-  if (test_atom != XA_SECONDARY)
-    print_debug (D_WARN, "XA_SECONDARY not named \"SECONDARY\"\n");
-
-  NUM_TARGETS=0;
-
-  /* Get the TIMESTAMP atom */
-  timestamp_atom = XInternAtom (display, "TIMESTAMP", False);
-  supported_targets[s++] = timestamp_atom;
-  NUM_TARGETS++;
-
-  /* Get the MULTIPLE atom */
-  multiple_atom = XInternAtom (display, "MULTIPLE", False);
-  supported_targets[s++] = multiple_atom;
-  NUM_TARGETS++;
-
-  /* Get the TARGETS atom */
-  targets_atom = XInternAtom (display, "TARGETS", False);
-  supported_targets[s++] = targets_atom;
-  NUM_TARGETS++;
-
-  /* Get the DELETE atom */
-  delete_atom = XInternAtom (display, "DELETE", False);
-  supported_targets[s++] = delete_atom;
-  NUM_TARGETS++;
-
-  /* Get the INCR atom */
-  incr_atom = XInternAtom (display, "INCR", False);
-  supported_targets[s++] = incr_atom;
-  NUM_TARGETS++;
-
-  /* Get the TEXT atom */
-  text_atom = XInternAtom (display, "TEXT", False);
-  supported_targets[s++] = text_atom;
-  NUM_TARGETS++;
-
-  /* Get the UTF8_STRING atom */
-  utf8_atom = XInternAtom (display, "UTF8_STRING", True);
-  if(utf8_atom != None) {
-    supported_targets[s++] = utf8_atom;
-    NUM_TARGETS++;
-  } else {
-    utf8_atom = XA_STRING;
-  }
-
-  supported_targets[s++] = XA_STRING;
-  NUM_TARGETS++;
-
-  if (NUM_TARGETS > MAX_NUM_TARGETS) {
-    exit_err ("internal error num-targets (%d) > max-num-targets (%d)\n",
-              NUM_TARGETS, MAX_NUM_TARGETS);
-  }
-
-  /* Get the NULL atom */
-  null_atom = XInternAtom (display, "NULL", False);
-
-  /* Get the COMPOUND_TEXT atom.
-   * NB. We do not currently serve COMPOUND_TEXT; we can retrieve it but
-   * do not perform charset conversion.
-   */
-  compound_text_atom = XInternAtom (display, "COMPOUND_TEXT", False);
-
-  sigemptyset (&exit_sigs);
-  sigaddset (&exit_sigs, SIGALRM);
-  sigaddset (&exit_sigs, SIGINT);
-  sigaddset (&exit_sigs, SIGTERM);
-
-  /* handle selection keeping and exit if so */
-  if (do_keep) {
-    keep_selections ();
-    _exit (0);
-  }
-
-  /* handle selection exchange and exit if so */
-  if (do_exchange) {
-    exchange_selections ();
-    _exit (0);
-  }
-
-  /* Find the "CLIPBOARD" selection if required */
-  if (want_clipboard) {
-    selection = XInternAtom (display, "CLIPBOARD", False);
-  }
-
-  /* handle output modes */
-  if (do_output || force_output) {
-    /* Get the current selection */
-    old_sel = get_selection_text (selection);
-    if (old_sel)
-      {
-         printf ("%s", old_sel);
-         if (!do_append && *old_sel != '\0' && isatty(1) &&
-             old_sel[xs_strlen (old_sel) - 1] != '\n')
-           {
-             fflush (stdout);
-             fprintf (stderr, "\n\\ No newline at end of selection\n");
-           }
-      }
-  }
-
-  /* handle input and clear modes */
-  if (do_delete) {
-    get_selection (selection, delete_atom);
-  } else if (do_clear) {
-    clear_selection (selection);
-  }
-  else if (do_input || force_input) {
-    if (do_output || force_output) fflush (stdout);
-    if (do_append) {
-      if (!old_sel) old_sel = get_selection_text (selection);
-      new_sel = copy_sel (old_sel);
-    }
-    new_sel = initialise_read (new_sel);
-    if(!do_follow)
-      new_sel = read_input (new_sel, False);
-    set_selection__daemon (selection, new_sel);
-  }
-
-  exit (0);
-
-usage_err:
-  usage ();
-  exit (0);
 }

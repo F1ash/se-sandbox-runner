@@ -11,7 +11,9 @@
  * implied warranty.
  */
 
-#define AUTHOR "Conrad Parker <conrad@vergenet.net>"
+/*
+ * Remaked for application tasks.
+ */
 
 #ifndef XSEL_H
 #define XSEL_H
@@ -102,5 +104,8 @@ typedef int HandleResult;
 #define HANDLE_ERR        (1<<0)
 #define HANDLE_INCOMPLETE (1<<1)
 #define DID_DELETE        (1<<2)
+
+void cp_to_sandboxed_session(unsigned char*, unsigned char*);
+void cp_to_user_X_session(unsigned char*, unsigned char*);
 
 #endif // XSEL_H

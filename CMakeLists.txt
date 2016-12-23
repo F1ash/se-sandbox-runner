@@ -78,7 +78,7 @@ set (SOURCES_DIRS . tray toolbar layout element settings)
 project (${PROJECT_NAME})
 include_directories (${CMAKE_CURRENT_BINARY_DIR} ${SOURCES_DIRS})
 set (DESKTOP_FILE se-sandbox-runner.desktop)
-set(RCC_SRC
+set (RCC_SRC
     se_sandbox_runner.qrc
 )
 ##

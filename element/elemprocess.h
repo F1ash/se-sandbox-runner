@@ -8,13 +8,9 @@
 #include <QTime>
 #include <QTimer>
 #include <QTimerEvent>
-#include "signal.h"
 #include "string_list.h"
 #include "shred_thread.h"
 #include "layout/jobitem_model.h"
-extern "C" {
-#include "xsel.h"
-}
 #include <QDebug>
 
 #define RUNNING         true
@@ -25,7 +21,7 @@ extern "C" {
 #define AVAILABLE       true
 #define NOT_AVAILABLE   false
 
-#define TMP_FILE QString("TEMPORARY_FILE")
+#define TMP_DIR QString("TEMPORARY_DIR")
 
 class ElemProcess : public QProcess
 {
@@ -61,7 +57,8 @@ private:
     bool            shred;
     bool            mountDirs;
     bool            copy_paste;
-    QProcess        copy_paste_proc;
+    int             cp_timerId;
+    QString         display_1, display_2;
     QString         tempDir;
     QString         homeDir;
     QString         SELabel;

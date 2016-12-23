@@ -1,4 +1,8 @@
 #include "element/elemprocess.h"
+extern "C" {
+#include "xsel.h"
+#include "signal.h"
+}
 
 ElemProcess::ElemProcess(QObject *parent) :
     QProcess(parent)
@@ -15,6 +19,7 @@ ElemProcess::ElemProcess(QObject *parent) :
     commandLine = new String(this);
     _diff = 0;
     copy_paste = false;
+    cp_timerId = 0;
     shredder = new ShredThread(this);
     connect(shredder, SIGNAL(finished()),
             this, SLOT(shreddingFinished()));
@@ -158,9 +163,9 @@ void ElemProcess::runJob()
     QString sep( QDir::separator() );
     int exitCode;
     d.setPath(homeDir);
-    if ( !homeDir.isEmpty() && homeDir!=TMP_FILE && !d.exists() ) {
+    if ( !homeDir.isEmpty() && homeDir!=TMP_DIR && !d.exists() ) {
         d.mkpath(homeDir);
-    } else if ( homeDir.isEmpty() || homeDir==TMP_FILE ) {
+    } else if ( homeDir.isEmpty() || homeDir==TMP_DIR ) {
         homeDir = QString("%1%2.sandbox_%3_%4")
                 .arg(tmpDir)
                 .arg(sep)
@@ -177,9 +182,9 @@ void ElemProcess::runJob()
                     "Create Home Directory failed.");
 
     d.setPath(tempDir);
-    if ( !tempDir.isEmpty() && tempDir!=TMP_FILE && !d.exists() ) {
+    if ( !tempDir.isEmpty() && tempDir!=TMP_DIR && !d.exists() ) {
         d.mkpath(tempDir);
-    } else if ( tempDir.isEmpty() || tempDir==TMP_FILE ) {
+    } else if ( tempDir.isEmpty() || tempDir==TMP_DIR ) {
         tempDir = QString("%1%2.sandbox_%3_%4")
                 .arg(tmpDir)
                 .arg(sep)
@@ -342,6 +347,13 @@ void ElemProcess::timerEvent(QTimerEvent *event)
             emit processState(RUNNING);
             if (!timerId) timerId = startTimer(1000);
         };
+    } else if ( _timerId && cp_timerId==_timerId ) {
+        cp_to_sandboxed_session(
+                    (unsigned char*) display_1.toUtf8().data(),
+                    (unsigned char*) display_2.toUtf8().data());
+        cp_to_user_X_session(
+                    (unsigned char*) display_2.toUtf8().data(),
+                    (unsigned char*) display_1.toUtf8().data());
     };
 }
 void ElemProcess::sendMessage()
@@ -374,11 +386,12 @@ void ElemProcess::setShredState(uint percent)
 void ElemProcess::startCopyPaste()
 {
     //QTextStream s(stdout);
-    QFile f(QString("%1%2seremote").arg(homeDir).arg(QDir::separator()));
+    QFile f(QString("%1%2seremote")
+            .arg(homeDir)
+            .arg(QDir::separator()));
     bool opened = f.open(QIODevice::ReadOnly);
     if ( opened ) {
         char buf[1024];
-        QString display_1, display_2;
         while (0<f.readLine(buf, sizeof(buf))) {
             QString line(buf);
             if ( line.startsWith("DISPLAY") ) {
@@ -400,16 +413,12 @@ void ElemProcess::startCopyPaste()
             };
         };
         //s<< display_1 << " "<< display_2 << endl;
-        QStringList args;
-        args.append(display_1);
-        args.append(display_2);
-        copy_paste_proc.start(
-                    "/usr/bin/xephyr-clipboard-share",
-                    args);
+        cp_timerId = startTimer(1000);
     };
     //s<< opened << endl;
 }
 void ElemProcess::stopCopyPaste()
 {
-    copy_paste_proc.kill();
+    killTimer(cp_timerId);
+    cp_timerId = 0;
 }

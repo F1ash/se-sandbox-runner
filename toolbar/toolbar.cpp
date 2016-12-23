@@ -37,12 +37,12 @@ void ToolBar::initActions()
     itemControlAction = new QAction(this);
     itemControlAction->setIcon(QIcon::fromTheme("job"));
     itemControlAction->setToolTip("Job Control");
-    connect(_hideAction, SIGNAL(hovered()),
-            this, SLOT(showHoveredMenu()));
-    connect(itemControlAction, SIGNAL(hovered()),
-            this, SLOT(showHoveredMenu()));
-    connect(_exitAction, SIGNAL(hovered()),
-            this, SLOT(showHoveredMenu()));
+    //connect(_hideAction, SIGNAL(hovered()),
+    //        this, SLOT(showHoveredMenu()));
+    //connect(itemControlAction, SIGNAL(hovered()),
+    //        this, SLOT(showHoveredMenu()));
+    //connect(_exitAction, SIGNAL(hovered()),
+    //        this, SLOT(showHoveredMenu()));
 
     itemControlMenu->addAction(_createAction);
     itemControlMenu->addAction(_editAction);

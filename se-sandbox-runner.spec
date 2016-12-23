@@ -13,7 +13,6 @@ Source0:        https://github.com/F1ash/%{name}/archive/%{version}.tar.gz
 URL:            https://github.com/F1ash/%{name}
 
 Requires:       coreutils
-Requires:       xsel
 Requires:       xdg-utils
 Requires:       hicolor-icon-theme
 Requires:       policycoreutils-sandbox
@@ -29,6 +28,8 @@ BuildRequires:  qt5-qtbase-devel
 %endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
+BuildRequires:  libX11-devel
+BuildRequires:  glibc-headers
 
 %description
 Qt wrapper for SELinux Sandbox.
@@ -95,7 +96,6 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %doc README.md Changelog
 %license COPYING
 %{_bindir}/%{name}-qt4
-%{_bindir}/xephyr-clipboard-share
 %{_datadir}/applications/%{name}-qt4.desktop
 %{_datadir}/icons/hicolor/256x256/apps/applications-safety-selinux.png
 %endif
@@ -104,7 +104,6 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt5.desktop
 %doc README.md Changelog
 %license COPYING
 %{_bindir}/%{name}-qt5
-%{_bindir}/xephyr-clipboard-share
 %{_datadir}/applications/%{name}-qt5.desktop
 %{_datadir}/icons/hicolor/256x256/apps/applications-safety-selinux.png
 %endif

@@ -366,7 +366,7 @@ bool SettingsDialog::make_Directory(QString _dirPath, QString Dir)
                     QMessageBox::Yes,
                     QMessageBox::No);
         if ( answer == QMessageBox::Yes ) {
-            dirPath = TMP_FILE;
+            dirPath = TMP_DIR;
         } else return false;
     } else dirPath = _dirPath;
 
@@ -404,7 +404,7 @@ bool SettingsDialog::make_SpecifiedDirectories()
 
 bool SettingsDialog::set_SpecifiedLabel(QString dirPath)
 {
-    if ( dirPath==TMP_FILE ) return true;
+    if ( dirPath==TMP_DIR ) return true;
     /*
      * chcon -R -t sandbox_file_t -l s0:c123,c456 /home/user/Example_HOME
      */
@@ -427,7 +427,7 @@ bool SettingsDialog::set_SpecifiedLabel(QString dirPath)
 
 bool SettingsDialog::clean_Directory(QString dir, void *opaque, void *p)
 {
-    if ( dir==TMP_FILE ) return true;
+    if ( dir==TMP_DIR ) return true;
     ShredThread *shredder = static_cast<ShredThread*>(opaque);
     PERCENT *P = static_cast<PERCENT*>(p);
     // Shred temporary files created in $HOME and /tmp, before deleting.
@@ -506,7 +506,7 @@ bool SettingsDialog::exist_Directory(QLineEdit *obj)
 {
     QDir d;
     QString dir = obj->text();
-    if ( dir==TMP_FILE ) return true;
+    if ( dir==TMP_DIR ) return true;
     d.setPath(dir);
     if ( !d.exists() ) {
         QMessageBox::information(

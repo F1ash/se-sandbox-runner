@@ -18,7 +18,7 @@
 #include "element/shred_thread.h"
 #include <QDebug>
 
-#define TMP_FILE QString("TEMPORARY_FILE")
+#define TMP_DIR QString("TEMPORARY_DIR")
 
 class SettingsDialog : public QDialog
 {
