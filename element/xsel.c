@@ -1852,98 +1852,167 @@ exchange_selections (void)
   set_selection_pair__daemon (text2, text1);
 }
 
-/*
- * free_saved_argv ()
- *
- * atexit function for freeing argv, after it has been relocated to the
- * heap.
- */
 static void
-free_saved_argv (void)
+cp_input_to_display(char *d)
 {
-  int i;
+    Bool do_input = False, do_output = False;
+    Bool force_input = False, force_output = False;
+    Window root;
+    Atom selection = XA_PRIMARY, test_atom;
+    int black;
+    int s=0;
+    unsigned char * new_sel = NULL;
+    char * display_name = NULL;
+    long timeout_ms = 0L;
 
-  for (i=0; i < saved_argc; i++) {
-    free (saved_argv[i]);
-  }
-  free (saved_argv);
-}
+    /* Solo invocation; display the selection and exit */
+    do_input = False; do_output = True;
 
-/*
- * expand_argv (&argc, &argv)
- *
- * Explodes single letter options so that the argument parser can see
- * all of them. Relocates argv and all arguments to the heap.
- */
-static void
-expand_argv(int * argc, char **argv[])
-{
-  int i, new_i, arglen, new_argc = *argc;
-  char ** new_argv;
-  char * arg;
+    // (OPT("--display"))
+    display_name = d;
 
-  /* Calculate new argc */
-  for (i = 0; i < *argc; i++) {
-    arglen = strlen((*argv)[i]);
-    /* An option we need to expand? */
-    if ((arglen > 2) && (*argv)[i][0] == '-' && (*argv)[i][1] != '-')
-      new_argc += arglen-2;
-  }
+    // (OPT("--input") || OPT("-i"))
+    force_input = True;
+    do_output = False;
 
-  /* Allocate new_argv */
-  new_argv = xs_malloc (new_argc * sizeof(char *));
+    //(OPT("--nodetach") || OPT("-n"))
+    no_daemon = True;
 
-  /* Copy args into new argv */
-  for (i = 0, new_i = 0; i < *argc; i++) {
-    arglen = strlen((*argv)[i]);
-
-    /* An option we need to expand? */
-    if ((arglen > 2)
-        && (*argv)[i][0] == '-' && (*argv)[i][1] != '-') {
-      /* Make each letter a new argument. */
-
-      char * c = ((*argv)[i] + 1);
-
-      while (*c != '\0') {
-        arg = xs_malloc(sizeof(char) * 3);
-        arg[0] = '-';
-        arg[1] = *c;
-        arg[2] = '\0';
-        new_argv[new_i++] = arg;
-        c++;
-      }
-    } else {
-      /* Simply copy the argument pointer to new_argv */
-      new_argv[new_i++] = _xs_strdup ((*argv)[i]);
+    if (fstat (0, &in_statbuf) == -1) {
+      exit_err ("fstat error on stdin");
     }
-  }
+    if (fstat (1, &out_statbuf) == -1) {
+      exit_err ("fstat error on stdout");
+    }
 
-  /* Set the expected return values */
-  *argc = new_argc;
-  *argv = new_argv;
+    if (S_ISDIR(in_statbuf.st_mode)) {
+      exit_err ("-: Is a directory\n");
+    }
+    if (S_ISDIR(out_statbuf.st_mode)) {
+      exit_err ("stdout: Is a directory\n");
+    }
 
-  /* Save the new argc, argv values and free them on exit */
-  saved_argc = new_argc;
-  saved_argv = new_argv;
-  atexit (free_saved_argv);
+    timeout = timeout_ms * 1000;
+
+    display = XOpenDisplay (display_name);
+    if (display==NULL) {
+      exit_err ("Can't open display: %s\n", display_name);
+    }
+    root = XDefaultRootWindow (display);
+
+    /* Create an unmapped window for receiving events */
+    black = BlackPixel (display, DefaultScreen (display));
+    window = XCreateSimpleWindow (display, root, 0, 0, 1, 1, 0, black, black);
+
+    print_debug (D_INFO, "Window id: 0x%x (unmapped)", window);
+
+    /* Get a timestamp */
+    XSelectInput (display, window, PropertyChangeMask);
+    timestamp = get_timestamp ();
+
+    print_debug (D_OBSC, "Timestamp: %lu", timestamp);
+
+    /* Get the maximum incremental selection size in bytes */
+    /*max_req = MAX_SELECTION_INCR (display);*/
+    max_req = 4000;
+
+    print_debug (D_OBSC, "Maximum request size: %ld bytes", max_req);
+
+    /* Consistency check */
+    test_atom = XInternAtom (display, "PRIMARY", False);
+    if (test_atom != XA_PRIMARY)
+      print_debug (D_WARN, "XA_PRIMARY not named \"PRIMARY\"\n");
+    test_atom = XInternAtom (display, "SECONDARY", False);
+    if (test_atom != XA_SECONDARY)
+      print_debug (D_WARN, "XA_SECONDARY not named \"SECONDARY\"\n");
+
+    NUM_TARGETS=0;
+
+    /* Get the TIMESTAMP atom */
+    timestamp_atom = XInternAtom (display, "TIMESTAMP", False);
+    supported_targets[s++] = timestamp_atom;
+    NUM_TARGETS++;
+
+    /* Get the MULTIPLE atom */
+    multiple_atom = XInternAtom (display, "MULTIPLE", False);
+    supported_targets[s++] = multiple_atom;
+    NUM_TARGETS++;
+
+    /* Get the TARGETS atom */
+    targets_atom = XInternAtom (display, "TARGETS", False);
+    supported_targets[s++] = targets_atom;
+    NUM_TARGETS++;
+
+    /* Get the DELETE atom */
+    delete_atom = XInternAtom (display, "DELETE", False);
+    supported_targets[s++] = delete_atom;
+    NUM_TARGETS++;
+
+    /* Get the INCR atom */
+    incr_atom = XInternAtom (display, "INCR", False);
+    supported_targets[s++] = incr_atom;
+    NUM_TARGETS++;
+
+    /* Get the TEXT atom */
+    text_atom = XInternAtom (display, "TEXT", False);
+    supported_targets[s++] = text_atom;
+    NUM_TARGETS++;
+
+    /* Get the UTF8_STRING atom */
+    utf8_atom = XInternAtom (display, "UTF8_STRING", True);
+    if(utf8_atom != None) {
+      supported_targets[s++] = utf8_atom;
+      NUM_TARGETS++;
+    } else {
+      utf8_atom = XA_STRING;
+    }
+
+    supported_targets[s++] = XA_STRING;
+    NUM_TARGETS++;
+
+    if (NUM_TARGETS > MAX_NUM_TARGETS) {
+      exit_err ("internal error num-targets (%d) > max-num-targets (%d)\n",
+                NUM_TARGETS, MAX_NUM_TARGETS);
+    }
+
+    /* Get the NULL atom */
+    null_atom = XInternAtom (display, "NULL", False);
+
+    /* Get the COMPOUND_TEXT atom.
+     * NB. We do not currently serve COMPOUND_TEXT; we can retrieve it but
+     * do not perform charset conversion.
+     */
+    compound_text_atom = XInternAtom (display, "COMPOUND_TEXT", False);
+
+    sigemptyset (&exit_sigs);
+    sigaddset (&exit_sigs, SIGALRM);
+    sigaddset (&exit_sigs, SIGINT);
+    sigaddset (&exit_sigs, SIGTERM);
+
+    /* Find the "CLIPBOARD" selection */
+    selection = XInternAtom (display, "CLIPBOARD", False);
+
+    if (do_input || force_input) {
+        if (do_output || force_output) fflush (stdout);
+        new_sel = initialise_read (new_sel);
+        new_sel = read_input (new_sel, False);
+        set_selection__daemon (selection, new_sel);
+    }
 }
 
-/*
- * cp_to_sandboxed_session(unsigned char*, unsigned char*)
- * Copy clipboard from user X session to sandboxed X session.
- */
-void
-cp_to_sandboxed_session(unsigned char *dx, unsigned char *ds)
+static void
+cp_output_from_display(char *d)
 {
 
 }
 
 /*
- * cp_to_user_X_session(unsigned char*, unsigned char*)
- * Copy clipboard from sandboxed X session to user X session.
+ * exchange_clipboardes(char*, char*)
+ *
+ * Copy clipboard data between user X session and sandboxed X session.
  */
 void
-cp_to_user_X_session(unsigned char *ds, unsigned char *dx)
+exchange_clipboardes(char *dx, char *ds)
 {
 
 }

@@ -29,6 +29,7 @@ BuildRequires:  qt5-qtbase-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
 BuildRequires:  libX11-devel
+BuildRequires:  xorg-x11-proto-devel
 BuildRequires:  glibc-headers
 
 %description

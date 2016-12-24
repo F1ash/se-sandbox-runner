@@ -105,7 +105,6 @@ typedef int HandleResult;
 #define HANDLE_INCOMPLETE (1<<1)
 #define DID_DELETE        (1<<2)
 
-void cp_to_sandboxed_session(unsigned char*, unsigned char*);
-void cp_to_user_X_session(unsigned char*, unsigned char*);
+void exchange_clipboardes(char *, char *);
 
 #endif // XSEL_H

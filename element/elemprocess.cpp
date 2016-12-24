@@ -348,12 +348,9 @@ void ElemProcess::timerEvent(QTimerEvent *event)
             if (!timerId) timerId = startTimer(1000);
         };
     } else if ( _timerId && cp_timerId==_timerId ) {
-        cp_to_sandboxed_session(
-                    (unsigned char*) display_1.toUtf8().data(),
-                    (unsigned char*) display_2.toUtf8().data());
-        cp_to_user_X_session(
-                    (unsigned char*) display_2.toUtf8().data(),
-                    (unsigned char*) display_1.toUtf8().data());
+        exchange_clipboardes(
+                    display_1.toUtf8().data(),
+                    display_2.toUtf8().data());
     };
 }
 void ElemProcess::sendMessage()
