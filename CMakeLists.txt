@@ -45,6 +45,9 @@ set (HEADERS
   element/string_list.h
   element/shred_thread.h
   element/xsel.h
+  element/help_thread.h
+  element/copy_thread.h
+  element/paste_thread.h
   settings/settings.h
   settings/common_settings.h
   settings/window_settings.h
@@ -66,6 +69,9 @@ set (SOURCES
   element/string_list.cpp
   element/shred_thread.cpp
   element/xsel.c
+  element/help_thread.cpp
+  element/copy_thread.cpp
+  element/paste_thread.cpp
   settings/settings.cpp
   settings/common_settings.cpp
   settings/window_settings.cpp
@@ -78,9 +84,7 @@ set (SOURCES_DIRS . tray toolbar layout element settings)
 project (${PROJECT_NAME})
 include_directories (${CMAKE_CURRENT_BINARY_DIR} ${SOURCES_DIRS})
 set (DESKTOP_FILE se-sandbox-runner.desktop)
-set (RCC_SRC
-    se_sandbox_runner.qrc
-)
+set (RCC_SRC se_sandbox_runner.qrc)
 ##
 if ( QT4_BUILD )
   include ("CMakeQt4.txt")
@@ -92,10 +96,10 @@ endif( QT4_BUILD )
 add_executable (${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MOC_SOURCES} ${RCC})
 target_link_libraries (${PROJECT_NAME} ${BUILD_PROJECT_LIBRARIES})
 
-configure_file ( ${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE} )
-install ( FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE}
+configure_file (${DESKTOP_FILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE})
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${DESKTOP_FILE}
     DESTINATION ${SHARE_INSTALL_PREFIX}/applications
-    RENAME ${PROJECT_NAME}.desktop )
+    RENAME ${PROJECT_NAME}.desktop)
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
-install ( FILES icons/256x256/apps/applications-safety-selinux.png
-    DESTINATION ${SHARE_INSTALL_PREFIX}/icons/hicolor/256x256/apps )
+install (FILES icons/256x256/apps/applications-safety-selinux.png
+    DESTINATION ${SHARE_INSTALL_PREFIX}/icons/hicolor/256x256/apps)

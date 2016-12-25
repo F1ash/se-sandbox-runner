@@ -8,9 +8,12 @@
 #include <QTime>
 #include <QTimer>
 #include <QTimerEvent>
+#include <QClipboard>
 #include "string_list.h"
 #include "shred_thread.h"
 #include "layout/jobitem_model.h"
+#include "copy_thread.h"
+#include "paste_thread.h"
 #include <QDebug>
 
 #define RUNNING         true
@@ -58,6 +61,9 @@ private:
     bool            mountDirs;
     bool            copy_paste;
     int             cp_timerId;
+    QClipboard     *clipboard;
+    CopyThread     *copyThread;
+    PasteThread    *pasteThread;
     QString         display_1, display_2;
     QString         tempDir;
     QString         homeDir;

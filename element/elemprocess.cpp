@@ -1,6 +1,6 @@
+#include <QApplication>
 #include "element/elemprocess.h"
 extern "C" {
-#include "xsel.h"
 #include "signal.h"
 }
 
@@ -20,6 +20,9 @@ ElemProcess::ElemProcess(QObject *parent) :
     _diff = 0;
     copy_paste = false;
     cp_timerId = 0;
+    clipboard = QApplication::clipboard();
+    copyThread = new CopyThread(this);
+    pasteThread = new PasteThread(this);
     shredder = new ShredThread(this);
     connect(shredder, SIGNAL(finished()),
             this, SLOT(shreddingFinished()));
@@ -348,9 +351,8 @@ void ElemProcess::timerEvent(QTimerEvent *event)
             if (!timerId) timerId = startTimer(1000);
         };
     } else if ( _timerId && cp_timerId==_timerId ) {
-        exchange_clipboardes(
-                    display_1.toUtf8().data(),
-                    display_2.toUtf8().data());
+        if ( copyThread->isRunning() ) copyThread->terminate();
+        if ( pasteThread->isRunning() ) pasteThread->terminate();
     };
 }
 void ElemProcess::sendMessage()
@@ -418,4 +420,6 @@ void ElemProcess::stopCopyPaste()
 {
     killTimer(cp_timerId);
     cp_timerId = 0;
+    if ( copyThread->isRunning() ) copyThread->terminate();
+    if ( pasteThread->isRunning() ) pasteThread->terminate();
 }
