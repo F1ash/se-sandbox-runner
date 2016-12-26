@@ -105,6 +105,7 @@ typedef int HandleResult;
 #define HANDLE_INCOMPLETE (1<<1)
 #define DID_DELETE        (1<<2)
 
-void exchange_clipboardes(char *, char *);
+void cp_input_to_display(char*, char*);
+char *cp_output_from_display(char*);
 
 #endif // XSEL_H

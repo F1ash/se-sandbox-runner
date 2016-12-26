@@ -46,8 +46,8 @@ set (HEADERS
   element/shred_thread.h
   element/xsel.h
   element/help_thread.h
-  element/copy_thread.h
-  element/paste_thread.h
+  element/output_thread.h
+  element/input_thread.h
   settings/settings.h
   settings/common_settings.h
   settings/window_settings.h
@@ -70,8 +70,8 @@ set (SOURCES
   element/shred_thread.cpp
   element/xsel.c
   element/help_thread.cpp
-  element/copy_thread.cpp
-  element/paste_thread.cpp
+  element/output_thread.cpp
+  element/input_thread.cpp
   settings/settings.cpp
   settings/common_settings.cpp
   settings/window_settings.cpp

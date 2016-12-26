@@ -8,8 +8,10 @@ class HelpThread : public QThread
     Q_OBJECT
 public:
     explicit HelpThread(QObject *parent = nullptr);
+    QString     getDisplay() const;
     void        setDisplay(const QString&);
     QString     getSelection() const;
+    void        setSelection(const QString&);
 
 private:
     QString     display;

@@ -1852,8 +1852,8 @@ exchange_selections (void)
   set_selection_pair__daemon (text2, text1);
 }
 
-static void
-cp_input_to_display(char *d)
+void
+cp_input_to_display(char *d, char *_sel)
 {
     Bool do_input = False, do_output = False;
     Bool force_input = False, force_output = False;
@@ -1861,7 +1861,7 @@ cp_input_to_display(char *d)
     Atom selection = XA_PRIMARY, test_atom;
     int black;
     int s=0;
-    unsigned char * new_sel = NULL;
+    unsigned char * new_sel = _sel;
     char * display_name = NULL;
     long timeout_ms = 0L;
 
@@ -1993,26 +1993,187 @@ cp_input_to_display(char *d)
     selection = XInternAtom (display, "CLIPBOARD", False);
 
     if (do_input || force_input) {
-        if (do_output || force_output) fflush (stdout);
-        new_sel = initialise_read (new_sel);
-        new_sel = read_input (new_sel, False);
+        //if (do_output || force_output) fflush (stdout);
+        //new_sel = initialise_read (new_sel);
+        //new_sel = read_input (new_sel, False);
         set_selection__daemon (selection, new_sel);
     }
 }
 
-static void
+char*
 cp_output_from_display(char *d)
 {
+    Bool show_version = False;
+    Bool show_help = False;
+    Bool do_append = False, do_clear = False;
+    Bool do_keep = False, do_exchange = False;
+    Bool do_input = False, do_output = False;
+    Bool force_input = False, force_output = False;
+    Bool want_clipboard = False, do_delete = False;
+    Window root;
+    Atom selection = XA_PRIMARY, test_atom;
+    int black;
+    int i, s=0;
+    unsigned char * old_sel = NULL, * new_sel = NULL;
+    char * display_name = NULL;
+    long timeout_ms = 0L;
 
+    /* Specify default behaviour based on input and output file types */
+    if (isatty(0) && isatty(1)) {
+      /* Solo invocation; display the selection and exit */
+      do_input = False; do_output = True;
+    } else {
+      /* Use only what is not attached to the tty */
+      /* Gives expected behaviour with *basic* usage of "xsel < foo", "xsel > foo", etc. */
+      do_input = !isatty(0); do_output = !isatty(1);
+    }
+    /* NOTE:
+     * Checking stdin/stdout for being a tty is NOT reliable to tell what the user wants.
+     * This is because child processes inherit the file descriptors of their parents;
+     * an xsel called in a script that is e.g. daemonized (not attached to a tty), or called
+     * with a redirection or in a pipeline will have non-tty file descriptors on default.
+     * The redirection/piping issue also applies to "grouped" or "compound" commands
+     * in the shell (functions, subshells, curly-brace blocks, conditionals, loops, etc.).
+     * In all these cases, the user *must* set the mode of operation explicitly.
+     */
+
+    // (OPT("--output") || OPT("-o"))
+    do_input = False;
+    force_output = True;
+    // (OPT("--clipboard") || OPT("-b"))
+    want_clipboard = True;
+    display_name = d;
+    // (OPT("--nodetach") || OPT("-n"))
+    no_daemon = True;
+
+    if (fstat (0, &in_statbuf) == -1) {
+      exit_err ("fstat error on stdin");
+    }
+    if (fstat (1, &out_statbuf) == -1) {
+      exit_err ("fstat error on stdout");
+    }
+
+    if (S_ISDIR(in_statbuf.st_mode)) {
+      exit_err ("-: Is a directory\n");
+    }
+    if (S_ISDIR(out_statbuf.st_mode)) {
+      exit_err ("stdout: Is a directory\n");
+    }
+
+    timeout = timeout_ms * 1000;
+
+    display = XOpenDisplay (display_name);
+    if (display==NULL) {
+      exit_err ("Can't open display: %s\n", display_name);
+    }
+    root = XDefaultRootWindow (display);
+
+    /* Create an unmapped window for receiving events */
+    black = BlackPixel (display, DefaultScreen (display));
+    window = XCreateSimpleWindow (display, root, 0, 0, 1, 1, 0, black, black);
+
+    print_debug (D_INFO, "Window id: 0x%x (unmapped)", window);
+
+    /* Get a timestamp */
+    XSelectInput (display, window, PropertyChangeMask);
+    timestamp = get_timestamp ();
+
+    print_debug (D_OBSC, "Timestamp: %lu", timestamp);
+
+    /* Get the maximum incremental selection size in bytes */
+    /*max_req = MAX_SELECTION_INCR (display);*/
+    max_req = 4000;
+
+    print_debug (D_OBSC, "Maximum request size: %ld bytes", max_req);
+
+    /* Consistency check */
+    test_atom = XInternAtom (display, "PRIMARY", False);
+    if (test_atom != XA_PRIMARY)
+      print_debug (D_WARN, "XA_PRIMARY not named \"PRIMARY\"\n");
+    test_atom = XInternAtom (display, "SECONDARY", False);
+    if (test_atom != XA_SECONDARY)
+      print_debug (D_WARN, "XA_SECONDARY not named \"SECONDARY\"\n");
+
+    NUM_TARGETS=0;
+
+    /* Get the TIMESTAMP atom */
+    timestamp_atom = XInternAtom (display, "TIMESTAMP", False);
+    supported_targets[s++] = timestamp_atom;
+    NUM_TARGETS++;
+
+    /* Get the MULTIPLE atom */
+    multiple_atom = XInternAtom (display, "MULTIPLE", False);
+    supported_targets[s++] = multiple_atom;
+    NUM_TARGETS++;
+
+    /* Get the TARGETS atom */
+    targets_atom = XInternAtom (display, "TARGETS", False);
+    supported_targets[s++] = targets_atom;
+    NUM_TARGETS++;
+
+    /* Get the DELETE atom */
+    delete_atom = XInternAtom (display, "DELETE", False);
+    supported_targets[s++] = delete_atom;
+    NUM_TARGETS++;
+
+    /* Get the INCR atom */
+    incr_atom = XInternAtom (display, "INCR", False);
+    supported_targets[s++] = incr_atom;
+    NUM_TARGETS++;
+
+    /* Get the TEXT atom */
+    text_atom = XInternAtom (display, "TEXT", False);
+    supported_targets[s++] = text_atom;
+    NUM_TARGETS++;
+
+    /* Get the UTF8_STRING atom */
+    utf8_atom = XInternAtom (display, "UTF8_STRING", True);
+    if(utf8_atom != None) {
+      supported_targets[s++] = utf8_atom;
+      NUM_TARGETS++;
+    } else {
+      utf8_atom = XA_STRING;
+    }
+
+    supported_targets[s++] = XA_STRING;
+    NUM_TARGETS++;
+
+    if (NUM_TARGETS > MAX_NUM_TARGETS) {
+      exit_err ("internal error num-targets (%d) > max-num-targets (%d)\n",
+                NUM_TARGETS, MAX_NUM_TARGETS);
+    }
+
+    /* Get the NULL atom */
+    null_atom = XInternAtom (display, "NULL", False);
+
+    /* Get the COMPOUND_TEXT atom.
+     * NB. We do not currently serve COMPOUND_TEXT; we can retrieve it but
+     * do not perform charset conversion.
+     */
+    compound_text_atom = XInternAtom (display, "COMPOUND_TEXT", False);
+
+    sigemptyset (&exit_sigs);
+    sigaddset (&exit_sigs, SIGALRM);
+    sigaddset (&exit_sigs, SIGINT);
+    sigaddset (&exit_sigs, SIGTERM);
+
+    /* Find the "CLIPBOARD" selection if required */
+    selection = XInternAtom (display, "CLIPBOARD", False);
+
+    /* handle output modes */
+    if (do_output || force_output) {
+      /* Get the current selection */
+      old_sel = get_selection_text (selection);
+
+      if (old_sel) {
+           printf ("%s", old_sel);
+           if (!do_append && *old_sel != '\0' && isatty(1) &&
+               old_sel[xs_strlen (old_sel) - 1] != '\n') {
+               fflush (stdout);
+               fprintf (stderr, "\n\\ No newline at end of selection\n");
+           }
+      }
+    }
+    return (char*)old_sel;
 }
 
-/*
- * exchange_clipboardes(char*, char*)
- *
- * Copy clipboard data between user X session and sandboxed X session.
- */
-void
-exchange_clipboardes(char *dx, char *ds)
-{
-
-}

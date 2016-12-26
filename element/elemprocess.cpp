@@ -20,9 +20,12 @@ ElemProcess::ElemProcess(QObject *parent) :
     _diff = 0;
     copy_paste = false;
     cp_timerId = 0;
+    selection.append(".");
     clipboard = QApplication::clipboard();
-    copyThread = new CopyThread(this);
-    pasteThread = new PasteThread(this);
+    outputThread = new OutputThread(this);
+    inputThread = new InputThread(this);
+    connect(outputThread, SIGNAL(finished()),
+            this, SLOT(exchangeSelections()));
     shredder = new ShredThread(this);
     connect(shredder, SIGNAL(finished()),
             this, SLOT(shreddingFinished()));
@@ -351,8 +354,9 @@ void ElemProcess::timerEvent(QTimerEvent *event)
             if (!timerId) timerId = startTimer(1000);
         };
     } else if ( _timerId && cp_timerId==_timerId ) {
-        if ( copyThread->isRunning() ) copyThread->terminate();
-        if ( pasteThread->isRunning() ) pasteThread->terminate();
+        if ( outputThread->isRunning() ) outputThread->terminate();
+        if ( inputThread->isRunning() ) inputThread->terminate();
+        outputThread->start();
     };
 }
 void ElemProcess::sendMessage()
@@ -382,6 +386,36 @@ void ElemProcess::setShredState(uint percent)
     //qDebug()<<_state;
     own_model->setData(_idx, _state, Qt::EditRole);
 }
+void ElemProcess::exchangeSelections()
+{
+    QTextStream i(stdin), o(stdout);
+    QString cpbd1(clipboard->text(QClipboard::Clipboard));
+    o<< "selUserSession: '"<<cpbd1<< "'"<< endl;
+    QString cpbd2(outputThread->getSelection());
+    o<< "selSandboxedS.: '"<<cpbd2<< "'"<< endl;
+    bool first = false, second = false;
+    if ( !cpbd1.isEmpty() && !cpbd1.compare(selection) ) {
+        inputThread->setSelection(cpbd1);
+        inputThread->start();
+        first = true;
+    };
+    if ( !cpbd2.isEmpty() && !cpbd2.compare(selection) ) {
+        clipboard->setText(
+                    cpbd2,
+                    QClipboard::Clipboard);
+        second = true;
+    };
+    if ( first ) selection = cpbd1;
+    if ( second ) selection = cpbd2;
+    o<< "lastSel.: '"<<selection<< "'"<< endl;
+}
+void ElemProcess::clipboardChanged(QClipboard::Mode mode)
+{
+    if ( mode == QClipboard::Clipboard ) {
+
+    };
+}
+
 void ElemProcess::startCopyPaste()
 {
     //QTextStream s(stdout);
@@ -391,27 +425,30 @@ void ElemProcess::startCopyPaste()
     bool opened = f.open(QIODevice::ReadOnly);
     if ( opened ) {
         char buf[1024];
+        QString sandboxedDisplay;
         while (0<f.readLine(buf, sizeof(buf))) {
             QString line(buf);
             if ( line.startsWith("DISPLAY") ) {
                 QStringList _data = line.split("=");
                 if ( _data.count()>1 ) {
-                    display_2 = _data.at(1).split(" ").at(0);
+                    sandboxedDisplay = _data.at(1).split(" ").at(0);
                 };
                 break;
             };
         };
         f.close();
-        QStringList env = QProcess::systemEnvironment();
-        QList<QString>::const_iterator i;
-        for ( i=env.constBegin(); i<env.constEnd(); i++ ) {
-            QString item = *i;
-            if ( (item).startsWith("DISPLAY=") ) {
-                display_1 = item.split("=").at(1);
-                break;
-            };
-        };
+        //QStringList env = QProcess::systemEnvironment();
+        //QList<QString>::const_iterator i;
+        //for ( i=env.constBegin(); i<env.constEnd(); i++ ) {
+        //    QString item = *i;
+        //    if ( (item).startsWith("DISPLAY=") ) {
+        //        display_1 = item.split("=").at(1);
+        //        break;
+        //    };
+        //};
         //s<< display_1 << " "<< display_2 << endl;
+        inputThread->setDisplay(sandboxedDisplay);
+        outputThread->setDisplay(sandboxedDisplay);
         cp_timerId = startTimer(1000);
     };
     //s<< opened << endl;
@@ -420,6 +457,6 @@ void ElemProcess::stopCopyPaste()
 {
     killTimer(cp_timerId);
     cp_timerId = 0;
-    if ( copyThread->isRunning() ) copyThread->terminate();
-    if ( pasteThread->isRunning() ) pasteThread->terminate();
+    if ( outputThread->isRunning() ) outputThread->terminate();
+    if ( inputThread->isRunning() ) inputThread->terminate();
 }

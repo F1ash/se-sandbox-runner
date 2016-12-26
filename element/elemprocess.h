@@ -12,8 +12,8 @@
 #include "string_list.h"
 #include "shred_thread.h"
 #include "layout/jobitem_model.h"
-#include "copy_thread.h"
-#include "paste_thread.h"
+#include "output_thread.h"
+#include "input_thread.h"
 #include <QDebug>
 
 #define RUNNING         true
@@ -61,10 +61,10 @@ private:
     bool            mountDirs;
     bool            copy_paste;
     int             cp_timerId;
+    QString         selection;
     QClipboard     *clipboard;
-    CopyThread     *copyThread;
-    PasteThread    *pasteThread;
-    QString         display_1, display_2;
+    OutputThread   *outputThread;   // threads for operations
+    InputThread    *inputThread;    // with sandboxed X session
     QString         tempDir;
     QString         homeDir;
     QString         SELabel;
@@ -82,6 +82,8 @@ private slots:
     void            sendMessage();
     void            shreddingFinished();
     void            setShredState(uint);
+    void            exchangeSelections();
+    void            clipboardChanged(QClipboard::Mode);
 };
 
 #endif //ELEMPROCESS_H
