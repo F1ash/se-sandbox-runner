@@ -388,32 +388,32 @@ void ElemProcess::setShredState(uint percent)
 }
 void ElemProcess::exchangeSelections()
 {
-    QTextStream i(stdin), o(stdout);
+    QTextStream o(stdout);
+    o<<"" <<endl;
     QString cpbd1(clipboard->text(QClipboard::Clipboard));
     o<< "selUserSession: '"<<cpbd1<< "'"<< endl;
     QString cpbd2(outputThread->getSelection());
     o<< "selSandboxedS.: '"<<cpbd2<< "'"<< endl;
-    bool first = false, second = false;
-    if ( !cpbd1.isEmpty() && !cpbd1.compare(selection) ) {
+    if ( !cpbd1.isEmpty() && cpbd1.compare(selection)!=0 ) {
+        o<< "first"<< endl;
         inputThread->setSelection(cpbd1);
         inputThread->start();
-        first = true;
+        selection = cpbd1;
+        cpbd2     = cpbd1;
+    } else {
+        selection.clear();
     };
-    if ( !cpbd2.isEmpty() && !cpbd2.compare(selection) ) {
+    if ( !cpbd2.isEmpty() && cpbd2.compare(selection)!=0 ) {
+        o<< "second"<< endl;
         clipboard->setText(
                     cpbd2,
                     QClipboard::Clipboard);
-        second = true;
+        selection = cpbd2;
+        cpbd1     = cpbd2;
+    } else {
+        selection.clear();
     };
-    if ( first ) selection = cpbd1;
-    if ( second ) selection = cpbd2;
     o<< "lastSel.: '"<<selection<< "'"<< endl;
-}
-void ElemProcess::clipboardChanged(QClipboard::Mode mode)
-{
-    if ( mode == QClipboard::Clipboard ) {
-
-    };
 }
 
 void ElemProcess::startCopyPaste()

@@ -1993,7 +1993,7 @@ cp_input_to_display(char *d, char *_sel)
     selection = XInternAtom (display, "CLIPBOARD", False);
 
     if (do_input || force_input) {
-        //if (do_output || force_output) fflush (stdout);
+        if (do_output || force_output) fflush (stdout);
         //new_sel = initialise_read (new_sel);
         //new_sel = read_input (new_sel, False);
         set_selection__daemon (selection, new_sel);
@@ -2003,10 +2003,7 @@ cp_input_to_display(char *d, char *_sel)
 char*
 cp_output_from_display(char *d)
 {
-    Bool show_version = False;
-    Bool show_help = False;
-    Bool do_append = False, do_clear = False;
-    Bool do_keep = False, do_exchange = False;
+    Bool do_append = False;
     Bool do_input = False, do_output = False;
     Bool force_input = False, force_output = False;
     Bool want_clipboard = False, do_delete = False;
@@ -2014,7 +2011,7 @@ cp_output_from_display(char *d)
     Atom selection = XA_PRIMARY, test_atom;
     int black;
     int i, s=0;
-    unsigned char * old_sel = NULL, * new_sel = NULL;
+    unsigned char * old_sel = NULL;
     char * display_name = NULL;
     long timeout_ms = 0L;
 
@@ -2166,7 +2163,7 @@ cp_output_from_display(char *d)
       old_sel = get_selection_text (selection);
 
       if (old_sel) {
-           printf ("%s", old_sel);
+           //printf ("%s", old_sel);
            if (!do_append && *old_sel != '\0' && isatty(1) &&
                old_sel[xs_strlen (old_sel) - 1] != '\n') {
                fflush (stdout);

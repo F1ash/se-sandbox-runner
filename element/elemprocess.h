@@ -83,7 +83,6 @@ private slots:
     void            shreddingFinished();
     void            setShredState(uint);
     void            exchangeSelections();
-    void            clipboardChanged(QClipboard::Mode);
 };
 
 #endif //ELEMPROCESS_H
